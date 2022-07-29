@@ -1,0 +1,72 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="FullScreenTheme" parent="AppTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="HealthTestStyle" parent="AppTheme">
+        <item name="android:statusBarColor">@android:color/transparent </item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="FullScreenDialog">
+
+        <!-- &lt;!&ndash; 有无边框 &ndash;&gt;
+         <item name="android:windowFrame">@null</item>
+         &lt;!&ndash; 是否浮现在activity之上 &ndash;&gt;
+         <item name="android:windowIsFloating">false</item>
+         &lt;!&ndash; 是否透明 &ndash;&gt;
+         &lt;!&ndash;<item name="android:windowIsTranslucent">true</item>&ndash;&gt;
+         &lt;!&ndash; 背景透明 &ndash;&gt;
+         &lt;!&ndash;<item name="android:windowBackground">@color/color_white_ffffff</item>&ndash;&gt;
+         &lt;!&ndash; 模糊 &ndash;&gt;
+         &lt;!&ndash;<item name="android:backgroundDimEnabled">true</item>&ndash;&gt;
+         &lt;!&ndash;无标题 &ndash;&gt;
+         <item name="android:windowFullscreen">true</item>
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowBackground">@color/colorPrimary</item>
+         <item name="android:backgroundDimEnabled">false</item>&lt;!&ndash;背景不变暗&ndash;&gt;
+         &lt;!&ndash;<item name="android:windowIsTranslucent">true</item>&ndash;&gt;
+         <item name="android:windowContentOverlay">@null</item>
+         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>-->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+
+    </style>
+
+    <style name="Transparent" parent="AppTheme">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
+    <!-- 图片全屏-->
+    <style name="Theme.imgFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
+        <!--全透明效果-->
+    </style>
+
+    <!--//把window背景设置为透明，这样的话响应期间就不会看到白屏，此方式可以不设置背景图片。但是会有启动延时的情况。-->
+    <!--<style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/bg</item>&ndash;&gt;
+        <item name="android:windowFullscreen">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        &lt;!&ndash;<item name="android:windowDisablePreview">true</item>&ndash;&gt;
+    </style>-->
+
+</resources>
