@@ -45,6 +45,6 @@ dependencies {
     //PermissionX
     implementation 'com.guolindev.permissionx:permissionx:1.6.4'
     //FastBle
-//    implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
+    implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
 
 }

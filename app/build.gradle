@@ -35,6 +35,6 @@ dependencies {
 
 
     //今日头条的适配方案
-//    implementation 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
+    implementation 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
 
 }
