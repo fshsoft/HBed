@@ -1,31 +1,27 @@
 package com.java.health.care.bed.present;
 
-import com.java.fsh.soft.common.base.BasePresenter;
+import com.java.health.care.bed.base.BasePresenter;
 import com.java.health.care.bed.contract.prescription.Contract;
+import com.java.health.care.bed.model.PrescriptionModel;
 
 /**
  * @author fsh
  * @date 2022/07/29 15:12
  * @Description
  */
-public class PrescriptionPresenter extends BasePresenter<Contract.IMyPrescriptionView> implements Contract.IMyPrescriptionPresenter {
+public class PrescriptionPresenter extends BasePresenter<Contract.IPrescriptionView>
+        implements Contract.IPrescriptionPresenter {
 
-    Contract.IMyPrescriptionModel iMyPrescriptionModel;
+    Contract.IPrescriptionModel iPrescriptionModel;
     public PrescriptionPresenter(){
-//        iMyPrescriptionModel = new M
+        iPrescriptionModel = new PrescriptionModel();
     }
-    @Override
-    public void loadFinishedPrescription() {
 
-    }
 
     @Override
     public void loadNotFinishedPrescription() {
 
     }
 
-    @Override
-    public void refreshUser() {
 
-    }
 }

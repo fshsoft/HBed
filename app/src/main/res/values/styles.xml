@@ -12,12 +12,10 @@
     <style name="FullScreenTheme" parent="AppTheme">
         <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
+        <item name="android:background">@drawable/welcome</item>
     </style>
 
-    <style name="HealthTestStyle" parent="AppTheme">
-        <item name="android:statusBarColor">@android:color/transparent </item>
-        <item name="windowNoTitle">true</item>
-    </style>
+
 
     <style name="FullScreenDialog">
 
@@ -69,4 +67,7 @@
         &lt;!&ndash;<item name="android:windowDisablePreview">true</item>&ndash;&gt;
     </style>-->
 
+    <style name="MyTabLayout">
+        <item name="android:textSize">20sp</item>
+    </style>
 </resources>

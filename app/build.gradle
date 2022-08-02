@@ -30,11 +30,50 @@ android {
 }
 
 dependencies {
-    implementation project(':common')
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
 
-
-
+    implementation 'androidx.appcompat:appcompat:1.0.0'                 //必须 1.0.0 以上
+    implementation  'io.github.scwang90:refresh-layout-kernel:2.0.5'      //核心必须依赖
+    implementation  'io.github.scwang90:refresh-header-classics:2.0.5'    //经典刷新头
+    implementation  'io.github.scwang90:refresh-footer-classics:2.0.5'    //经典加载
     //今日头条的适配方案
     implementation 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
 
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+
+
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
+    //rx
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
+    //AndroidUtilCode
+    //if u use AndroidX, use the following
+    implementation 'com.blankj:utilcodex:1.31.0'
+    //EvenBus
+    api 'org.greenrobot:eventbus:3.3.1'
+    //LoadSir
+    implementation 'com.kingja.loadsir:loadsir:1.3.8'
+    //Material Dialogs
+    implementation 'com.afollestad.material-dialogs:core:3.3.0'
+    //LitePal
+    implementation 'org.litepal.guolindev:core:3.2.3'
+    //PermissionX
+    implementation 'com.guolindev.permissionx:permissionx:1.6.4'
+    //FastBle
+    implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
+
+    implementation 'com.hjq:titlebar:5.0'
 }
