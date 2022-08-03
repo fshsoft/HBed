@@ -36,6 +36,7 @@
     <string name="connected">已连接</string>
     <string name="disconnect">断开连接</string>
     <string name="enter">进入操作</string>
+    <string name="look">查看</string>
 
     <string name="confirm">确定</string>
     <string name="topsearch">搜索</string>

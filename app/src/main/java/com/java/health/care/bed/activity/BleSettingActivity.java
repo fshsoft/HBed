@@ -149,6 +149,15 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                     startActivity(intent);
                 }
             }
+
+            @Override
+            public void onLook(BleDevice bleDevice) {
+                if (BleManager.getInstance().isConnected(bleDevice)) {
+                    Intent intent = new Intent(BleSettingActivity.this, OperationActivity.class);
+                    intent.putExtra(OperationActivity.KEY_DATA, bleDevice);
+                    startActivity(intent);
+                }
+            }
         });
         ListView listView_device = (ListView) findViewById(R.id.list_device);
         listView_device.setAdapter(mDeviceAdapter);

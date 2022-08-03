@@ -1,9 +1,6 @@
 package com.java.health.care.bed.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -13,12 +10,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
-import com.java.health.care.bed.bean.User;
-import com.java.health.care.bed.contract.user.Contract;
 import com.java.health.care.bed.fragment.PrescriptionNoFragment;
 import com.java.health.care.bed.fragment.PrescriptionYesFragment;
-
-import com.java.health.care.bed.present.UserPresenter;
 
 import java.util.ArrayList;
 
@@ -30,8 +23,7 @@ import butterknife.OnClick;
  * @date 2022/07/29 14:08
  * @Description 我的处方,获取User信息，跳转未完成和已完成界面fragment
  */
-public class PrescriptionActivity extends BaseActivity<Contract.IUserView, UserPresenter>
-        implements Contract.IUserView {
+public class PrescriptionActivity extends BaseActivity {
 
     @BindView(R.id.prescription_tab)
     TabLayout mTabLayout;
@@ -47,16 +39,17 @@ public class PrescriptionActivity extends BaseActivity<Contract.IUserView, UserP
 
     @OnClick(R.id.prescription_tv_set)
     public void onClickSet(){
-          startActivity(new Intent(PrescriptionActivity.this,InputPassWordActivity.class));
+          goActivity(InputPassWordActivity.class);
     }
 
+
     @Override
-    protected int getContentViewId() {
+    protected int getLayoutId() {
         return R.layout.activity_prescription;
     }
 
     @Override
-    protected void init(Bundle savedInstanceState) {
+    protected void initView() {
         PrescriptionNoFragment noFragment = new PrescriptionNoFragment();
         PrescriptionYesFragment yesFragment = new PrescriptionYesFragment();
         mFragmentSparseArray.add(noFragment);
@@ -77,40 +70,17 @@ public class PrescriptionActivity extends BaseActivity<Contract.IUserView, UserP
         mViewPager.setOffscreenPageLimit(2);
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(mTabLayout, mViewPager,
                 new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                tab.setText(titles[position]);
-            }
-        });
+                    @Override
+                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        tab.setText(titles[position]);
+                    }
+                });
         //这句话很重要
         tabLayoutMediator.attach();
-
-
     }
 
     @Override
-    protected UserPresenter createPresenter() {
-        return null;
-    }
-
-
-    @Override
-    public void refreshUser(User user) {
-
-    }
-
-    @Override
-    public void onLoading() {
-
-    }
-
-    @Override
-    public void onLoadFailed() {
-
-    }
-
-    @Override
-    public void onLoadSuccess() {
+    protected void initData() {
 
     }
 }

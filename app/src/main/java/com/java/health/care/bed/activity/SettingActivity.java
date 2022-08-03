@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.base.BaseActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -17,18 +18,25 @@ import butterknife.Unbinder;
  * @date 2022/08/02 13:55
  * @Description
  */
-public class SettingActivity extends AppCompatActivity {
-    private Unbinder unbinder;
+public class SettingActivity extends BaseActivity {
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_set);
-        unbinder= ButterKnife.bind(this);
+    protected int getLayoutId() {
+        return R.layout.activity_set;
+    }
+
+    @Override
+    protected void initView() {
+    }
+
+    @Override
+    protected void initData() {
+
     }
 
     @OnClick(R.id.set_ble_set_rl)
     public void setBle(){
-        startActivity(new Intent(SettingActivity.this,BleSettingActivity.class));
+        goActivity(BleSettingActivity.class);
     }
 
     @OnClick(R.id.set_about_us_rl)
@@ -41,9 +49,4 @@ public class SettingActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
-    }
 }

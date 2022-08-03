@@ -62,7 +62,7 @@
 
             <Button
                 android:id="@+id/btn_connect"
-                android:layout_width="50dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="@string/connect"
@@ -87,7 +87,7 @@
 
             <Button
                 android:id="@+id/btn_disconnect"
-                android:layout_width="50dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="@string/disconnect"
@@ -95,10 +95,18 @@
 
             <Button
                 android:id="@+id/btn_detail"
-                android:layout_width="50dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="@string/enter"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_look"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/look"
                 android:textSize="12sp" />
 
         </LinearLayout>

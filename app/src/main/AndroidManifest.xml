@@ -32,8 +32,7 @@
 
         </activity>
 
-        <activity android:name=".activity.PrescriptionActivity"
-            android:screenOrientation="landscape"/>
+        <activity android:name=".activity.PrescriptionActivity"/>
 
         <activity android:name=".activity.InputPassWordActivity"
             android:screenOrientation="landscape"/>
@@ -45,6 +44,9 @@
             android:screenOrientation="landscape"/>
 
         <activity android:name=".ble.operation.OperationActivity"
+            android:screenOrientation="landscape"/>
+
+        <activity android:name=".activity.VitalSignsActivity"
             android:screenOrientation="landscape"/>
     </application>
 

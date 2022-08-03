@@ -1,83 +1,80 @@
 package com.java.health.care.bed.base;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.kingja.loadsir.core.LoadService;
-
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * Description: Base Fragment
  * @author Administrator
  */
-public abstract class BaseFragment<V, P extends BasePresenter<V>> extends Fragment{
+public abstract class BaseFragment extends Fragment {
 
-    protected P mPresenter;
+    private Unbinder unbinder;
 
-    /**
-     * 使用butterKnife注解
-     */
-    protected Unbinder unbinder;
-
-    /**
-     * 获取布局id
-     * @return 当前需要加载的布局
-     */
-    protected abstract int getContentViewId();
-
-    protected View mRootView;
-
-    /**
-     * 加载管理页面
-     */
-    protected LoadService mLoadService;
-
-
-    /**
-     * 初始化
-     */
-    protected abstract void init();
-
-    /**
-     * 创建Presenter
-     *
-     * @return p
-     */
-    protected abstract P createPresenter();
-
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if (mRootView == null) {
-            mRootView = inflater.inflate(getContentViewId(), container, false);
-        }
-        mPresenter = createPresenter();
-        unbinder = ButterKnife.bind(this, mRootView);
-        if (mPresenter != null) {
-            mPresenter.attachView((V) this);
-        }
-        init();
-        return mRootView;
+        View root = inflater.inflate(getLayoutId(),container,false);
+        ButterKnife.bind(this,root);
+        initView();
+        initData();
+        return root;
     }
 
+    protected abstract int getLayoutId();
+    protected abstract void initView();
+
+    protected abstract void initData();
+
+    public void goActivity(Class<?> clazz) {
+        goActivity(clazz, null);
+    }
+
+    public void goActivity(Class<?> clazz, Bundle bundle) {
+        Intent intent = new Intent(getActivity(), clazz);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+    }
+
+    public static void goActivity(Class<?> clazz, Bundle bundle, Context ctx) {
+        Intent intent = new Intent(ctx, clazz);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        ctx.startActivity(intent);
+    }
+
+    public void showToast(String text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void showToast(Context ctx, String text) {
+        Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public void showLongToast(Context ctx, String text) {
+        Toast.makeText(ctx, text, Toast.LENGTH_LONG).show();
+
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (unbinder != null) {
+        if(null!=unbinder){
             unbinder.unbind();
-        }
-        if (mPresenter != null) {
-            mPresenter.detachView();
         }
     }
 }
