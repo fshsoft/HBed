@@ -1,4 +1,4 @@
-package com.java.health.care.bed.comm;
+package com.java.health.care.bed.ble.comm;
 
 
 import com.clj.fastble.data.BleDevice;

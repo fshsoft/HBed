@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -44,8 +43,9 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.clj.fastble.scan.BleScanRuleConfig;
 import com.java.health.care.bed.R;
-import com.java.health.care.bed.adapter.DeviceAdapter;
-import com.java.health.care.bed.comm.ObserverManager;
+import com.java.health.care.bed.ble.adapter.DeviceAdapter;
+import com.java.health.care.bed.ble.comm.ObserverManager;
+import com.java.health.care.bed.ble.operation.OperationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +61,8 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
     private static final int REQUEST_CODE_OPEN_GPS = 1;
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
 
-    private LinearLayout layout_setting;
     private TextView txt_setting;
     private Button btn_scan;
-    private EditText et_name, et_mac, et_uuid;
-    private Switch sw_auto;
     private ImageView img_loading;
 
     private Animation operatingAnim;
@@ -109,14 +106,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
 
-            case R.id.txt_setting:
-                if (layout_setting.getVisibility() == View.VISIBLE) {
-                    layout_setting.setVisibility(View.GONE);
-                    txt_setting.setText(getString(R.string.expand_search_settings));
-                } else {
-                    layout_setting.setVisibility(View.VISIBLE);
-                    txt_setting.setText(getString(R.string.retrieve_search_settings));
-                }
+            default:
                 break;
         }
     }
@@ -128,17 +118,6 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         btn_scan = (Button) findViewById(R.id.btn_scan);
         btn_scan.setText(getString(R.string.start_scan));
         btn_scan.setOnClickListener(this);
-
-        et_name = (EditText) findViewById(R.id.et_name);
-        et_mac = (EditText) findViewById(R.id.et_mac);
-        et_uuid = (EditText) findViewById(R.id.et_uuid);
-        sw_auto = (Switch) findViewById(R.id.sw_auto);
-
-        layout_setting = (LinearLayout) findViewById(R.id.layout_setting);
-        txt_setting = (TextView) findViewById(R.id.txt_setting);
-        txt_setting.setOnClickListener(this);
-        layout_setting.setVisibility(View.GONE);
-        txt_setting.setText(getString(R.string.expand_search_settings));
 
         img_loading = (ImageView) findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
@@ -184,55 +163,17 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         }
         mDeviceAdapter.notifyDataSetChanged();
     }
-
-    private void setScanRule() {
-        String[] uuids;
-        String str_uuid = et_uuid.getText().toString();
-        if (TextUtils.isEmpty(str_uuid)) {
-            uuids = null;
-        } else {
-            uuids = str_uuid.split(",");
-        }
-        UUID[] serviceUuids = null;
-        if (uuids != null && uuids.length > 0) {
-            serviceUuids = new UUID[uuids.length];
-            for (int i = 0; i < uuids.length; i++) {
-                String name = uuids[i];
-                String[] components = name.split("-");
-                if (components.length != 5) {
-                    serviceUuids[i] = null;
-                } else {
-                    serviceUuids[i] = UUID.fromString(uuids[i]);
-                }
-            }
-        }
-
-        String[] names;
-        String str_name = et_name.getText().toString();
-        if (TextUtils.isEmpty(str_name)) {
-            names = null;
-        } else {
-            names = str_name.split(",");
-        }
-
-        String mac = et_mac.getText().toString();
-
-        boolean isAutoConnect = sw_auto.isChecked();
-
+    private void setScanNameRule(){
+        String[] names ={"CM19","QianShan","SpO2"};
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
-                // 只扫描指定的服务的设备，可选
-                .setServiceUuids(serviceUuids)
                 // 只扫描指定广播名的设备，可选
                 .setDeviceName(true, names)
-                // 只扫描指定mac的设备，可选
-                .setDeviceMac(mac)
-                // 连接时的autoConnect参数，可选，默认false
-                .setAutoConnect(isAutoConnect)
                 // 扫描超时时间，可选，默认10秒
                 .setScanTimeOut(10000)
                 .build();
         BleManager.getInstance().initScanRule(scanRuleConfig);
     }
+
 
     private void startScan() {
         BleManager.getInstance().scan(new BleScanCallback() {
@@ -306,33 +247,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         });
     }
 
-    private void readRssi(BleDevice bleDevice) {
-        BleManager.getInstance().readRssi(bleDevice, new BleRssiCallback() {
-            @Override
-            public void onRssiFailure(BleException exception) {
-                Log.i(TAG, "onRssiFailure" + exception.toString());
-            }
 
-            @Override
-            public void onRssiSuccess(int rssi) {
-                Log.i(TAG, "onRssiSuccess: " + rssi);
-            }
-        });
-    }
-
-    private void setMtu(BleDevice bleDevice, int mtu) {
-        BleManager.getInstance().setMtu(bleDevice, mtu, new BleMtuChangedCallback() {
-            @Override
-            public void onSetMTUFailure(BleException exception) {
-                Log.i(TAG, "onsetMTUFailure" + exception.toString());
-            }
-
-            @Override
-            public void onMtuChanged(int mtu) {
-                Log.i(TAG, "onMtuChanged: " + mtu);
-            }
-        });
-    }
 
     @Override
     public final void onRequestPermissionsResult(int requestCode,
@@ -403,7 +318,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                             .setCancelable(false)
                             .show();
                 } else {
-                    setScanRule();
+                    setScanNameRule();
                     startScan();
                 }
                 break;
@@ -425,8 +340,9 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_OPEN_GPS) {
             if (checkGPSIsOpen()) {
-                setScanRule();
+                setScanNameRule();
                 startScan();
+
             }
         }
     }

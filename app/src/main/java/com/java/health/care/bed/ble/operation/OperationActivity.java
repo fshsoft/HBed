@@ -1,4 +1,4 @@
-package com.java.health.care.bed.activity;
+package com.java.health.care.bed.ble.operation;
 
 
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -15,8 +15,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.data.BleDevice;
 import com.java.health.care.bed.R;
-import com.java.health.care.bed.comm.Observer;
-import com.java.health.care.bed.comm.ObserverManager;
+import com.java.health.care.bed.ble.comm.Observer;
+import com.java.health.care.bed.ble.comm.ObserverManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,20 +114,20 @@ public class OperationActivity extends AppCompatActivity implements Observer {
         currentPage = page;
         toolbar.setTitle(titles[page]);
         updateFragment(page);
-       /* if (currentPage == 1) {
+        if (currentPage == 1) {
             ((CharacteristicListFragment) fragments.get(1)).showData();
         } else if (currentPage == 2) {
             ((CharacteristicOperationFragment) fragments.get(2)).showData();
-        }*/
+        }
     }
 
     private void prepareFragment() {
-      /*  fragments.add(new ServiceListFragment());
+        fragments.add(new ServiceListFragment());
         fragments.add(new CharacteristicListFragment());
         fragments.add(new CharacteristicOperationFragment());
         for (Fragment fragment : fragments) {
             getSupportFragmentManager().beginTransaction().add(R.id.fragment, fragment).hide(fragment).commit();
-        }*/
+        }
     }
 
     private void updateFragment(int position) {

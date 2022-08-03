@@ -43,6 +43,9 @@
 
         <activity android:name=".activity.BleSettingActivity"
             android:screenOrientation="landscape"/>
+
+        <activity android:name=".ble.operation.OperationActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

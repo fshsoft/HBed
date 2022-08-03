@@ -1,4 +1,4 @@
-package com.java.health.care.bed.adapter;
+package com.java.health.care.bed.ble.adapter;
 
 
 import android.content.Context;
