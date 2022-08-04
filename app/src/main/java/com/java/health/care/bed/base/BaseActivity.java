@@ -55,6 +55,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         Intent intent = new Intent(this, clazz);
         startService(intent);
     }
+    public void goService(Class<?> clazz,Bundle bundle) {
+        Intent intent = new Intent(this, clazz);
+        if (bundle != null) {
+            intent.putExtras(bundle);
+        }
+        startService(intent);
+    }
 
     public void stopService(Class<?> clazz) {
         Intent intent = new Intent(this, clazz);

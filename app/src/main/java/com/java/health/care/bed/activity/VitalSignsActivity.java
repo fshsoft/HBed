@@ -1,12 +1,8 @@
 package com.java.health.care.bed.activity;
 
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+
 
 /**
  * @author fsh
@@ -14,6 +10,8 @@ import com.java.health.care.bed.base.BaseActivity;
  * @Description  生命体征
  */
 public class VitalSignsActivity extends BaseActivity {
+
+    public static final String TAG = VitalSignsActivity.class.getSimpleName();
 
     @Override
     protected int getLayoutId() {
@@ -26,7 +24,14 @@ public class VitalSignsActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     protected void initData() {
+
 
     }
 

@@ -98,7 +98,7 @@ public class DeviceAdapter extends BaseAdapter {
             holder.btn_disconnect = (Button) convertView.findViewById(R.id.btn_disconnect);
             holder.btn_connect = (Button) convertView.findViewById(R.id.btn_connect);
             holder.btn_detail = (Button) convertView.findViewById(R.id.btn_detail);
-            holder.btn_look = (Button)convertView.findViewById(R.id.btn_look);
+
         }
 
         final BleDevice bleDevice = getItem(position);
@@ -152,14 +152,6 @@ public class DeviceAdapter extends BaseAdapter {
             }
         });
 
-        holder.btn_look.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListener!=null){
-                    mListener.onLook(bleDevice);
-                }
-            }
-        });
 
         return convertView;
     }
@@ -174,7 +166,7 @@ public class DeviceAdapter extends BaseAdapter {
         Button btn_disconnect;
         Button btn_connect;
         Button btn_detail;
-        Button btn_look;
+
     }
 
     public interface OnDeviceClickListener {
@@ -184,7 +176,6 @@ public class DeviceAdapter extends BaseAdapter {
 
         void onDetail(BleDevice bleDevice);
 
-        void onLook(BleDevice bleDevice);
     }
 
     private OnDeviceClickListener mListener;

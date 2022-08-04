@@ -46,6 +46,13 @@ import com.java.health.care.bed.R;
 import com.java.health.care.bed.ble.adapter.DeviceAdapter;
 import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
+import com.java.health.care.bed.device.DataReaderService;
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +68,14 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
     private static final int REQUEST_CODE_OPEN_GPS = 1;
     private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
 
-    private TextView txt_setting;
-    private Button btn_scan;
+    private Button btn_scan,btn_see;
     private ImageView img_loading;
 
     private Animation operatingAnim;
     private DeviceAdapter mDeviceAdapter;
     private ProgressDialog progressDialog;
+    List<BleDevice> deviceListConnect = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +101,10 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         super.onDestroy();
         BleManager.getInstance().disconnectAllDevice();
         BleManager.getInstance().destroy();
+        if(null!=deviceListConnect){
+            deviceListConnect.clear();
+            deviceListConnect=null;
+        }
     }
 
     @Override
@@ -105,6 +117,16 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                     BleManager.getInstance().cancelScan();
                 }
                 break;
+            case R.id.btn_see:
+                if(deviceListConnect.size()!=0){
+                    EventBus.getDefault().post(deviceListConnect);
+                    Intent intent = new Intent(BleSettingActivity.this, VitalSignsActivity.class);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(this,"请先连接",Toast.LENGTH_SHORT).show();
+                }
+
+                break;
 
             default:
                 break;
@@ -112,12 +134,17 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initView() {
+        startService(new Intent(BleSettingActivity.this,DataReaderService.class));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         btn_scan = (Button) findViewById(R.id.btn_scan);
         btn_scan.setText(getString(R.string.start_scan));
         btn_scan.setOnClickListener(this);
+
+        btn_see = findViewById(R.id.btn_see);
+        btn_see.setOnClickListener(this);
 
         img_loading = (ImageView) findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
@@ -150,14 +177,6 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                 }
             }
 
-            @Override
-            public void onLook(BleDevice bleDevice) {
-                if (BleManager.getInstance().isConnected(bleDevice)) {
-                    Intent intent = new Intent(BleSettingActivity.this, OperationActivity.class);
-                    intent.putExtra(OperationActivity.KEY_DATA, bleDevice);
-                    startActivity(intent);
-                }
-            }
         });
         ListView listView_device = (ListView) findViewById(R.id.list_device);
         listView_device.setAdapter(mDeviceAdapter);
@@ -236,6 +255,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                 progressDialog.dismiss();
                 mDeviceAdapter.addDevice(bleDevice);
                 mDeviceAdapter.notifyDataSetChanged();
+                deviceListConnect.add(bleDevice);
             }
 
             @Override
@@ -257,26 +277,9 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-
-    @Override
-    public final void onRequestPermissionsResult(int requestCode,
-                                                 @NonNull String[] permissions,
-                                                 @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_CODE_PERMISSION_LOCATION:
-                if (grantResults.length > 0) {
-                    for (int i = 0; i < grantResults.length; i++) {
-                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                            onPermissionGranted(permissions[i]);
-                        }
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
+    /**
+     * 权限申请
+     */
 
     private void checkPermissions() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -285,75 +288,42 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
             return;
         }
 
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
-        List<String> permissionDeniedList = new ArrayList<>();
-        for (String permission : permissions) {
-            int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                onPermissionGranted(permission);
-            } else {
-                permissionDeniedList.add(permission);
-            }
+        List requestList = new ArrayList();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestList.add(Manifest.permission.BLUETOOTH_SCAN);
+            requestList.add(Manifest.permission.BLUETOOTH_ADVERTISE);
+            requestList.add(Manifest.permission.BLUETOOTH_CONNECT);
+        }else {
+            requestList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (!permissionDeniedList.isEmpty()) {
-            String[] deniedPermissions = permissionDeniedList.toArray(new String[permissionDeniedList.size()]);
-            ActivityCompat.requestPermissions(this, deniedPermissions, REQUEST_CODE_PERMISSION_LOCATION);
+        if(!requestList.isEmpty()){
+            PermissionX.init(this)
+                    .permissions(requestList)
+                    .onExplainRequestReason(new ExplainReasonCallback() {
+                        @Override
+                        public void onExplainReason(@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+                            scope.showRequestReasonDialog(deniedList,"需要您同意以下权限才能正常使用","同意","拒绝");
+                        }
+                    })
+                    .request(new RequestCallback() {
+                        @Override
+                        public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                            if (allGranted) {
+                                setScanNameRule();
+                                startScan();
+//                                Toast.makeText(BleSettingActivity.this, "所有申请的权限都已通过", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(BleSettingActivity.this, "您拒绝了如下权限"+deniedList, Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
         }
+
+
+
     }
 
-    private void onPermissionGranted(String permission) {
-        switch (permission) {
-            case Manifest.permission.ACCESS_FINE_LOCATION:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !checkGPSIsOpen()) {
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.notifyTitle)
-                            .setMessage(R.string.gpsNotifyMsg)
-                            .setNegativeButton(R.string.cancel,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            finish();
-                                        }
-                                    })
-                            .setPositiveButton(R.string.setting,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                            startActivityForResult(intent, REQUEST_CODE_OPEN_GPS);
-                                        }
-                                    })
 
-                            .setCancelable(false)
-                            .show();
-                } else {
-                    setScanNameRule();
-                    startScan();
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private boolean checkGPSIsOpen() {
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager == null)
-            return false;
-        return locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_OPEN_GPS) {
-            if (checkGPSIsOpen()) {
-                setScanNameRule();
-                startScan();
-
-            }
-        }
-    }
 
 }

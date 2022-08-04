@@ -101,14 +101,6 @@
                 android:text="@string/enter"
                 android:textSize="12sp" />
 
-            <Button
-                android:id="@+id/btn_look"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="@string/look"
-                android:textSize="12sp" />
-
         </LinearLayout>
 
 

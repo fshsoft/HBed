@@ -27,6 +27,15 @@
             android:layout_centerInParent="true"
             android:text="@string/start_scan" />
 
+        <Button
+            android:id="@+id/btn_see"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@+id/btn_scan"
+            android:text="@string/start_see" />
+
         <ImageView
             android:id="@+id/img_loading"
             android:layout_width="30dp"
