@@ -1,20 +1,10 @@
 package com.java.health.care.bed.device;
 
-import android.Manifest;
 import android.app.Service;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattServer;
-import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleNotifyCallback;
 import com.clj.fastble.callback.BleWriteCallback;
@@ -26,14 +16,8 @@ import com.java.health.care.bed.util.ByteUtil;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
 
 
 /**
@@ -86,12 +70,12 @@ public class DataReaderService extends Service {
         if (deviceList != null) {
             for (BleDevice bleDevice : deviceList) {
                 String bleName = bleDevice.getName();
-                if (bleName.contains("CM19")) {
+                if (bleName.contains(Constant.CM19)) {
                     getCM19BleDevice(bleDevice);
-                } else if (bleName.contains("SpO2")) {
+                } else if (bleName.contains(Constant.SPO2)) {
                     getSpO2BleDevice(bleDevice);
-                } else if (bleName.contains("QianShan")) {
-                    getBPBleDevice(bleDevice);
+                } else if (bleName.contains(Constant.QIANSHAN)) {
+                    writeBPBleDevice(bleDevice);
                 } else {
 
                 }
@@ -107,7 +91,7 @@ public class DataReaderService extends Service {
         BleManager.getInstance().notify(
                 bleDevice,
                 Constant.UUID_SERVICE_CM19,
-                Constant.UUID_CHARA_CM19,
+                Constant.UUID_CHARA_CM19_NOTIFY,
                 new BleNotifyCallback() {
                     @Override
                     public void onNotifySuccess() {
@@ -136,7 +120,7 @@ public class DataReaderService extends Service {
         BleManager.getInstance().notify(
                 bleDevice,
                 Constant.UUID_SERVICE_SPO2,
-                Constant.UUID_CHARA_SPO2,
+                Constant.UUID_CHARA_SPO2_NOTIFY,
                 new BleNotifyCallback() {
                     @Override
                     public void onNotifySuccess() {
@@ -159,41 +143,40 @@ public class DataReaderService extends Service {
     }
 
     /**
-     * 收到血压计bleDevice
+     * 收到血压计bleDevice,先写数据
      */
-    private void getBPBleDevice(BleDevice bleDevice) {
+    private void writeBPBleDevice(BleDevice bleDevice) {
+        BleManager.getInstance().write(
+                bleDevice,
+                Constant.UUID_SERVICE_BP,
+                Constant.UUID_CHARA_BP_WRITE,
+                ByteUtil.HexString2Bytes(Constant.START),
+                new BleWriteCallback() {
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        String data = df.format(new Date());
-        String ready = Constant.READY_ONE + data + Constant.READY_TWO;
+                    @Override
+                    public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                        Log.d(TAG,"current:"+current+"==total:"+total+"===byte[]:"+ Arrays.toString(justWrite));
+                        getBPBleDevice(bleDevice);
+                    }
 
-        BluetoothGatt mBluetoothGatt = BleManager.getInstance().getBluetoothGatt(bleDevice);
-        BluetoothGattService bluetoothGattService = mBluetoothGatt.getService(UUID.fromString(Constant.UUID_SERVICE_BP));
-        BluetoothGattCharacteristic characteristic = bluetoothGattService.getCharacteristic(UUID.fromString(Constant.UUID_CHARA_NOTIFY_BP));
-        characteristic.setValue(ByteUtil.HexString2Bytes(ready));
-        characteristic.setValue(Constant.START);
+                    @Override
+                    public void onWriteFailure(BleException exception) {
+                        Log.d(TAG,exception.toString());
+                    }
+                }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "RETURN");
-                return;
-            }
-        }
-        mBluetoothGatt.writeCharacteristic(characteristic);
+        );
+    }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    /**
+     * 血压计bleDevice,写完数据成功，接收数据
+     */
 
-
-        Log.d(TAG, "GO ON");
-
+    private void getBPBleDevice(BleDevice bleDevice){
         BleManager.getInstance().notify(
                 bleDevice,
                 Constant.UUID_SERVICE_BP,
-                Constant.UUID_CHARA_NOTIFY_BP,
+                Constant.UUID_CHARA_BP_NOTIFY,
                 new BleNotifyCallback() {
                     @Override
                     public void onNotifySuccess() {
@@ -216,8 +199,6 @@ public class DataReaderService extends Service {
 
         );
 
-
     }
-
 
 }

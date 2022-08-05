@@ -108,5 +108,6 @@
     <string name="choose_theme_color_summary">设置App的主题颜色</string>
     <string name="author_link_empty">不能为空</string>
     <string name="share_article">分享文章</string>
+    <string name="please_connect">请先连接</string>
 
 </resources>

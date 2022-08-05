@@ -1,43 +1,27 @@
 package com.java.health.care.bed.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
-import com.clj.fastble.callback.BleMtuChangedCallback;
-import com.clj.fastble.callback.BleRssiCallback;
 import com.clj.fastble.callback.BleScanCallback;
 import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
@@ -46,6 +30,7 @@ import com.java.health.care.bed.R;
 import com.java.health.care.bed.ble.adapter.DeviceAdapter;
 import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
+import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.device.DataReaderService;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
@@ -56,7 +41,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author fsh
@@ -64,9 +48,6 @@ import java.util.UUID;
  * @Description
  */
 public class BleSettingActivity extends AppCompatActivity implements View.OnClickListener{
-    private static final String TAG = BleSettingActivity.class.getSimpleName();
-    private static final int REQUEST_CODE_OPEN_GPS = 1;
-    private static final int REQUEST_CODE_PERMISSION_LOCATION = 2;
 
     private Button btn_scan,btn_see;
     private ImageView img_loading;
@@ -123,7 +104,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                     Intent intent = new Intent(BleSettingActivity.this, VitalSignsActivity.class);
                     startActivity(intent);
                 }else {
-                    Toast.makeText(this,"请先连接",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.please_connect,Toast.LENGTH_SHORT).show();
                 }
 
                 break;
@@ -192,7 +173,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         mDeviceAdapter.notifyDataSetChanged();
     }
     private void setScanNameRule(){
-        String[] names ={"CM19","QianShan","SpO2"};
+        String[] names ={Constant.CM19,Constant.SPO2,Constant.QIANSHAN};
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
                 // 只扫描指定广播名的设备，可选
                 .setDeviceName(true, names)
@@ -289,6 +270,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         }
 
         List requestList = new ArrayList();
+        //android12以上版本，蓝牙需要下面三个权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestList.add(Manifest.permission.BLUETOOTH_SCAN);
             requestList.add(Manifest.permission.BLUETOOTH_ADVERTISE);
@@ -311,7 +293,7 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                             if (allGranted) {
                                 setScanNameRule();
                                 startScan();
-//                                Toast.makeText(BleSettingActivity.this, "所有申请的权限都已通过", Toast.LENGTH_SHORT).show();
+//
                             } else {
                                 Toast.makeText(BleSettingActivity.this, "您拒绝了如下权限"+deniedList, Toast.LENGTH_SHORT).show();
                             }
@@ -320,10 +302,6 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                     });
         }
 
-
-
     }
-
-
 
 }
