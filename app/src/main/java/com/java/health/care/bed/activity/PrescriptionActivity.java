@@ -1,6 +1,9 @@
 package com.java.health.care.bed.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -12,8 +15,13 @@ import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.fragment.PrescriptionNoFragment;
 import com.java.health.care.bed.fragment.PrescriptionYesFragment;
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -81,6 +89,43 @@ public class PrescriptionActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        checkPermissions();
+    }
+
+
+
+    /**
+     * 权限申请
+     */
+
+    private void checkPermissions() {
+
+        List requestList = new ArrayList();
+        //文件读写需要的三个权限
+        requestList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        requestList.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+
+        if(!requestList.isEmpty()){
+            PermissionX.init(this)
+                    .permissions(requestList)
+                    .onExplainRequestReason(new ExplainReasonCallback() {
+                        @Override
+                        public void onExplainReason(@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+                            scope.showRequestReasonDialog(deniedList,"需要您同意以下权限才能正常使用","同意","拒绝");
+                        }
+                    })
+                    .request(new RequestCallback() {
+                        @Override
+                        public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                            if (allGranted) {
+                            } else {
+                                Toast.makeText(PrescriptionActivity.this, "您拒绝了如下权限"+deniedList, Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+        }
 
     }
 }

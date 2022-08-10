@@ -408,4 +408,70 @@ public class ByteUtil {
 
 		return bytes;
 	}
+
+
+	public static byte[] get16Bitint(int[] data) {
+		byte[] resultData = new byte[4 * data.length];
+		int iter = 0;
+		for (int sample : data) {
+			resultData[iter++] = (byte)( sample & 0xff);     //低位存储，0xff是掩码操作
+			resultData[iter++] = (byte)((sample >>8) & 0xff); //高位存储
+			resultData[iter++] = (byte)((sample >>16) & 0xff);
+			resultData[iter++] = (byte)((sample >>24) & 0xff);
+		}
+		return resultData;
+	}
+
+	public static byte[] get16Bitshort(short[] data) {
+		byte[] resultData = new byte[4 * data.length];
+		int iter = 0;
+
+		for (short sample : data) {
+			resultData[iter++] = (byte)( sample & 0xff);     //低位存储，0xff是掩码操作
+			resultData[iter++] = (byte)((sample >>8) & 0xff); //高位存储
+			resultData[iter++] = 0x00;
+			resultData[iter++] = 0x00;
+		}
+		return resultData;
+	}
+
+	public static void bbToInts(int[] s, byte[] b) {
+		int len = s.length;
+		for(int i = 0; i < len; i ++) {
+			s[i]  =(int) (((b[3*i] << 16) & 0xff0000) | ((b[3*i+1] << 8) & 0xff00) |(b[3*i +2] & 0xff));
+		}
+	}
+
+	/**
+	 * short数组转byte数组
+	 *
+	 * @param src
+	 * @return
+	 */
+	public static byte[] toByteArray(short[] src) {
+		int count = src.length;
+		byte[] dest = new byte[count << 1];
+		for (int i = 0; i < count; i++) {
+			dest[i * 2] = (byte) (src[i] >>8 );
+			dest[i * 2 + 1] = (byte) (src[i]);
+		}
+		return dest;
+	}
+
+	public static byte[] intToByte1(int val){
+		byte[] b = new byte[1];
+		b[0] = (byte)(val);
+         /*   b[1] = (byte)((val >> 8) & 0xff);
+            b[2] = (byte)((val >> 16) & 0xff);
+            b[3] = (byte)((val >> 24) & 0xff);*/
+		return b;
+	}
+
+	public static void intToByte(byte[] bb, int x, int index){
+
+		bb[index + 0] = (byte) ((x >> 0)  & 0xff);
+		bb[index + 1] = (byte) ((x >> 8)  & 0xff);
+		bb[index + 2] = (byte) ((x >> 16)  & 0xff);
+		bb[index + 3] = (byte) ((x >> 24)  & 0xff);
+	}
 }

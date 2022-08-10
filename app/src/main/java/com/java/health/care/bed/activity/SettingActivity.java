@@ -1,17 +1,10 @@
 package com.java.health.care.bed.activity;
 
-import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
+
 
 /**
  * @author fsh

@@ -6,7 +6,6 @@ import android.os.Handler;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.java.health.care.bed.R;
 
 /**
  * @author fsh
@@ -26,4 +25,5 @@ public class WelcomeActivity extends AppCompatActivity {
         },3000);
 
     }
+
 }
