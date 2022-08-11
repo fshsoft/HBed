@@ -50,6 +50,10 @@ public class PrescriptionActivity extends BaseActivity {
           goActivity(InputPassWordActivity.class);
     }
 
+    @OnClick(R.id.prescription_user)
+    public void onClickUser(){
+        goActivity(AssessActivity.class);
+    }
 
     @Override
     protected int getLayoutId() {

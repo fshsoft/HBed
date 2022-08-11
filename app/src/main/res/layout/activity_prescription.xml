@@ -28,21 +28,25 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/prescription_user"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="姓名：张三" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/prescription_sex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="性别：男" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/prescription_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="年龄：40" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/prescription_ch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="床号：52" />

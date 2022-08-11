@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleScanCallback;
@@ -32,6 +33,7 @@ import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.device.DataReaderService;
+import com.java.health.care.bed.util.SpUtils;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
@@ -237,6 +239,11 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                 mDeviceAdapter.addDevice(bleDevice);
                 mDeviceAdapter.notifyDataSetChanged();
                 deviceListConnect.add(bleDevice);
+                //蓝牙连接成功之后，进行保存BleDevice
+                if(bleDevice.getName().contains(Constant.CM19)){
+                   SpUtils.putObject(BleSettingActivity.this,bleDevice.getDevice());
+                }
+
             }
 
             @Override

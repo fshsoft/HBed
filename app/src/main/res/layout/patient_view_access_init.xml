@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/patient_access_connect_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:text="开始"
+        android:textColor="@color/white"
+        android:textSize="@dimen/size_18" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_90">
+
+
+        <ImageView
+            android:id="@+id/patient_breathe_iv"
+            android:layout_width="@dimen/size_210"
+            android:layout_height="@dimen/size_210"
+            android:layout_centerHorizontal="true" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/patient_access_tv_breathe_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="常规呼吸"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_18sp" />
+
+            <com.java.health.care.bed.widget.TagValueTextView
+                android:id="@+id/patient_access_tv_breathe_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_9" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

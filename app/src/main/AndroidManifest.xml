@@ -75,6 +75,12 @@
         <activity android:name=".activity.VitalSignsActivity"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".activity.AssessActivity"
+            android:screenOrientation="landscape"/>
+
+        <activity android:name=".activity.DrillActivity"
+            android:screenOrientation="landscape"/>
+
         <service android:name=".device.DataReaderService"
             android:exported="false"/>
     </application>

@@ -110,4 +110,33 @@
     <string name="share_article">分享文章</string>
     <string name="please_connect">请先连接</string>
 
+
+    <string name="patient_access_breath_rate_tag">次/分钟</string>
+    <string name="patient_data_upload_fail">数据上传失败，请在“历史数据”中重新上传</string>
+    <string name="patient_data_disconnect_access">正在进行中 ，您确定要中断吗</string>
+    <string name="patient_disconnect_access">中断</string>
+    <string name="patient_breath_value">呼吸:-</string>
+    <string name="patient_breath_score_value">平衡状态评分:-</string>
+
+    <string name="patient_heart_rate_value">心率:</string>
+    <string name="patient_history_upload_status">报告上传状态</string>
+    <string name="patient_history_start_access_time">评估开始时间</string>
+    <string name="patient_history_data_upload_time">训练开始时间</string>
+    <string name="patient_history_name">姓名</string>
+
+    <string name="patient_access">评估</string>
+    <string name="patient_names">姓名</string>
+    <string name="patient_breathe_type">呼吸类型</string>
+    <string name="patient_access_date">评估日期</string>
+    <string name="patient_input_service">输入服务器地址</string>
+    <string name="patient_input_service_dk">输入端口号</string>
+    <string name="patient_breathe_frequency">呼吸率:%s次/分钟</string>
+    <string name="patient_breathe_ratio">吸气呼气比:%s</string>
+    <string name="patient_breathe_normal">常规呼吸</string>
+    <string name="patient_expiration">呼</string>
+    <string name="patient_suction">吸</string>
+    <string name="patient_min">min</string>
+    <string name="patient_access_finish">本次评估完成</string>
+    <string name="patient_drill_finish">本次训练完成</string>
+
 </resources>

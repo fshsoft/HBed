@@ -47,5 +47,6 @@
         <color name="text_th">#DDDDDD</color>
         <color name="bg_color">#E8E8E8</color>
         <color name="bg_hrv">#EAEDF1</color>
-
+    <color name="color_red_FE647C">#FE647C</color>
+    <color name="color_blue_7EC0EE">#7EC0EE</color>
 </resources>

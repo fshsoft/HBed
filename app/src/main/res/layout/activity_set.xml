@@ -10,6 +10,7 @@
         android:background="?attr/colorPrimaryVariant"
         app:barStyle="light"
         app:title="密码"
+        app:leftIcon="@drawable/back_white"
         app:titleColor="@color/white"
         app:titleSize="22sp"/>
 
