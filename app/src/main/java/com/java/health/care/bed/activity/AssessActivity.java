@@ -1,6 +1,5 @@
 package com.java.health.care.bed.activity;
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +24,6 @@ import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.util.ImageLoadUtils;
-import com.java.health.care.bed.util.SpUtils;
 import com.java.health.care.bed.widget.MyEcgView;
 import com.java.health.care.bed.widget.TagValueTextView;
 

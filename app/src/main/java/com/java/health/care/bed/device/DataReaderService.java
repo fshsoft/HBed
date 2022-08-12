@@ -26,7 +26,6 @@ import com.java.health.care.bed.constant.ImplementConfig;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.util.ByteUtil;
-import com.java.health.care.bed.util.SpUtils;
 import com.microsenstech.PPG.model.Ucoherence;
 import com.microsenstech.ucarerg.device.PacketParse;
 import com.microsenstech.ucarerg.process.SignalProcessor;

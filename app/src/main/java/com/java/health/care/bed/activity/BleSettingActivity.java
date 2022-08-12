@@ -6,8 +6,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -18,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.blankj.utilcode.util.SPUtils;
@@ -35,7 +32,6 @@ import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.device.DataReaderService;
-import com.java.health.care.bed.util.SpUtils;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;

@@ -11,9 +11,11 @@ import butterknife.Unbinder;
 
 /**
  * Description: Base Activity
- * @author Administrator
+ * @author MVP基类
+ * https://github.com/fly803/BaseProject
+ * https://github.com/JsonChao/Awesome-WanAndroid.git
  */
-public abstract class BaseActivity2<V, P extends BasePresenter<V>> extends AppCompatActivity {
+public abstract class BaseMVPActivity<P extends BasePresenter> extends AppCompatActivity implements IBaseView{
 
     protected P mPresenter;
 
@@ -47,9 +49,24 @@ public abstract class BaseActivity2<V, P extends BasePresenter<V>> extends AppCo
         unbinder = ButterKnife.bind(this);
         mPresenter = createPresenter();
         if (mPresenter != null) {
-            mPresenter.attachView((V) this);
+            mPresenter.attachView(this);
         }
         init(savedInstanceState);
+
+    }
+
+    @Override
+    public void onLoadFailed() {
+
+    }
+
+    @Override
+    public void onLoadSuccess() {
+
+    }
+
+    @Override
+    public void onLoading() {
 
     }
 

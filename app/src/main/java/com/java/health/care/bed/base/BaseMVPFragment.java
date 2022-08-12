@@ -16,9 +16,9 @@ import butterknife.Unbinder;
 
 /**
  * Description: Base Fragment
- * @author Administrator
+ * @author MVP基类
  */
-public abstract class BaseFragment2<V, P extends BasePresenter<V>> extends Fragment{
+public abstract class BaseMVPFragment<P extends BasePresenter> extends Fragment implements IBaseView{
 
     protected P mPresenter;
 
@@ -63,12 +63,26 @@ public abstract class BaseFragment2<V, P extends BasePresenter<V>> extends Fragm
         mPresenter = createPresenter();
         unbinder = ButterKnife.bind(this, mRootView);
         if (mPresenter != null) {
-            mPresenter.attachView((V) this);
+            mPresenter.attachView(this);
         }
         init();
         return mRootView;
     }
 
+    @Override
+    public void onLoadFailed() {
+
+    }
+
+    @Override
+    public void onLoadSuccess() {
+
+    }
+
+    @Override
+    public void onLoading() {
+
+    }
 
     @Override
     public void onDestroy() {
