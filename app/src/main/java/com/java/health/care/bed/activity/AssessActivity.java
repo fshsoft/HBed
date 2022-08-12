@@ -13,12 +13,15 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.SPUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
+import com.clj.fastble.callback.BleScanCallback;
 import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.device.DataReaderService;
 import com.java.health.care.bed.model.DataReceiver;
+import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.util.ImageLoadUtils;
@@ -26,14 +29,18 @@ import com.java.health.care.bed.util.SpUtils;
 import com.java.health.care.bed.widget.MyEcgView;
 import com.java.health.care.bed.widget.TagValueTextView;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 
 /**
  * @author fsh
  * @date 2022/08/11 09:20
- * @Description  评估界面
+ * @Description 评估界面
  */
 public class AssessActivity extends BaseActivity implements DataReceiver {
     @BindView(R.id.assess_user)
@@ -66,6 +73,9 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     private MyEcgView myRespView;
     private TagValueTextView tvBreatheTime;//呼吸时间
     private boolean startDraw = false;
+    private String bleDeviceMac;
+    List<BleDevice> deviceListConnect = new ArrayList<>();
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -74,11 +84,19 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     @Override
     protected void initView() {
         addConnectDeviceView();
+        goService(DataReaderService.class);
     }
 
     @Override
     protected void initData() {
-
+        DataTransmitter.getInstance().addDataReceiver(this);
+        bleDeviceMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(1, 5000)
+                .setConnectOverTime(20000)
+                .setOperateTimeout(5000);
     }
 
     /**
@@ -97,7 +115,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
             public void onClick(View v) {
                 //开始，连接cm19设备
 //
-                connectBle();
+                scanBle();
                 addBreathView();
 
             }
@@ -106,32 +124,54 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         assess_ll.addView(connectDeviceView);
     }
 
-    private void connectBle(){
-        BluetoothDevice bluetoothDevice = SpUtils.getObject(AssessActivity.this, BluetoothDevice.class);
-        if(bluetoothDevice!=null){
-            BleManager.getInstance().connect(new BleDevice(bluetoothDevice), new BleGattCallback() {
-                @Override
-                public void onStartConnect() {
-                    Log.d(TAG,"onStartConnect:");
-                }
+    private void scanBle() {
+        BleManager.getInstance().scan(new BleScanCallback() {
+            @Override
+            public void onScanFinished(List<BleDevice> scanResultList) {
 
-                @Override
-                public void onConnectFail(BleDevice bleDevice, BleException exception) {
-                    Log.d(TAG,"onConnectFail:exception:"+exception.toString());
-                }
 
-                @Override
-                public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
-                    Log.d(TAG,"onConnectSuccess:status:"+status);
-                    goActivity(DataReaderService.class);
-                }
+            }
 
-                @Override
-                public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
-                    Log.d(TAG,"onDisConnected:status:"+status);
+            @Override
+            public void onScanStarted(boolean success) {
+                Log.d(TAG, "bleDeviceMac:success:" + success);
+            }
+
+            @Override
+            public void onScanning(BleDevice bleDevice) {
+
+                if (bleDevice.getMac().equals(bleDeviceMac)) {
+                    connectBle(bleDevice);
                 }
-            });
-        }
+            }
+        });
+    }
+
+    private void connectBle(BleDevice bleDevice) {
+        BleManager.getInstance().connect(bleDevice, new BleGattCallback() {
+            @Override
+            public void onStartConnect() {
+                Log.d(TAG, "onStartConnect:");
+            }
+
+            @Override
+            public void onConnectFail(BleDevice bleDevice, BleException exception) {
+                Log.d(TAG, "onConnectFail:exception:" + exception.toString());
+            }
+
+            @Override
+            public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                Log.d(TAG, "onConnectSuccess:status:" + status);
+                deviceListConnect.add(bleDevice);
+                EventBus.getDefault().post(deviceListConnect);
+            }
+
+            @Override
+            public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
+                Log.d(TAG, "onDisConnected:status:" + status);
+            }
+        });
+
     }
 
     /**
@@ -177,24 +217,25 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         tvHeartRate = breatheView.findViewById(R.id.patient_view_tv_hart_rate);
         tvBreathScore = breatheView.findViewById(R.id.patient_view_tv_breathe_score);
         //比如心率值为 23 那么加载数据如下
-        tvHeartRate.setText(getString(R.string.patient_heart_rate_value)+"-bpm");
+        tvHeartRate.setText(getString(R.string.patient_heart_rate_value) + "-bpm");
         //添加之前必须先移除里面的所有view
         assess_ll.removeAllViews();
         assess_ll.addView(breatheView);
     }
 
-    private void refreshEcgData(){
-        if(!startDraw){
+    private void refreshEcgData() {
+        if (!startDraw) {
             startDraw = true;
             myEcgView.refreshView();
             myRespView.refreshView();
-        }else {
+        } else {
             startDraw = false;
         }
     }
 
     /**
      * 数据接收
+     *
      * @param packet
      */
     @Override
@@ -204,7 +245,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
             public void run() {
                 short[] ecgData = packet.secgdata;
                 Log.d(TAG, Arrays.toString(ecgData));
-                for (int i = 0;i<ecgData.length;i++){
+                for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView) {
                         myEcgView.addOneData((int) ecgData[i]/* & 0x00ff*/, -200, 200);
                         myRespView.addOneData((int) packet.irspData[i]/* & 0x00ff*/, -200, 200);

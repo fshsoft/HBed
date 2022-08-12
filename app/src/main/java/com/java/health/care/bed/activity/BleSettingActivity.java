@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -28,6 +29,7 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.clj.fastble.scan.BleScanRuleConfig;
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.ble.adapter.DeviceAdapter;
 import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
@@ -49,7 +51,7 @@ import java.util.List;
  * @date 2022/08/02 13:55
  * @Description
  */
-public class BleSettingActivity extends AppCompatActivity implements View.OnClickListener{
+public class BleSettingActivity extends BaseActivity implements View.OnClickListener{
 
     private Button btn_scan,btn_see;
     private ImageView img_loading;
@@ -59,18 +61,11 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
     private ProgressDialog progressDialog;
     List<BleDevice> deviceListConnect = new ArrayList<>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ble_set);
-        initView();
+    private static final String TAG = BleSettingActivity.class.getSimpleName();
 
-        BleManager.getInstance().init(getApplication());
-        BleManager.getInstance()
-                .enableLog(true)
-                .setReConnectCount(1, 5000)
-                .setConnectOverTime(20000)
-                .setOperateTimeout(5000);
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_ble_set;
     }
 
     @Override
@@ -88,6 +83,9 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
             deviceListConnect.clear();
             deviceListConnect=null;
         }
+
+        stopService(DataReaderService.class);
+
     }
 
     @Override
@@ -116,8 +114,9 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    private void initView() {
-        startService(new Intent(BleSettingActivity.this,DataReaderService.class));
+    @Override
+    protected void initView() {
+        goService(DataReaderService.class);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -163,6 +162,16 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
         });
         ListView listView_device = (ListView) findViewById(R.id.list_device);
         listView_device.setAdapter(mDeviceAdapter);
+    }
+
+    @Override
+    protected void initData() {
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(1, 5000)
+                .setConnectOverTime(20000)
+                .setOperateTimeout(5000);
     }
 
 
@@ -239,9 +248,13 @@ public class BleSettingActivity extends AppCompatActivity implements View.OnClic
                 mDeviceAdapter.addDevice(bleDevice);
                 mDeviceAdapter.notifyDataSetChanged();
                 deviceListConnect.add(bleDevice);
-                //蓝牙连接成功之后，进行保存BleDevice
+                //蓝牙连接成功之后，进行保存BleDevice的mac
                 if(bleDevice.getName().contains(Constant.CM19)){
-                   SpUtils.putObject(BleSettingActivity.this,bleDevice.getDevice());
+                    SPUtils.getInstance().put(Constant.BLE_DEVICE_CM19_MAC,bleDevice.getMac());
+                } else if (bleDevice.getName().contains(Constant.SPO2)) {
+                    SPUtils.getInstance().put(Constant.BLE_DEVICE_SPO2_MAC,bleDevice.getMac());
+                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                    SPUtils.getInstance().put(Constant.BLE_DEVICE_QIANSHAN_MAC,bleDevice.getMac());
                 }
 
             }

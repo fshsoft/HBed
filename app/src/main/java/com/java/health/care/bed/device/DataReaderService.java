@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleNotifyCallback;
 import com.clj.fastble.callback.BleWriteCallback;
@@ -25,6 +26,7 @@ import com.java.health.care.bed.constant.ImplementConfig;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.util.ByteUtil;
+import com.java.health.care.bed.util.SpUtils;
 import com.microsenstech.PPG.model.Ucoherence;
 import com.microsenstech.ucarerg.device.PacketParse;
 import com.microsenstech.ucarerg.process.SignalProcessor;
@@ -97,11 +99,16 @@ public class DataReaderService extends Service {
     private SignalProcessor signalProcessor = null;
     private DataTransmitter dataTrans = null;
 
-
+    private String bleCM19Mac;
+    private String bleSPO2Mac;
+    private String bleQSMac;
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(TAG, "onStart()");
+        bleCM19Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
+        bleSPO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
+        bleQSMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
     }
 
     @Override
@@ -658,19 +665,20 @@ public class DataReaderService extends Service {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Object event) {
+    public void onEvent(Object event) {
         List<BleDevice> deviceList = (List<BleDevice>) event;
         if (deviceList != null) {
             for (BleDevice bleDevice : deviceList) {
-                String bleName = bleDevice.getName();
-                if (bleName.contains(Constant.CM19)) {
-                    getCM19BleDevice(bleDevice);
-                } else if (bleName.contains(Constant.SPO2)) {
-                    getSpO2BleDevice(bleDevice);
-                } else if (bleName.contains(Constant.QIANSHAN)) {
-                    writeBPBleDevice(bleDevice);
-                } else {
+                String bleMac = bleDevice.getMac();
 
+                if (bleCM19Mac!=null) {
+                    if( bleMac.equals(bleCM19Mac)) getCM19BleDevice(bleDevice);
+
+                } else if (bleSPO2Mac!=null) {
+                    if(bleMac.equals(bleSPO2Mac)) getSpO2BleDevice(bleDevice);
+
+                } else if (bleQSMac!=null) {
+                    if(bleMac.equals(bleQSMac)) writeBPBleDevice(bleDevice);
                 }
             }
         }

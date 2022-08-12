@@ -22,5 +22,8 @@ public class Constant {
     public static final String CM19 = "CM19";
     public static final String SPO2 = "SpO2";
     public static final String QIANSHAN = "QianShan";
+    public static final String BLE_DEVICE_CM19_MAC = "BLE_DEVICE_CM19_MAC";
+    public static final String BLE_DEVICE_SPO2_MAC = "BLE_DEVICE_SPO2_MAC";
+    public static final String BLE_DEVICE_QIANSHAN_MAC = "BLE_DEVICE_QIANSHAN_MAC";
 
 }
