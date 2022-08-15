@@ -1,4 +1,4 @@
-package com.java.health.care.bed.device;
+package com.java.health.care.bed.service;
 
 import android.app.Service;
 import android.content.Intent;

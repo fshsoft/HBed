@@ -1,6 +1,6 @@
 package com.java.health.care.bed.model;
 
-import com.java.health.care.bed.device.DataReaderService;
+import com.java.health.care.bed.service.DataReaderService;
 
 import java.util.ArrayList;
 import java.util.List;

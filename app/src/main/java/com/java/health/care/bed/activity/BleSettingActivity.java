@@ -31,7 +31,7 @@ import com.java.health.care.bed.ble.adapter.DeviceAdapter;
 import com.java.health.care.bed.ble.comm.ObserverManager;
 import com.java.health.care.bed.ble.operation.OperationActivity;
 import com.java.health.care.bed.constant.Constant;
-import com.java.health.care.bed.device.DataReaderService;
+import com.java.health.care.bed.service.DataReaderService;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;

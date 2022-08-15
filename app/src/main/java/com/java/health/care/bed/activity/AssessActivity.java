@@ -18,7 +18,7 @@ import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
-import com.java.health.care.bed.device.DataReaderService;
+import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;

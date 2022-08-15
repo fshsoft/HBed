@@ -81,8 +81,10 @@
         <activity android:name=".activity.DrillActivity"
             android:screenOrientation="landscape"/>
 
-        <service android:name=".device.DataReaderService"
+        <service android:name=".service.DataReaderService"
             android:exported="false"/>
+
+        <service android:name=".service.WebSocketService"/>
     </application>
 
 </manifest>
