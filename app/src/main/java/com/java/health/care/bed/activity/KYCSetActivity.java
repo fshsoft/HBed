@@ -17,7 +17,7 @@ public class KYCSetActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_sound_wave;
+        return R.layout.activity_kyc_set;
     }
 
     @Override
