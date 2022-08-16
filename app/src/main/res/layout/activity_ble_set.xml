@@ -21,21 +21,25 @@
         android:padding="10dp">
 
         <Button
-            android:id="@+id/btn_scan"
+            android:id="@+id/btn_see_vital"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/start_scan" />
+            android:text="@string/start_see" />
+        <Button
+            android:id="@+id/btn_see_kyc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@+id/btn_see_vital"
+            android:text="@string/start_see_kyc" />
 
         <Button
-            android:id="@+id/btn_see"
+            android:id="@+id/btn_scan"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@id/btn_see_kyc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="50dp"
-            android:layout_toRightOf="@+id/btn_scan"
-            android:text="@string/start_see" />
-
+            android:text="@string/start_scan" />
         <ImageView
             android:id="@+id/img_loading"
             android:layout_width="30dp"

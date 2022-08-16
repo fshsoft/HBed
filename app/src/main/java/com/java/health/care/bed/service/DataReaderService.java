@@ -101,6 +101,8 @@ public class DataReaderService extends Service {
     private String bleCM19Mac;
     private String bleSPO2Mac;
     private String bleQSMac;
+    private String bleKYCMac;
+    private BleDevice bleDeviceKYC;
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -108,6 +110,7 @@ public class DataReaderService extends Service {
         bleCM19Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
         bleSPO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
         bleQSMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
+        bleKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
     }
 
     @Override
@@ -665,22 +668,36 @@ public class DataReaderService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-        List<BleDevice> deviceList = (List<BleDevice>) event;
-        if (deviceList != null) {
-            for (BleDevice bleDevice : deviceList) {
-                String bleMac = bleDevice.getMac();
+        if(event instanceof String){
+            String str = (String) event;
+            writeKYCBleDevice(bleDeviceKYC,str);
+        }else {
+            List<BleDevice> deviceList = (List<BleDevice>) event;
+            if (deviceList != null) {
+                for (BleDevice bleDevice : deviceList) {
+                    String bleMac = bleDevice.getMac();
 
-                if (bleCM19Mac!=null) {
-                    if( bleMac.equals(bleCM19Mac)) getCM19BleDevice(bleDevice);
+                    if (bleCM19Mac!=null) {
+                        if( bleMac.equals(bleCM19Mac)) getCM19BleDevice(bleDevice);
 
-                } else if (bleSPO2Mac!=null) {
-                    if(bleMac.equals(bleSPO2Mac)) getSpO2BleDevice(bleDevice);
+                    }
+                    if (bleSPO2Mac!=null) {
+                        if(bleMac.equals(bleSPO2Mac)) getSpO2BleDevice(bleDevice);
 
-                } else if (bleQSMac!=null) {
-                    if(bleMac.equals(bleQSMac)) writeBPBleDevice(bleDevice);
+                    }
+                    if (bleQSMac!=null) {
+                        if(bleMac.equals(bleQSMac)) writeBPBleDevice(bleDevice);
+
+                    }
+                    if(bleKYCMac!=null){
+                        bleDeviceKYC = bleDevice;
+                        if(bleMac.equals(bleKYCMac)) getKYCBleDevice(bleDevice);
+
+                    }
                 }
             }
         }
+
 
     }
 
@@ -696,7 +713,7 @@ public class DataReaderService extends Service {
                     @Override
                     public void onNotifySuccess() {
                         // 打开通知操作成功
-                        Log.d(TAG, "打开通知成功");
+                        Log.d(TAG, "cm19打开通知成功");
                     }
 
                     @Override
@@ -730,13 +747,13 @@ public class DataReaderService extends Service {
                     @Override
                     public void onNotifySuccess() {
                         // 打开通知操作成功
-                        Log.d(TAG, "打开通知成功");
+                        Log.d(TAG, "SpO2打开通知成功");
                     }
 
                     @Override
                     public void onNotifyFailure(BleException exception) {
                         // 打开通知操作失败
-                        Log.d(TAG, exception.toString() + "打开通知失败");
+                        Log.d(TAG, exception.toString() + "SpO2打开通知失败");
                     }
 
                     @Override
@@ -786,13 +803,13 @@ public class DataReaderService extends Service {
                     @Override
                     public void onNotifySuccess() {
                         // 打开通知操作成功
-                        Log.d(TAG, "打开通知成功");
+                        Log.d(TAG, "bp打开通知成功");
                     }
 
                     @Override
                     public void onNotifyFailure(BleException exception) {
                         // 打开通知操作失败
-                        Log.d(TAG, exception.toString() + "打开通知失败");
+                        Log.d(TAG, exception.toString() + "bp打开通知失败");
                     }
 
                     @Override
@@ -806,6 +823,56 @@ public class DataReaderService extends Service {
 
     }
 
+    private void getKYCBleDevice(BleDevice bleDevice){
+        BleManager.getInstance().notify(
+                bleDevice,
+                Constant.UUID_SERVICE_KYC,
+                Constant.UUID_CHARA_KYC_NOTIFY,
+                new BleNotifyCallback() {
+                    @Override
+                    public void onNotifySuccess() {
+                        // 打开通知操作成功
+                        Log.d(TAG, "kyc打开通知成功");
+
+                    }
+
+                    @Override
+                    public void onNotifyFailure(BleException exception) {
+                        // 打开通知操作失败
+                        Log.d(TAG, exception.toString() + "kyc打开通知失败");
+                    }
+
+                    @Override
+                    public void onCharacteristicChanged(byte[] data) {
+                        // 打开通知后，设备发过来的数据将在这里出现
+                        Log.d(TAG + "kyc=======", Arrays.toString(data));
+                    }
+                }
+
+        );
+    }
+    private void writeKYCBleDevice(BleDevice bleDevice,String bleKYCWrite){
+        BleManager.getInstance().write(
+                bleDevice,
+                Constant.UUID_SERVICE_KYC,
+                Constant.UUID_CHARA_KYC_WRITE,
+                ByteUtil.HexString2Bytes(bleKYCWrite),
+                new BleWriteCallback() {
+
+                    @Override
+                    public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                        Log.d(TAG,"kyc-current:"+current+"==total:"+total+"===byte[]:"+ Arrays.toString(justWrite));
+
+                    }
+
+                    @Override
+                    public void onWriteFailure(BleException exception) {
+                        Log.d(TAG,exception.toString());
+                    }
+                }
+
+        );
+    }
 
 
 

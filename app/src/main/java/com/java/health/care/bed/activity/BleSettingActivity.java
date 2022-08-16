@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleScanCallback;
@@ -49,7 +50,7 @@ import java.util.List;
  */
 public class BleSettingActivity extends BaseActivity implements View.OnClickListener{
 
-    private Button btn_scan,btn_see;
+    private Button btn_scan,btn_see_vital,btn_see_kyc;
     private ImageView img_loading;
 
     private Animation operatingAnim;
@@ -94,7 +95,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     BleManager.getInstance().cancelScan();
                 }
                 break;
-            case R.id.btn_see:
+            case R.id.btn_see_vital: //生命体征
                 if(deviceListConnect.size()!=0){
                     EventBus.getDefault().post(deviceListConnect);
                     Intent intent = new Intent(BleSettingActivity.this, VitalSignsActivity.class);
@@ -105,6 +106,14 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
 
                 break;
 
+            case R.id.btn_see_kyc: //声波通道
+                if(deviceListConnect.size()!=0){
+                    EventBus.getDefault().post(deviceListConnect);
+                   goActivity(KYCSetActivity.class);
+                }else {
+                    ToastUtils.showShort( R.string.please_connect);
+                }
+                break;
             default:
                 break;
         }
@@ -121,8 +130,11 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
         btn_scan.setText(getString(R.string.start_scan));
         btn_scan.setOnClickListener(this);
 
-        btn_see = findViewById(R.id.btn_see);
-        btn_see.setOnClickListener(this);
+        btn_see_vital = findViewById(R.id.btn_see_vital);
+        btn_see_vital.setOnClickListener(this);
+
+        btn_see_kyc = findViewById(R.id.btn_see_kyc);
+        btn_see_kyc.setOnClickListener(this);
 
         img_loading = (ImageView) findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
