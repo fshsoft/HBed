@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+
 /**
  * @author fsh
  * @date 2022/08/02 13:58
@@ -23,6 +24,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void run() {
                 startActivity(new Intent(WelcomeActivity.this,PrescriptionActivity.class));
+
                 finish();
             }
         },3000);

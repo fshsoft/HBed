@@ -33,6 +33,10 @@ public class Constant {
     public static final String BLE_DEVICE_KYC_MAC = "BLE_DEVICE_KANGYANGCHUANG_MAC";
 
 
+    public static final String SERVER_IP = "server_ip";
+    public static final String AREA_NUM = "area_num";
+    public static final String BED_NUM = "bed_num";
+
     //==============================================================================================//
     //康养床-声波\熏香\呼叫
 
