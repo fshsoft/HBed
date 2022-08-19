@@ -26,4 +26,9 @@ public class Constant {
      * 用户信息
      */
     public static final String USER = "/banner/json";
+
+    /**
+     * 广场文章
+     */
+    public static final String HOME_SQUARE_URL = "/user_article/list/{pageNum}/json";
 }

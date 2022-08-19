@@ -84,6 +84,10 @@
         <activity android:name=".activity.KYCSetActivity"
             android:screenOrientation="landscape"/>
 
+        <!--测试接口-->
+        <activity android:name=".test.ParentSquareActivity"
+            android:screenOrientation="landscape"/>
+
         <service android:name=".service.DataReaderService"
             android:exported="false"/>
 
