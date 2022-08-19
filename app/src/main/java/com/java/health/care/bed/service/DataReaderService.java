@@ -580,7 +580,9 @@ public class DataReaderService extends Service {
 
                 pkt.bHasNew = ppgret[1];
 
+                //计算心率RR间期
                 pkt.rrNew = heartRateFilter(heart);
+                Log.d(TAG,"RR间期1："+pkt.rrNew );
 
                 pkt.scoreNew = newret[1];
                 score = (int)(newret[1]);
@@ -603,6 +605,7 @@ public class DataReaderService extends Service {
 
             } else {
                 pkt.rrNew = heartRateFilter(heart);
+                Log.d(TAG,"RR间期0："+pkt.rrNew );
             }
             pkt.respRate = respRate;
             dataTrans.sendData(pkt, battery);
