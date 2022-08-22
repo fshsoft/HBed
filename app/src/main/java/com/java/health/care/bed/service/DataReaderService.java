@@ -26,6 +26,7 @@ import com.java.health.care.bed.constant.ImplementConfig;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.util.ByteUtil;
+import com.java.health.care.bed.util.DataUtils;
 import com.microsenstech.PPG.model.Ucoherence;
 import com.microsenstech.ucarerg.device.PacketParse;
 import com.microsenstech.ucarerg.process.SignalProcessor;
@@ -34,9 +35,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -70,6 +74,7 @@ public class DataReaderService extends Service {
     private Queue<Integer> hrtRateQue = new LinkedList<Integer>();
     private static final int HrtRateQueSize = 16;
 
+    private Map<String,Object> mapEvent = new HashMap<>();
     /**
      *  BleReader 读取数据线程处理
      */
@@ -101,6 +106,7 @@ public class DataReaderService extends Service {
     private String bleCM19Mac;
     private String bleSPO2Mac;
     private String bleQSMac;
+    private String bleIRTMac;
     private String bleKYCMac;
     private BleDevice bleDeviceKYC;
     @Override
@@ -110,6 +116,7 @@ public class DataReaderService extends Service {
         bleCM19Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
         bleSPO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
         bleQSMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
+        bleIRTMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
         bleKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
     }
 
@@ -318,7 +325,7 @@ public class DataReaderService extends Service {
                         byte[] magData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_MAG);
 
 
-                        if (ecgData != null) {
+                        /*if (ecgData != null) {
                             Log.d(TAG, "===ecgData.length =192" + ecgData.length);
                         }
                         if (accData != null) {
@@ -335,7 +342,7 @@ public class DataReaderService extends Service {
                         }
                         if (magData!=null){
                             Log.d(TAG, "===magData.length ===" + magData.length);
-                        }
+                        }*/
 
                         if ((ecgData == null)
                                 || (accData == null)
@@ -469,6 +476,9 @@ public class DataReaderService extends Service {
                                 signalProcessor.processData(data, data.length,
                                         heartRate, activity, abnStates);
 
+                                respRate = signalProcessor.RespProcess(irspData,96);
+                                Log.d("resp======",respRate+"===");
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -506,8 +516,7 @@ public class DataReaderService extends Service {
                         }
 
 
-                        devicePacket.resp = 0;
-                        respRate = devicePacket.resp;
+                        devicePacket.resp =respRate;
 
                         devicePacket.score = score;
 
@@ -673,7 +682,12 @@ public class DataReaderService extends Service {
     public void onEvent(Object event) {
         if(event instanceof String){
             String str = (String) event;
-            writeKYCBleDevice(bleDeviceKYC,str);
+            if(bleDeviceKYC!=null){
+                writeKYCBleDevice(bleDeviceKYC,str);
+            }else {
+                Log.d(TAG,"康养床bleDevice为空了");
+            }
+
         }else {
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
@@ -692,9 +706,15 @@ public class DataReaderService extends Service {
                         if(bleMac.equals(bleQSMac)) writeBPBleDevice(bleDevice);
 
                     }
+                    if(bleIRTMac!=null){
+                        if(bleMac.equals(bleIRTMac)) getIRTBleDevice(bleDevice);
+                    }
                     if(bleKYCMac!=null){
-                        bleDeviceKYC = bleDevice;
-                        if(bleMac.equals(bleKYCMac)) getKYCBleDevice(bleDevice);
+                        if(bleMac.equals(bleKYCMac)) {
+                            bleDeviceKYC = bleDevice;
+                            getKYCBleDevice(bleDeviceKYC);
+                        }
+
 
                     }
                 }
@@ -763,9 +783,56 @@ public class DataReaderService extends Service {
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
                         Log.d(TAG + "SpO2=======", Arrays.toString(data));
+                        if(data.length==13){
+                            int spo2 = DataUtils.getSPO2Data(data);
+                            if(spo2!=0){
+                                Log.d("fshman","spo2:"+spo2);
+                                mapEvent.put(Constant.SPO2_DATA,spo2);
+                                EventBus.getDefault().post(mapEvent);
+                            }
+
+                        }
+
                     }
                 });
     }
+
+    /**
+     * 收到体温计bleDevice
+     */
+    private void getIRTBleDevice(BleDevice bleDevice) {
+        BleManager.getInstance().notify(
+                bleDevice,
+                Constant.UUID_SERVICE_IRT,
+                Constant.UUID_CHARA_IRT_NOTIFY,
+                new BleNotifyCallback() {
+                    @Override
+                    public void onNotifySuccess() {
+                        // 打开通知操作成功
+                        Log.d(TAG, "IRT体温打开通知成功");
+                    }
+
+                    @Override
+                    public void onNotifyFailure(BleException exception) {
+                        // 打开通知操作失败
+                        Log.d(TAG, exception.toString() + "IRT打开通知失败");
+                    }
+
+                    @Override
+                    public void onCharacteristicChanged(byte[] data) {
+                        // 打开通知后，设备发过来的数据将在这里出现
+                        Log.d(TAG + "IRT=======", Arrays.toString(data));
+                        if(data.length==4){
+                            double dataIRT = DataUtils.getIRTData(data);
+                            Log.d("fshman" + "IRT=======", "dataIRT:"+dataIRT);
+                            mapEvent.put(Constant.IRT_DATA,dataIRT);
+                            EventBus.getDefault().post(mapEvent);
+                        }
+
+                    }
+                });
+    }
+
 
     /**
      * 收到血压计bleDevice,先写数据
@@ -819,6 +886,18 @@ public class DataReaderService extends Service {
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
                         Log.d(TAG + "bp=======", Arrays.toString(data));
+                        if(data.length==10) {
+                            String bpString = DataUtils.getSBPData(data);
+                            Log.d("fshman","BP==="+bpString);
+                            mapEvent.put(Constant.BP_DATA,bpString);
+                            EventBus.getDefault().post(mapEvent);
+                        }else if(data.length==6){
+                            //测量失败
+                            Log.d("fshman","BP===测量失败");
+                            mapEvent.put(Constant.BP_DATA_ERROR,"BP_ERROR");
+                            EventBus.getDefault().post(mapEvent);
+                        }
+
                     }
                 }
 
@@ -848,7 +927,7 @@ public class DataReaderService extends Service {
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
-                        Log.d(TAG + "kyc=======", Arrays.toString(data));
+                        Log.d("fshman" + "kyc=======", Arrays.toString(data));
                     }
                 }
 

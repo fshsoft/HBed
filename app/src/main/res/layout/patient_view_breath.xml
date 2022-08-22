@@ -49,8 +49,8 @@
         android:id="@+id/patient_view_bottom"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
         android:layout_below="@+id/patient_ll_disconnect"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:paddingTop="@dimen/size_10">
 

@@ -95,18 +95,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     BleManager.getInstance().cancelScan();
                 }
                 break;
-            case R.id.btn_see_vital: //生命体征
-                if(deviceListConnect.size()!=0){
-                    EventBus.getDefault().post(deviceListConnect);
-                    Intent intent = new Intent(BleSettingActivity.this, VitalSignsActivity.class);
-                    startActivity(intent);
-                }else {
-                    Toast.makeText(this, R.string.please_connect,Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-
-            case R.id.btn_see_kyc: //声波通道
+            case R.id.btn_see_kyc: //康养床查看
                 if(deviceListConnect.size()!=0){
                     EventBus.getDefault().post(deviceListConnect);
                    goActivity(KYCSetActivity.class);
@@ -192,7 +181,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
         mDeviceAdapter.notifyDataSetChanged();
     }
     private void setScanNameRule(){
-        String[] names ={Constant.CM19,Constant.SPO2,Constant.QIANSHAN,Constant.KANGYANGCHUANG};
+        String[] names ={Constant.CM19,Constant.SPO2,Constant.QIANSHAN,Constant.IRT,Constant.KANGYANGCHUANG};
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
                 // 只扫描指定广播名的设备，可选
                 .setDeviceName(true, names)
@@ -263,6 +252,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_SPO2_MAC,bleDevice.getMac());
                 }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_QIANSHAN_MAC,bleDevice.getMac());
+                }else if(bleDevice.getName().contains(Constant.IRT)){
+                    SPUtils.getInstance().put(Constant.BLE_DEVICE_IRT_MAC,bleDevice.getMac());
                 }else if(bleDevice.getName().contains(Constant.KANGYANGCHUANG)){
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_KYC_MAC,bleDevice.getMac());
                 }

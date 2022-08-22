@@ -1,8 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CM19"/>
+
+        <TextView
+            android:id="@+id/kyc_heart_rate"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="心率："/>
+        <TextView
+            android:id="@+id/kyc_resp_rate"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="呼吸："/>
+    </LinearLayout>
+    <com.java.health.care.bed.widget.MyEcgView
+        android:id="@+id/patient_view_signal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_100"
+        android:layout_marginTop="@dimen/size_2"
+        android:layout_marginBottom="@dimen/size_2" />
+
+    <com.java.health.care.bed.widget.MyEcgView
+        android:id="@+id/patient_view_resp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_100"
+        android:layout_marginTop="@dimen/size_2"
+        android:layout_marginBottom="@dimen/size_2" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="血氧"/>
+        <TextView
+            android:id="@+id/kyc_spo2_data"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="99 %SpO₂"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="血压"/>
+        <TextView
+            android:id="@+id/kyc_bp_data"
+            android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="122/76 mmHg"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="体温"/>
+        <TextView
+            android:id="@+id/kyc_irt_data"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="36.6 ℃"/>
+
+    </LinearLayout>
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

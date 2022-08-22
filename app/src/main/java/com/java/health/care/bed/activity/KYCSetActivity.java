@@ -1,11 +1,26 @@
 package com.java.health.care.bed.activity;
 
+import android.util.Log;
+import android.view.ViewTreeObserver;
+import android.widget.TextView;
+
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.model.DataReceiver;
+import com.java.health.care.bed.model.DataTransmitter;
+import com.java.health.care.bed.model.DevicePacket;
+import com.java.health.care.bed.model.EstimateRet;
+import com.java.health.care.bed.widget.MyEcgView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
@@ -13,8 +28,23 @@ import butterknife.OnClick;
  * @date 2022/08/15 15:03
  * @Description 康养床ble设置
  */
-public class KYCSetActivity extends BaseActivity {
+public class KYCSetActivity extends BaseActivity implements DataReceiver {
+    @BindView(R.id.patient_view_signal)
+    MyEcgView myEcgView;
+    @BindView(R.id.patient_view_resp)
+    MyEcgView myRespView;
+    @BindView(R.id.kyc_heart_rate)
+    TextView kyc_heart_rate;
+    @BindView(R.id.kyc_resp_rate)
+    TextView kyc_resp_rate;
+    @BindView(R.id.kyc_spo2_data)
+    TextView kyc_spo2_data;
+    @BindView(R.id.kyc_irt_data)
+    TextView kyc_irt_data;
+    @BindView(R.id.kyc_bp_data)
+    TextView kyc_bp_data;
 
+    private boolean startDraw = false;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_kyc_set;
@@ -22,13 +52,40 @@ public class KYCSetActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-
+        EventBus.getDefault().register(this);
+        DataTransmitter.getInstance().addDataReceiver(this);
     }
 
     @Override
     protected void initData() {
-//        DataTransmitter.getInstance().addDataReceiver(SoundWaveSetActivity.this);
+
+        myEcgView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //重绘完毕
+                startDraw = false;
+            }
+        });
+        myRespView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //重绘完毕
+                startDraw = false;
+            }
+        });
     }
+
+    private void refreshEcgData() {
+        if (!startDraw) {
+            startDraw = true;
+            myEcgView.refreshView();
+            myRespView.refreshView();
+        } else {
+            startDraw = false;
+        }
+    }
+
+
 
     @OnClick(R.id.sound_wave_one_on)
     public void soundWaveOneOn(){
@@ -98,4 +155,84 @@ public class KYCSetActivity extends BaseActivity {
         EventBus.getDefault().post(Constant.CALL_OFF);
     }
 
+    @Override
+    public void onDataReceived(DevicePacket packet) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                short[] ecgData = packet.secgdata;
+                Log.d("TAG", Arrays.toString(ecgData));
+                for (int i = 0; i < ecgData.length; i++) {
+                    if (null != myEcgView) {
+                        myEcgView.addOneData((int) ecgData[i]/* & 0x00ff*/, -200, 200);
+                        myRespView.addOneData((int) packet.irspData[i]/* & 0x00ff*/, -200, 200);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshEcgData();
+
+                                Log.d("fengshuai",packet.resp+"===="+packet.heartRate);
+                                kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
+                                kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
+
+                            }
+                        });
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void onDataReceived(DevicePacket packet, int battery) {
+
+    }
+
+    @Override
+    public void onDataReceived(EstimateRet ret) {
+
+    }
+
+    @Override
+    public void onDeviceDisConnected() {
+
+    }
+
+    @Override
+    public void onDeviceConnected(long startTime) {
+
+    }
+
+    @Override
+    public void onStartToConnect() {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(Object event) {
+        Map<String,Object> map = (Map<String, Object>) event;
+        if(map!=null){
+            if(map.containsKey(Constant.SPO2_DATA)) {
+                kyc_spo2_data.setText(map.get(Constant.SPO2_DATA)+"%SpO₂");
+            }
+
+            if(map.containsKey(Constant.IRT_DATA)){
+                kyc_irt_data.setText(map.get(Constant.IRT_DATA)+"℃");
+            }
+
+            if(map.containsKey(Constant.BP_DATA)){
+                kyc_bp_data.setText(map.get(Constant.BP_DATA)+"mmHg");
+            }
+            if(map.containsKey(Constant.BP_DATA_ERROR)){
+                kyc_bp_data.setText("测量失败");
+            }
+        }
+    }
 }

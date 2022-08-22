@@ -19,19 +19,28 @@ public class Constant {
 
     public static final String START = "AA55FFC1000000000000000000000000000000CC";
 
+    public static final String UUID_SERVICE_IRT ="0000ffb0-0000-1000-8000-00805f9b34fb";
+    public static final String UUID_CHARA_IRT_NOTIFY ="0000ffb2-0000-1000-8000-00805f9b34fb";
+
     public static final String UUID_SERVICE_KYC ="00001526-1212-efde-1523-785feabcd123";
     public static final String UUID_CHARA_KYC_NOTIFY ="00001527-1212-efde-1523-785feabcd123";
     public static final String UUID_CHARA_KYC_WRITE ="00001528-1212-efde-1523-785feabcd123";
 
-    public static final String CM19 = "CM19";
-    public static final String SPO2 = "SpO2";
-    public static final String QIANSHAN = "QianShan";
-    public static final String KANGYANGCHUANG = "kangyangchuang";
+    public static final String CM19 = "CM19"; //心电
+    public static final String SPO2 = "SpO2"; //血氧
+    public static final String QIANSHAN = "QianShan"; //血压
+    public static final String IRT = "IRT"; //体温计
+    public static final String KANGYANGCHUANG = "kangyangchuang"; //康养床
     public static final String BLE_DEVICE_CM19_MAC = "BLE_DEVICE_CM19_MAC";
     public static final String BLE_DEVICE_SPO2_MAC = "BLE_DEVICE_SPO2_MAC";
     public static final String BLE_DEVICE_QIANSHAN_MAC = "BLE_DEVICE_QIANSHAN_MAC";
+    public static final String BLE_DEVICE_IRT_MAC = "BLE_DEVICE_IRT_MAC";
     public static final String BLE_DEVICE_KYC_MAC = "BLE_DEVICE_KANGYANGCHUANG_MAC";
 
+    public static final String BP_DATA = "BP_DATA";
+    public static final String BP_DATA_ERROR = "BP_ERROR";
+    public static final String IRT_DATA = "IRT_DATA";
+    public static final String SPO2_DATA = "SPO2_DATA";
 
     public static final String SERVER_IP = "server_ip";
     public static final String AREA_NUM = "area_num";
