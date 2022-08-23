@@ -181,7 +181,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
         mDeviceAdapter.notifyDataSetChanged();
     }
     private void setScanNameRule(){
-        String[] names ={Constant.CM19,Constant.SPO2,Constant.QIANSHAN,Constant.IRT,Constant.KANGYANGCHUANG};
+        String[] names ={Constant.CM19,Constant.CM22,Constant.SPO2,Constant.QIANSHAN,Constant.IRT,Constant.KANGYANGCHUANG};
         BleScanRuleConfig scanRuleConfig = new BleScanRuleConfig.Builder()
                 // 只扫描指定广播名的设备，可选
                 .setDeviceName(true, names)
@@ -256,6 +256,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_IRT_MAC,bleDevice.getMac());
                 }else if(bleDevice.getName().contains(Constant.KANGYANGCHUANG)){
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_KYC_MAC,bleDevice.getMac());
+                }else if(bleDevice.getName().contains(Constant.CM22)){
+                    SPUtils.getInstance().put(Constant.BLE_DEVICE_CM22_MAC,bleDevice.getMac());
                 }
 
             }

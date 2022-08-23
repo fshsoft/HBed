@@ -94,5 +94,5 @@ dependencies {
     implementation 'com.hjq:titlebar:5.0'
 
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.31.Final'
 }

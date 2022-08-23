@@ -1,5 +1,7 @@
 package com.java.health.care.bed.constant;
 
+import java.util.UUID;
+
 /**
  * @author fsh
  * @date 2022/08/04 15:14
@@ -9,6 +11,14 @@ public class Constant {
 
     public static final String UUID_SERVICE_CM19 ="00001526-1212-efde-1523-785feabcd123";
     public static final String UUID_CHARA_CM19_NOTIFY ="00001527-1212-efde-1523-785feabcd123";
+
+    //无创连续血压
+    public static final String UUID_SERVICE_CM22 = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
+    public static final String UUID_CHARA_CM22_NOTIFY = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
+    public static final String UUID_CHARA_CM22_WRITE = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
+    public static final String Order_BeginMeasure = "2002000E0000000010000006FEFE";
+    public static final String Order_StopMeasure =  "2002000E0000000020000006FEFE";
+
 
     public static final String UUID_SERVICE_SPO2 ="0000ffb0-0000-1000-8000-00805f9b34fb";
     public static final String UUID_CHARA_SPO2_NOTIFY ="0000ffb2-0000-1000-8000-00805f9b34fb";
@@ -27,11 +37,13 @@ public class Constant {
     public static final String UUID_CHARA_KYC_WRITE ="00001528-1212-efde-1523-785feabcd123";
 
     public static final String CM19 = "CM19"; //心电
+    public static final String CM22 = "CM22"; //无创连续血压
     public static final String SPO2 = "SpO2"; //血氧
     public static final String QIANSHAN = "QianShan"; //血压
     public static final String IRT = "IRT"; //体温计
     public static final String KANGYANGCHUANG = "kangyangchuang"; //康养床
     public static final String BLE_DEVICE_CM19_MAC = "BLE_DEVICE_CM19_MAC";
+    public static final String BLE_DEVICE_CM22_MAC = "BLE_DEVICE_CM22_MAC";
     public static final String BLE_DEVICE_SPO2_MAC = "BLE_DEVICE_SPO2_MAC";
     public static final String BLE_DEVICE_QIANSHAN_MAC = "BLE_DEVICE_QIANSHAN_MAC";
     public static final String BLE_DEVICE_IRT_MAC = "BLE_DEVICE_IRT_MAC";
