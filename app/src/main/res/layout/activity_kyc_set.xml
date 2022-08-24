@@ -12,7 +12,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CM19"/>
+            android:text="CM19 心电检测仪 "/>
 
         <TextView
             android:id="@+id/kyc_heart_rate"
@@ -41,6 +41,41 @@
         android:layout_marginTop="@dimen/size_2"
         android:layout_marginBottom="@dimen/size_2" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CM22无创连续血压仪"/>
+
+        <TextView
+            android:id="@+id/kyc_heart_rate_cm22"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="心率："/>
+        <TextView
+            android:id="@+id/kyc_press"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="呼吸："/>
+    </LinearLayout>
+    <com.java.health.care.bed.widget.MyEcgView
+        android:id="@+id/patient_view_signal_cm22"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_100"
+        android:layout_marginTop="@dimen/size_2"
+        android:layout_marginBottom="@dimen/size_2" />
+
+    <com.java.health.care.bed.widget.MyEcgView
+        android:id="@+id/patient_view_ppg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_100"
+        android:layout_marginTop="@dimen/size_2"
+        android:layout_marginBottom="@dimen/size_2" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -3,6 +3,7 @@ package com.java.health.care.bed.activity;
 import android.util.Log;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
@@ -55,6 +56,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 Log.d(TAG, Arrays.toString(ecgData));
             }
         }).start();
+    }
+
+    @Override
+    public void onDataReceived(BPDevicePacket packet) {
+
     }
 
     @Override

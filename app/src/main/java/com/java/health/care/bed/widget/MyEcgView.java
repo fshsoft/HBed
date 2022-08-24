@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
@@ -31,7 +32,7 @@ public class MyEcgView extends View {
         this.mContext = context;
         //关闭硬件加速
         setLayerType(LAYER_TYPE_SOFTWARE, null);
-        mEcgColor = ContextCompat.getColor(mContext, R.color.color_red_FE647C);
+        mEcgColor = ContextCompat.getColor(mContext, R.color.holo_green_dark);
         smailGridWith = DpUtil.dp2px(mContext, smailGridWith);
         mMarginTop = DpUtil.dp2px(mContext, mMarginTop);
         mMarginButtom = DpUtil.dp2px(mContext, mMarginButtom);
@@ -53,7 +54,7 @@ public class MyEcgView extends View {
     private int mEcgColor;
     public void setRespColor()
     {
-        mEcgColor = ContextCompat.getColor(mContext, R.color.color_blue_7EC0EE);
+        mEcgColor = ContextCompat.getColor(mContext, R.color.color_red_FE647C);
     }
     private int mViewWidth;
     private int mViewHeight;
@@ -152,16 +153,16 @@ public class MyEcgView extends View {
     {
         MAX_RRLIST_LEN = len;
     }
-    float xStep = mViewWidth/MAX_RRLIST_LEN;
+    float xStep ;
 
     private Object lock = new int[1];
+
     /**
      * 添加数据
      *
      * @param data
      */
-    public void addOneData(Integer data,int min,int max) {
-
+    public void addOneData(Integer data) {
         xStep = (float)mViewWidth/MAX_RRLIST_LEN;
         synchronized (lock) {
             datas.add(data);
@@ -186,10 +187,11 @@ public class MyEcgView extends View {
 
             canvas.drawColor(Color.WHITE);// 清除画布
 
-            Paint mPaint = new Paint();
+//            Paint mPaint = new Paint();
             mPaint.setColor(mEcgColor);// 画笔色
             mPaint.setStrokeWidth(2);// 设置画笔粗细
 
+            Log.d("MyEcg===","xStep:"+xStep+"with:"+mViewWidth+"size:"+datas.size());
             float y = 0;
             float oldX = 0;
             synchronized (lock){
@@ -208,10 +210,9 @@ public class MyEcgView extends View {
                     y =(maxValue != minValue) ? mViewHeight -(datas.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
 
                     canvas.drawLine(oldX, oldY, i * xStep, y, mPaint);
-                    //canvas.drawLine(oldX, oldY, i*xStep, i+1, mPaint);
                     oldX = i * xStep;
                     oldY = y;
-                    //System.out.println("oldX:" + oldX +"oldY:"  + oldY);
+//                    Log.d("MyEcg===","i:"+i);
                 }
             }
         }

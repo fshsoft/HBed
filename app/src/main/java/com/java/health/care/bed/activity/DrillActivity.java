@@ -18,6 +18,7 @@ import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
@@ -244,8 +245,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                 Log.d(TAG, Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView) {
-                        myEcgView.addOneData((int) ecgData[i]/* & 0x00ff*/, -200, 200);
-                        myRespView.addOneData((int) packet.irspData[i]/* & 0x00ff*/, -200, 200);
+                        myEcgView.addOneData((int) ecgData[i]);
+                        myRespView.addOneData((int) packet.irspData[i]);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -257,6 +258,11 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onDataReceived(BPDevicePacket packet) {
+
     }
 
     @Override

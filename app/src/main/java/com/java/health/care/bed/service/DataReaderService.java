@@ -23,6 +23,7 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.ImplementConfig;
+import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.util.ByteUtil;
@@ -361,12 +362,12 @@ public class DataReaderService extends Service {
 
                 prcHandler.sendMessage(message);
 
-                try {
+           /*     try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {
                     Log.d(TAG, "sendProcMsg");
                     e.printStackTrace();
-                }
+                }*/
             }
         }
 
@@ -419,6 +420,7 @@ public class DataReaderService extends Service {
             super(looper);
         }
 
+        //无创连续血压
         private void processDataTlvBP(Queue<byte[]> packets) {
 
             if (true) {
@@ -435,23 +437,23 @@ public class DataReaderService extends Service {
                         byte[] heartData = tlvBox.getBytesValue(EcgPacket.HeartRate.getType());
                         byte[] szPressData = tlvBox.getBytesValue(EcgPacket.DiaBp.getType());
                         byte[] ssPressData = tlvBox.getBytesValue(EcgPacket.SysBp.getType());
-                        if (ecgData != null) {
-                            Log.d("fsh===", "===ecgData192" + ecgData.length + "===" + Arrays.toString(ecgData));
-                        }
-
-                        if (ppgData != null) {
-                            Log.d("fsh===", "===ppgData192" + ppgData.length + "===" + Arrays.toString(ppgData));
-                        }
-                        if (heartData != null) {
-                            Log.d("fsh===", "===heartData4" + heartData.length + "===" + Arrays.toString(heartData));
-                        }
-
-                        if (szPressData != null) {
-                            Log.d("fsh===", "===szPressData4" + szPressData.length + "===" + Arrays.toString(szPressData));
-                        }
-                        if (ssPressData != null) {
-                            Log.d("fsh===", "===ssPressData4" + ssPressData.length + "===" + Arrays.toString(ssPressData));
-                        }
+//                        if (ecgData != null) {
+//                            Log.d("fsh===", "===ecgData192" + ecgData.length + "===" + Arrays.toString(ecgData));
+//                        }
+//
+//                        if (ppgData != null) {
+//                            Log.d("fsh===", "===ppgData192" + ppgData.length + "===" + Arrays.toString(ppgData));
+//                        }
+//                        if (heartData != null) {
+//                            Log.d("fsh===", "===heartData4" + heartData.length + "===" + Arrays.toString(heartData));
+//                        }
+//
+//                        if (szPressData != null) {
+//                            Log.d("fsh===", "===szPressData4" + szPressData.length + "===" + Arrays.toString(szPressData));
+//                        }
+//                        if (ssPressData != null) {
+//                            Log.d("fsh===", "===ssPressData4" + ssPressData.length + "===" + Arrays.toString(ssPressData));
+//                        }
 
                         int length = ecgData.length/2;
                         short[] sEcgData = new short[length];
@@ -466,11 +468,17 @@ public class DataReaderService extends Service {
                         ByteUtil.bbToShorts(sSzPressDataData, szPressData);
                         ByteUtil.bbToShorts(sSsPressDataData, ssPressData);
 
-                        Log.d("fsh===", "===sEcgData" + sEcgData.length + "===" + Arrays.toString(sEcgData));
-                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
-                        Log.d("fsh===", "===sHeartData" + sHeartData.length + "===" + Arrays.toString(sHeartData));
-                        Log.d("fsh===", "===sSzPressDataData" + sSzPressDataData.length + "===" + Arrays.toString(sSzPressDataData));
-                        Log.d("fsh===", "===sSsPressDataData" + sSsPressDataData.length + "===" + Arrays.toString(sSsPressDataData));
+                        int sEcg = sHeartData[0];
+                        int sSzPress = sSzPressDataData[0];
+                        int sSsPress = sSsPressDataData[0];
+
+                        BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
+                        dataTrans.sendData(bpDevicePacket);
+//                        Log.d("fsh===", "===sEcgData" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+//                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
+//                        Log.d("fsh===", "===sHeartData" + sHeartData.length + "===" + Arrays.toString(sHeartData));
+//                        Log.d("fsh===", "===sSzPressDataData" + sSzPressDataData.length + "===" + Arrays.toString(sSzPressDataData));
+//                        Log.d("fsh===", "===sSsPressDataData" + sSsPressDataData.length + "===" + Arrays.toString(sSsPressDataData));
                         //打印如下：两组数据，失效时为1000。按时间先后填充
                         //===sHeartData2===[75, 1000]
                         //===sSzPressDataData2===[78, 1000]

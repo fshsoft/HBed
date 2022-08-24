@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
@@ -44,6 +45,16 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     @BindView(R.id.kyc_bp_data)
     TextView kyc_bp_data;
 
+    //无创连续血压
+    @BindView(R.id.patient_view_signal_cm22)
+    MyEcgView myEcgViewCM22;
+    @BindView(R.id.patient_view_ppg)
+    MyEcgView myPPGView;
+    @BindView(R.id.kyc_heart_rate_cm22)
+    TextView kyc_heart_rate_cm22;
+    @BindView(R.id.kyc_press)
+    TextView kyc_press;
+
     private boolean startDraw = false;
     @Override
     protected int getLayoutId() {
@@ -73,6 +84,24 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 startDraw = false;
             }
         });
+        myRespView.setRespColor();
+
+        myEcgViewCM22.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //重绘完毕
+                startDraw = false;
+            }
+        });
+
+        myPPGView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //重绘完毕
+                startDraw = false;
+            }
+        });
+        myPPGView.setRespColor();
     }
 
     private void refreshEcgData() {
@@ -80,6 +109,8 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
             startDraw = true;
             myEcgView.refreshView();
             myRespView.refreshView();
+            myEcgViewCM22.refreshView();
+            myPPGView.refreshView();
         } else {
             startDraw = false;
         }
@@ -164,8 +195,8 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView) {
-                        myEcgView.addOneData((int) ecgData[i]/* & 0x00ff*/, -200, 200);
-                        myRespView.addOneData((int) packet.irspData[i]/* & 0x00ff*/, -200, 200);
+                        myEcgView.addOneData((int) ecgData[i]);
+                        myRespView.addOneData((int) packet.irspData[i]);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -175,6 +206,40 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                                 Log.d("fengshuai",packet.resp+"===="+packet.heartRate);
                                 kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
                                 kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
+
+                            }
+                        });
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void onDataReceived(BPDevicePacket packet) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                short[] ecgData = packet.getsEcgData();
+                Log.d("TAG", Arrays.toString(ecgData));
+                for (int i = 0; i < ecgData.length; i++) {
+                    if (null != myEcgViewCM22) {
+                        myEcgViewCM22.addOneData((int) ecgData[i]);
+                        myPPGView.addOneData((int) packet.getsPpgData()[i]);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshEcgData();
+                                int heart = packet.getHeartRate();
+                                int szPress = packet.getsSzPressDataData();
+                                int ssPress = packet.getsSsPressDataData();
+                                if(heart!=1000){
+                                    kyc_heart_rate_cm22.setText("心率："+heart+"次/分");
+                                }
+                                if(szPress!=1000&&ssPress!=1000){
+                                    kyc_press.setText("血压："+ssPress+"/"+szPress+"mmHg");
+                                }
 
                             }
                         });

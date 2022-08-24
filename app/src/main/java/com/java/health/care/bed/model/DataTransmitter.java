@@ -107,6 +107,22 @@ public class DataTransmitter {
             ex.printStackTrace();
         }
     }
+
+    public void sendData(BPDevicePacket packet) {
+        try {
+
+            // 通知接收者
+            synchronized (dataReceivers) {
+                for (DataReceiver dataReceiver : dataReceivers) {
+                    dataReceiver.onDataReceived(packet);
+                }
+            }
+
+        } catch (Exception ex) {
+            //System.out.println("jl DataTransmitter sendData Exception: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
     public void sendData(EstimateRet ret) {
         try {
 

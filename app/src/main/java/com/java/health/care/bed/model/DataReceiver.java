@@ -13,11 +13,15 @@ public interface DataReceiver {
 	 */
 	void onDataReceived(DevicePacket packet);
 
+	void onDataReceived(BPDevicePacket packet);
+
 
 	/**
 	 * 收到数据
 	 */
 	void onDataReceived(DevicePacket packet, int battery);
+
+
 
 	void onDataReceived(EstimateRet ret);
 
