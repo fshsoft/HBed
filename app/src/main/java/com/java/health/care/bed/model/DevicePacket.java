@@ -64,8 +64,8 @@ public class DevicePacket {
 	/**
 	 * 心电数据
 	 */
-	//public byte[] data;
-	public short[] data;
+	public byte[] data;
+
 
 	public byte[] ecgdata;
 
@@ -162,7 +162,7 @@ public class DevicePacket {
 	public Context context = null;
 
 
-	public DevicePacket(int offset, short[] data, byte[] ecgdatas, short[] secgdatas,int[] irspData,int heartRate, int abnStates,
+	public DevicePacket(int offset, byte[] data, byte[] ecgdatas, short[] secgdatas,int[] irspData,int heartRate, int abnStates,
 						char activityTag, double intensity, int stepRate, short[] AccData,
 						float met, Context context) {
 		super();

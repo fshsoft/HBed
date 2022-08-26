@@ -49,4 +49,5 @@
         <color name="bg_hrv">#EAEDF1</color>
     <color name="color_red_FE647C">#FE647C</color>
     <color name="color_blue_7EC0EE">#7EC0EE</color>
+    <color name="linegreen">#249924</color>
 </resources>

@@ -40,7 +40,7 @@ public class MyEcgView extends View {
         mPaint.setColor(mEcgColor);
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
-
+        mPaint.setStrokeWidth(2);// 设置画笔粗细
         mPath = new Path();
 
     }
@@ -55,6 +55,7 @@ public class MyEcgView extends View {
     public void setRespColor()
     {
         mEcgColor = ContextCompat.getColor(mContext, R.color.color_red_FE647C);
+        mPaint.setColor(mEcgColor);
     }
     private int mViewWidth;
     private int mViewHeight;
@@ -185,13 +186,7 @@ public class MyEcgView extends View {
             int maxValue = 0xF0000000;;
             int minValue = 0x7FFFFFFF;
 
-            canvas.drawColor(Color.WHITE);// 清除画布
-
-//            Paint mPaint = new Paint();
-            mPaint.setColor(mEcgColor);// 画笔色
-            mPaint.setStrokeWidth(2);// 设置画笔粗细
-
-            Log.d("MyEcg===","xStep:"+xStep+"with:"+mViewWidth+"size:"+datas.size());
+//            Log.d("MyEcg===","xStep:"+xStep+"with:"+mViewWidth+"size:"+datas.size());
             float y = 0;
             float oldX = 0;
             synchronized (lock){
@@ -212,7 +207,6 @@ public class MyEcgView extends View {
                     canvas.drawLine(oldX, oldY, i * xStep, y, mPaint);
                     oldX = i * xStep;
                     oldY = y;
-//                    Log.d("MyEcg===","i:"+i);
                 }
             }
         }
@@ -226,33 +220,6 @@ public class MyEcgView extends View {
      * @param data
      * @return
      */
-  /*  private float change(Integer data) {
-        //数值1在view上表示的高度
-        item1Y = mEcgDataHeight /(maxValue - minValue);
-        *//*if (data > 0) {
-            itemY = mMarginTop + (mEcgDataHeight / 2.0f * (200 - data) / 200.0f);
-        } else {
-            itemY = mBaseLine - data / 200.0f * mEcgDataHeight / 2.0f;
-        }*//*
-
-        dataY = mViewHeight - mMarginButtom - item1Y * (data - minValue);
-        return dataY;
-    }
-*/
-
-
-  /*  private float change(Integer data) {
-        //数值1在view上表示的高度
-        item1Y = mEcgDataHeight /(maxValue - minValue);
-        if (data > 0) {
-            dataY = mMarginTop + (maxValue - data) * item1Y;
-        } else {
-            dataY = mViewHeight - mMarginButtom - (mEcgDataHeight/2.0f + data * item1Y);
-        }
-
-//        dataY = mViewHeight - mMarginButtom - item1Y * (data - minValue);
-        return dataY;
-    }*/
 
     private float change(Integer data) {
         //数值1在view上表示的高度

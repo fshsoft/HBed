@@ -60,6 +60,9 @@
         <activity android:name=".activity.PrescriptionActivity"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".activity.PrescriptionActivity2"
+            android:screenOrientation="landscape"/>
+
         <activity android:name=".activity.InputPassWordActivity"
             android:screenOrientation="landscape"/>
 
@@ -82,6 +85,12 @@
             android:screenOrientation="landscape"/>
 
         <activity android:name=".activity.KYCSetActivity"
+            android:screenOrientation="landscape"/>
+
+        <activity android:name=".activity.SoundWaveActivity"
+            android:screenOrientation="landscape"/>
+
+        <activity android:name=".activity.SweetActivity"
             android:screenOrientation="landscape"/>
 
         <!--测试接口-->

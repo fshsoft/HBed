@@ -13,6 +13,7 @@ import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.widget.MyEcgView;
+import com.java.health.care.bed.widget.SignalView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -20,6 +21,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -54,8 +57,13 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     TextView kyc_heart_rate_cm22;
     @BindView(R.id.kyc_press)
     TextView kyc_press;
-
+    @BindView(R.id.kyc_signal_view)
+    SignalView signalView;
     private boolean startDraw = false;
+
+    //只启动一个线程
+    public ExecutorService executorService = Executors.newScheduledThreadPool(1);
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_kyc_set;
@@ -77,6 +85,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 startDraw = false;
             }
         });
+        myRespView.setRespColor();
         myRespView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -84,7 +93,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 startDraw = false;
             }
         });
-        myRespView.setRespColor();
+
 
         myEcgViewCM22.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -94,6 +103,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
             }
         });
 
+        myPPGView.setRespColor();
         myPPGView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -101,7 +111,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 startDraw = false;
             }
         });
-        myPPGView.setRespColor();
+
     }
 
     private void refreshEcgData() {
@@ -117,78 +127,87 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     }
 
 
-
     @OnClick(R.id.sound_wave_one_on)
-    public void soundWaveOneOn(){
+    public void soundWaveOneOn() {
         //FE0801010A14FF16  第一通道10分钟
-        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_ONE_HALL+Constant.OPEN_SOUND_WAVE_TIME
-                +Constant.OPEN_SOUND_WAVE_LAST_ONE);
+        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_ONE_HALL + Constant.OPEN_SOUND_WAVE_TIME
+                + Constant.OPEN_SOUND_WAVE_LAST_ONE);
     }
 
     @OnClick(R.id.sound_wave_one_off)
-    public void soundWaveOneOff(){
+    public void soundWaveOneOff() {
         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_ONE_HALL);
     }
 
     @OnClick(R.id.sound_wave_two_on)
-    public void soundWaveTwoOn(){
+    public void soundWaveTwoOn() {
         //FE0801020A15FF16  第二通道10分钟
-        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_TWO_HALL+Constant.OPEN_SOUND_WAVE_TIME
-                +Constant.OPEN_SOUND_WAVE_LAST_TWO);
+        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_TWO_HALL + Constant.OPEN_SOUND_WAVE_TIME
+                + Constant.OPEN_SOUND_WAVE_LAST_TWO);
     }
+
     @OnClick(R.id.sound_wave_two_off)
-    public void soundWaveTwoOff(){
+    public void soundWaveTwoOff() {
         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_TWO_HALL);
     }
 
     @OnClick(R.id.sound_wave_three_on)
-    public void soundWaveThreeOn(){
+    public void soundWaveThreeOn() {
         //FE0801030A16FF16  第三通道10分钟
-        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_THREE_HALL+Constant.OPEN_SOUND_WAVE_TIME
-                +Constant.OPEN_SOUND_WAVE_LAST_THREE);
+        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_THREE_HALL + Constant.OPEN_SOUND_WAVE_TIME
+                + Constant.OPEN_SOUND_WAVE_LAST_THREE);
     }
+
     @OnClick(R.id.sound_wave_three_off)
-    public void soundWaveThreeOff(){
+    public void soundWaveThreeOff() {
         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_THREE_HALL);
     }
 
     @OnClick(R.id.sound_wave_four_on)
-    public void soundWaveFourOn(){
+    public void soundWaveFourOn() {
         //FE0801040A17FF16  第四通道10分钟
-        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_FOUR_HALL+Constant.OPEN_SOUND_WAVE_TIME
-                +Constant.OPEN_SOUND_WAVE_LAST_FOUR);
+        EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_FOUR_HALL + Constant.OPEN_SOUND_WAVE_TIME
+                + Constant.OPEN_SOUND_WAVE_LAST_FOUR);
     }
+
     @OnClick(R.id.sound_wave_four_off)
-    public void soundWaveFourOff(){
+    public void soundWaveFourOff() {
         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_FOUR_HALL);
     }
 
     //香薰
     @OnClick(R.id.sweet_on)
-    public void sweetOn(){
-        EventBus.getDefault().post(Constant.OPEN_SWEET_ONE_HALL+Constant.OPEN_SWEET_TIME+
-                Constant.SWEET_CODE+Constant.OPEN_SWEET_LAST);
+    public void sweetOn() {
+        EventBus.getDefault().post(Constant.OPEN_SWEET_ONE_HALL + Constant.OPEN_SWEET_TIME +
+                Constant.SWEET_CODE + Constant.OPEN_SWEET_LAST);
     }
 
     @OnClick(R.id.sweet_off)
-    public void sweetOff(){
+    public void sweetOff() {
         EventBus.getDefault().post(Constant.CLOSE_SWEET_ONE_HALL);
     }
 
     //呼叫
     @OnClick(R.id.call_on)
-    public void callOn(){
+    public void callOn() {
         EventBus.getDefault().post(Constant.CALL_ON);
     }
 
     @OnClick(R.id.call_off)
-    public void callOff(){
+    public void callOff() {
         EventBus.getDefault().post(Constant.CALL_OFF);
     }
 
     @Override
     public void onDataReceived(DevicePacket packet) {
-        new Thread(new Runnable() {
+  /*      executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                signalView.setDataEcg(packet);
+            }
+        });*/
+
+       new Thread(new Runnable() {
             @Override
             public void run() {
                 short[] ecgData = packet.secgdata;
@@ -234,11 +253,11 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                                 int heart = packet.getHeartRate();
                                 int szPress = packet.getsSzPressDataData();
                                 int ssPress = packet.getsSsPressDataData();
-                                if(heart!=1000){
-                                    kyc_heart_rate_cm22.setText("心率："+heart+"次/分");
+                                if (heart != 1000) {
+                                    kyc_heart_rate_cm22.setText("心率：" + heart + "次/分");
                                 }
-                                if(szPress!=1000&&ssPress!=1000){
-                                    kyc_press.setText("血压："+ssPress+"/"+szPress+"mmHg");
+                                if (szPress != 1000 && ssPress != 1000) {
+                                    kyc_press.setText("血压：" + ssPress + "/" + szPress + "mmHg");
                                 }
 
                             }
@@ -282,20 +301,20 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-        Map<String,Object> map = (Map<String, Object>) event;
-        if(map!=null){
-            if(map.containsKey(Constant.SPO2_DATA)) {
-                kyc_spo2_data.setText(map.get(Constant.SPO2_DATA)+"%SpO₂");
+        Map<String, Object> map = (Map<String, Object>) event;
+        if (map != null) {
+            if (map.containsKey(Constant.SPO2_DATA)) {
+                kyc_spo2_data.setText(map.get(Constant.SPO2_DATA) + "%SpO₂");
             }
 
-            if(map.containsKey(Constant.IRT_DATA)){
-                kyc_irt_data.setText(map.get(Constant.IRT_DATA)+"℃");
+            if (map.containsKey(Constant.IRT_DATA)) {
+                kyc_irt_data.setText(map.get(Constant.IRT_DATA) + "℃");
             }
 
-            if(map.containsKey(Constant.BP_DATA)){
-                kyc_bp_data.setText(map.get(Constant.BP_DATA)+"mmHg");
+            if (map.containsKey(Constant.BP_DATA)) {
+                kyc_bp_data.setText(map.get(Constant.BP_DATA) + "mmHg");
             }
-            if(map.containsKey(Constant.BP_DATA_ERROR)){
+            if (map.containsKey(Constant.BP_DATA_ERROR)) {
                 kyc_bp_data.setText("测量失败");
             }
         }

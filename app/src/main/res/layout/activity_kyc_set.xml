@@ -4,7 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <com.java.health.care.bed.widget.SignalView
+        android:visibility="gone"
+        android:id="@+id/kyc_signal_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,6 +80,8 @@
         android:layout_height="@dimen/size_100"
         android:layout_marginTop="@dimen/size_2"
         android:layout_marginBottom="@dimen/size_2" />
+
+
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -549,10 +549,13 @@ public class DataReaderService extends Service {
                         }
 
                         short[] secgData = new short[length];
-                        short[] sevgDataView = new short[length];
-                        ByteUtil.bbToShorts(secgData, ecgData);
-                        ByteUtil.bbToShorts(sevgDataView, ecgData);
 
+                        ByteUtil.bbToShorts(secgData, ecgData);
+
+                        byte[] becgData = new byte[length];
+                        for (int i = 0; i < length; i++) {
+                            becgData[i] = (byte) ((secgData[i] >> 4) & 0xff);
+                        }
 
                         //写入文件ecg
                         FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
@@ -681,7 +684,7 @@ public class DataReaderService extends Service {
                         }
 
                         DevicePacket devicePacket = new DevicePacket(currentOffset,
-                                sevgDataView, secgnew, secgData, irspData, heartRate[0], 1, (char) 26,
+                                becgData, secgnew, secgData, irspData, heartRate[0], 1, (char) 26,
                                 30, 15, null, 26,
                                 getApplicationContext());
                         devicePacket.connOffset = connOffset;
