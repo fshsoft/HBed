@@ -1,9 +1,7 @@
 package com.java.health.care.bed.test;
 
 import com.java.health.care.bed.base.IBaseView;
-
 import java.util.List;
-
 import io.reactivex.Observable;
 
 /**

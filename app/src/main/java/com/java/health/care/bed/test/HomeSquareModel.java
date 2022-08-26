@@ -10,7 +10,7 @@ import io.reactivex.Observable;
 
 public class HomeSquareModel extends BaseModel implements Contracts.IHomeSquareModel {
     public HomeSquareModel() {
-        setCookies(false);
+        retrofitManager();
     }
 
     @Override
