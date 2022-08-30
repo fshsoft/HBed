@@ -1,7 +1,8 @@
 package com.java.health.care.bed.base;
 
+import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.util.ApiServer;
-import com.java.health.care.bed.util.Constant;
+
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;

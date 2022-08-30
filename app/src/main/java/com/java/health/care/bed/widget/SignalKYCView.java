@@ -2,11 +2,9 @@ package com.java.health.care.bed.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
@@ -17,13 +15,13 @@ import com.java.health.care.bed.util.DpUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyEcgView extends View {
-    public MyEcgView(Context context) {
+public class SignalKYCView extends View {
+    public SignalKYCView(Context context) {
         super(context);
         init(context);
     }
 
-    public MyEcgView(Context context, AttributeSet attrs) {
+    public SignalKYCView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
@@ -50,7 +48,6 @@ public class MyEcgView extends View {
      * 所有的数据
      */
     private List<Integer> datas = new ArrayList<>();
-    private List<Integer> dataEcg = new ArrayList<>();
     //心电图颜色
     private int mEcgColor;
     public void setRespColor()
@@ -107,6 +104,20 @@ public class MyEcgView extends View {
         return maxSize;
     }
 
+    /**
+     * 添加数据数组
+     *
+     * @param datas
+     */
+    public void addAllData(List<Integer> datas) {
+        this.datas.addAll(datas);
+        if (this.datas.size() > maxSize) {
+            for (int i = 0; i < this.datas.size() - maxSize; i++) {
+                this.datas.remove(0);
+            }
+        }
+        invalidate();
+    }
 
 
     //当前点的位置下标
@@ -155,14 +166,16 @@ public class MyEcgView extends View {
         synchronized (lock) {
             datas.add(data);
             if (datas.size() > MAX_RRLIST_LEN) {
-
                 datas.remove(0);
-//                datas.clear();
             }
-
         }
     }
 
+    /**
+     * 心电图内容高度
+     */
+    private float mEcgDataHeight;
+    private float mBaseLine;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -175,11 +188,9 @@ public class MyEcgView extends View {
 //            Log.d("MyEcg===","xStep:"+xStep+"with:"+mViewWidth+"size:"+datas.size());
             float y = 0;
             float oldX = 0;
-
             synchronized (lock){
 
                 for (int i = 0; i < datas.size(); i++) {
-
                     if (maxValue < datas.get(i)) {
                         maxValue = datas.get(i);
                     }
@@ -199,5 +210,28 @@ public class MyEcgView extends View {
             }
         }
     }
+    float item1Y;
+    float dataY;
+    /**
+     * 把数据转化为对应的坐标  1大格表示的数据值为0.5毫伏，1毫伏= 200(数据) 1大格表示的数据 = 0.5 *200 1小格表示的数据 = 0.5*200/5 = 20
+     * 1 小格的数据 表示为20 1小格的高度为16
+     *
+     * @param data
+     * @return
+     */
 
+    private float change(Integer data) {
+        //数值1在view上表示的高度
+        item1Y = mEcgDataHeight /(maxValue - minValue);
+        if (data > 0) {
+            dataY = mMarginTop + (maxValue - data) * item1Y;
+
+        } else {
+            dataY = mViewHeight - mMarginButtom + (minValue - data) * item1Y;
+        }
+
+
+//        dataY = mViewHeight - mMarginButtom - item1Y * (data - minValue);
+        return dataY;
+    }
 }

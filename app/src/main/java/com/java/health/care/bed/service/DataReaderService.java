@@ -283,14 +283,15 @@ public class DataReaderService extends Service {
                         head1 = dataBuffer.get(0);
                         head2 = dataBuffer.get(1);
 
-                        if ((head1 == ImplementConfig.TLV_CODE_SYS_HEAD
+/*                        if ((head1 == ImplementConfig.TLV_CODE_SYS_HEAD
                                 && (head2 == ImplementConfig.TLV_VERSION_ONE
-                                || head2 == ImplementConfig.TLV_VERSION_TWO
+//                                || head2 == ImplementConfig.TLV_VERSION_TWO
                                 || head2 == ImplementConfig.TLV_VERSION_THREE))
                                 || (head1 == ImplementConfig.TLV_CODE_SYS_DATA
                                 && (head2 == ImplementConfig.TLV_VERSION_ONE
-                                || head2 == ImplementConfig.TLV_VERSION_TWO
-                                || head2 == ImplementConfig.TLV_VERSION_THREE))) {
+//                                || head2 == ImplementConfig.TLV_VERSION_TWO
+                                || head2 == ImplementConfig.TLV_VERSION_THREE))) {*/
+                        if(head1 == ImplementConfig.TLV_CODE_SYS_DATA && head2 == ImplementConfig.TLV_VERSION_ONE) {
                             int head3 = dataBuffer.get(2) & 0xff;
                             int head4 = dataBuffer.get(3) & 0xff;
                             packetLen = (head3 << 8) + head4;
@@ -498,6 +499,7 @@ public class DataReaderService extends Service {
 
             if (true) {
                 for (byte[] packet : packets) {
+                    Log.d(TAG, "===packet" + Arrays.toString(packet));
                     if (PacketParse.parsePacket(packet)) {
                         byte[] ecgData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ECG);
                         byte[] accData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ACC);
@@ -878,9 +880,10 @@ public class DataReaderService extends Service {
                 Log.d(TAG, "康养床bleDevice为空了");
             }
 
-        } else {
+        } else{
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
+                Log.d(TAG,"deviceList=="+deviceList.size());
                 for (BleDevice bleDevice : deviceList) {
                     String bleMac = bleDevice.getMac();
 
@@ -939,7 +942,7 @@ public class DataReaderService extends Service {
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
-//                        Log.d(TAG, Arrays.toString(data));
+                        Log.d(TAG, Arrays.toString(data));
                         Message message = Message.obtain();
                         message.what = CM19_BLE_DATA_MSG;
                         message.obj = data;

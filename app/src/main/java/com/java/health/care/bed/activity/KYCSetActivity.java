@@ -1,9 +1,9 @@
 package com.java.health.care.bed.activity;
 
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
-
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
@@ -200,7 +200,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
 
     @Override
     public void onDataReceived(DevicePacket packet) {
-  /*      executorService.execute(new Runnable() {
+    /*    executorService.execute(new Runnable() {
             @Override
             public void run() {
                 signalView.setDataEcg(packet);
@@ -301,22 +301,32 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-        Map<String, Object> map = (Map<String, Object>) event;
-        if (map != null) {
-            if (map.containsKey(Constant.SPO2_DATA)) {
-                kyc_spo2_data.setText(map.get(Constant.SPO2_DATA) + "%SpO₂");
-            }
+        if(event instanceof Map){
+            Map<String, Object> map = (Map<String, Object>) event;
+            if (map != null) {
+                if (map.containsKey(Constant.SPO2_DATA)) {
+                    kyc_spo2_data.setText(map.get(Constant.SPO2_DATA) + "%SpO₂");
+                }
 
-            if (map.containsKey(Constant.IRT_DATA)) {
-                kyc_irt_data.setText(map.get(Constant.IRT_DATA) + "℃");
-            }
+                if (map.containsKey(Constant.IRT_DATA)) {
+                    kyc_irt_data.setText(map.get(Constant.IRT_DATA) + "℃");
+                }
 
-            if (map.containsKey(Constant.BP_DATA)) {
-                kyc_bp_data.setText(map.get(Constant.BP_DATA) + "mmHg");
-            }
-            if (map.containsKey(Constant.BP_DATA_ERROR)) {
-                kyc_bp_data.setText("测量失败");
+                if (map.containsKey(Constant.BP_DATA)) {
+                    kyc_bp_data.setText(map.get(Constant.BP_DATA) + "mmHg");
+                }
+                if (map.containsKey(Constant.BP_DATA_ERROR)) {
+                    kyc_bp_data.setText("测量失败");
+                }
             }
         }
+
     }
+
+ /*   @Override
+    protected void onPause() {
+        super.onPause();
+        BleManager.getInstance().disconnectAllDevice();
+    }
+*/
 }

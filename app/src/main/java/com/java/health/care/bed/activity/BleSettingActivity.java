@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -69,6 +70,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
         showConnectedDevice();
+
+        Log.d(TAG,"deviceList==="+deviceListConnect.size());
     }
 
     @Override
@@ -259,7 +262,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                 }else if(bleDevice.getName().contains(Constant.CM22)){
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_CM22_MAC,bleDevice.getMac());
                 }
-
+                Log.d(TAG,"deviceList1==="+deviceListConnect.size());
             }
 
             @Override
@@ -275,6 +278,12 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     Toast.makeText(BleSettingActivity.this, getString(R.string.disconnected), Toast.LENGTH_LONG).show();
                     ObserverManager.getInstance().notifyObserver(bleDevice);
                 }
+                if(null!=deviceListConnect){
+                    if(deviceListConnect.size()!=0){
+                        deviceListConnect.remove(bleDevice);
+                    }
+                }
+
 
             }
         });

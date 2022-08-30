@@ -1,5 +1,6 @@
 package com.java.health.care.bed.util;
 
+import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.test.SquareData;
 import com.java.health.care.bed.bean.User;
 
@@ -16,6 +17,11 @@ import retrofit2.http.Path;
  * @Description 请求APi
  */
 public interface ApiServer {
+
+    /**
+     * 获取token
+     */
+    @POST
 
     /**
      * 获取用户信息
