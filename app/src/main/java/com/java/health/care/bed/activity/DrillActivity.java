@@ -266,6 +266,11 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
     }
 
     @Override
+    public void onDataReceived(byte[] packet) {
+
+    }
+
+    @Override
     public void onDataReceived(DevicePacket packet, int battery) {
 
     }

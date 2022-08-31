@@ -15,7 +15,7 @@ public interface DataReceiver {
 
 	void onDataReceived(BPDevicePacket packet);
 
-
+	void onDataReceived(byte[] packet);
 	/**
 	 * 收到数据
 	 */

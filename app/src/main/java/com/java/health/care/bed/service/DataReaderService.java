@@ -499,6 +499,7 @@ public class DataReaderService extends Service {
 
             if (true) {
                 for (byte[] packet : packets) {
+                    dataTrans.sendData(packet);
                     Log.d(TAG, "===packet" + Arrays.toString(packet));
                     if (PacketParse.parsePacket(packet)) {
                         byte[] ecgData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ECG);

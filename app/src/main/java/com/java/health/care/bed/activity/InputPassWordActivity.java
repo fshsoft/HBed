@@ -44,10 +44,15 @@ public class InputPassWordActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
+//        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
     }
 
-    @OnClick(R.id.input_password_close)
+    @OnClick(R.id.input_password_btn)
+    public void inputPassword() {
+        goActivity(SettingActivity.class);
+    }
+
+    /*@OnClick(R.id.input_password_close)
     public void closeClick() {
         if (webSocketService != null) {
             webSocketService.close();
@@ -61,10 +66,6 @@ public class InputPassWordActivity extends BaseActivity {
         }
     }
 
-    @OnClick(R.id.input_password_btn)
-    public void inputPassword() {
-        goActivity(SettingActivity.class);
-    }
 
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -109,5 +110,5 @@ public class InputPassWordActivity extends BaseActivity {
                 }
             });
         }
-    };
+    };*/
 }

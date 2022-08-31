@@ -1,6 +1,10 @@
 package com.java.health.care.bed.activity;
 
 import android.bluetooth.BluetoothGatt;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +28,7 @@ import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
+import com.java.health.care.bed.service.WebSocketService;
 import com.java.health.care.bed.util.ImageLoadUtils;
 import com.java.health.care.bed.widget.MyEcgView;
 import com.java.health.care.bed.widget.TagValueTextView;
@@ -54,7 +59,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     LinearLayout assess_ll;
     @BindView(R.id.assess_monitor_battery)
     ImageView assess_monitor_battery;
-
+    private WebSocketService webSocketService;
     private static final String TAG = AssessActivity.class.getSimpleName();
     private View connectDeviceView;
     private TextView tvConnectDevice;
@@ -96,6 +101,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                 .setReConnectCount(1, 5000)
                 .setConnectOverTime(20000)
                 .setOperateTimeout(5000);
+        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
     }
 
     /**
@@ -269,6 +275,13 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     }
 
     @Override
+    public void onDataReceived(byte[] packet) {
+//        byte[] packets = new byte[packet.length];
+//        System.arraycopy(packet,0,packets,0,packet.length+1);
+        webSocketService.send(Arrays.toString(packet));
+    }
+
+    @Override
     public void onDataReceived(DevicePacket packet, int battery) {
 
     }
@@ -292,4 +305,51 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     public void onStartToConnect() {
 
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            webSocketService = ((WebSocketService.LocalBinder) service).getService();
+            webSocketService.setWebSocketCallback(webSocketCallback);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            webSocketService = null;
+        }
+    };
+    private WebSocketService.WebSocketCallback webSocketCallback = new WebSocketService.WebSocketCallback() {
+        @Override
+        public void onMessage(final String text) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                tvMessage.setText(text);
+                    Log.d("WebSocketService====",text);
+                }
+            });
+        }
+
+        @Override
+        public void onOpen() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                tvMessage.setText("onOpen");
+                    Log.d("WebSocketService====","onOpen=====");
+                }
+            });
+        }
+
+        @Override
+        public void onClosed() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                tvMessage.setText("onClosed");
+                    Log.d("WebSocketService====","onClosed====");
+                }
+            });
+        }
+    };
 }
