@@ -12,12 +12,18 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.util.DpUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Timer;
 
-public class MyEcgView extends View {
+public class MyEcgView extends View { //ECG心电
+
     public MyEcgView(Context context) {
         super(context);
         init(context);
@@ -150,24 +156,80 @@ public class MyEcgView extends View {
      *
      * @param data
      */
+
     public void addOneData(Integer data) {
         xStep = (float)mViewWidth/MAX_RRLIST_LEN;
         synchronized (lock) {
             datas.add(data);
             if (datas.size() > MAX_RRLIST_LEN) {
 
-                datas.remove(0);
-//                datas.clear();
+//                datas.remove(0);
+
             }
+
 
         }
     }
 
+    public void addOneData1(Integer data) {
+        xStep = (float)mViewWidth/MAX_RRLIST_LEN;
+        synchronized (lock) {
+            datas.add(data);
+            if (datas.size() > MAX_RRLIST_LEN) {
+
+//                datas.remove(0);
+
+            }
+
+            drawHeartRefresh();
+
+
+        }
+    }
+
+    int showIndex; //
+    int intervalNumHeart =1500;
+    private float[] data = new float[1500]; //一排显示的数据
+    List<Integer> datass;
+    private void drawHeartRefresh() {
+        int nowIndex = datas.size(); //当前长度
+        if (nowIndex < intervalNumHeart) {
+            showIndex = nowIndex - 1;
+        } else {
+            showIndex = (nowIndex - 1) % intervalNumHeart;
+        }
+        for (int i = 0; i < intervalNumHeart; i++) {
+            if (i > datas.size() - 1) {
+                break;
+            }
+            if (nowIndex <= intervalNumHeart) {
+                data[i] = datas.get(i);
+            } else {
+                int times = (nowIndex - 1) / intervalNumHeart;
+                int temp = times * intervalNumHeart + i;
+                if (temp < nowIndex) {
+                    data[i] = datas.get(temp);
+                }
+            }
+        }
+         datass= new ArrayList<>();
+        for(int i=0;i<data.length;i++){
+            datass.add((int) data[i]);
+        }
+        Log.d("fshman====s", data.length+"======"+Arrays.toString(data));
+
+    }
+
+
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if(datass==null){
+            return;
+        }
 
-        if (!isStop && datas.size()>0) {
+        Log.d("fshman========",datass.size()+"===");
+        if (!isStop && datass.size()>0) {
 
             int maxValue = 0xF0000000;;
             int minValue = 0x7FFFFFFF;
@@ -178,19 +240,19 @@ public class MyEcgView extends View {
 
             synchronized (lock){
 
-                for (int i = 0; i < datas.size(); i++) {
+                for (int i = 0; i < datass.size(); i++) {
 
-                    if (maxValue < datas.get(i)) {
-                        maxValue = datas.get(i);
+                    if (maxValue < datass.get(i)) {
+                        maxValue = datass.get(i);
                     }
-                    if (minValue > datas.get(i)) {
-                        minValue = datas.get(i);
+                    if (minValue > datass.get(i)) {
+                        minValue = datass.get(i);
                     }
                 }
-                float oldY = (maxValue != minValue) ? (datas.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
-                for (int i = 1; i < datas.size(); i++) {// 绘画波形
+                float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                for (int i = 1; i < datass.size(); i++) {// 绘画波形
 
-                    y =(maxValue != minValue) ? mViewHeight -(datas.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                    y =(maxValue != minValue) ? mViewHeight -(datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
 
                     canvas.drawLine(oldX, oldY, i * xStep, y, mPaint);
                     oldX = i * xStep;

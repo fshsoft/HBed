@@ -182,7 +182,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         ivBreathe = breatheView.findViewById(R.id.patient_view_breathe);
         myEcgView = breatheView.findViewById(R.id.patient_view_signal);
         myRespView = breatheView.findViewById(R.id.patient_view_resp);
-        myRespView.setMaxViewDatalen(5000);
+//        myRespView.setMaxViewDatalen(5000);
         myRespView.setRespColor();
         ImageLoadUtils.loadGifToImg(this, R.drawable.a369, ivBreathe);
         breatheType = breatheView.findViewById(R.id.patient_view_breathe_type);
@@ -246,8 +246,10 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                 Log.d(TAG, Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView) {
-                        myEcgView.addOneData((int) ecgData[i]);
-                        myRespView.addOneData((int) packet.irspData[i]);
+//                        myEcgView.addOneData((int) ecgData[i]);
+//                        myRespView.addOneData((int) packet.irspData[i]);
+                        myEcgView.addOneData1((int) ecgData[i]);
+                        myRespView.addOneData1((int) packet.irspData[i]);
 
                         runOnUiThread(new Runnable() {
                             @Override

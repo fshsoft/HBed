@@ -117,10 +117,19 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     private void refreshEcgData() {
         if (!startDraw) {
             startDraw = true;
-            myEcgView.refreshView();
-            myRespView.refreshView();
-            myEcgViewCM22.refreshView();
-            myPPGView.refreshView();
+            if(myEcgView!=null){
+                myEcgView.refreshView();
+            }
+            if(myRespView!=null){
+                myRespView.refreshView();
+            }
+            if(myEcgViewCM22!=null){
+                myEcgViewCM22.refreshView();
+            }
+            if(myPPGView!=null){
+                myPPGView.refreshView();
+            }
+
         } else {
             startDraw = false;
         }
@@ -214,8 +223,8 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView) {
-                        myEcgView.addOneData((int) ecgData[i]);
-                        myRespView.addOneData((int) packet.irspData[i]);
+                        myEcgView.addOneData1((int) ecgData[i]);
+                        myRespView.addOneData1((int) packet.irspData[i]);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -223,8 +232,8 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
                                 refreshEcgData();
 
                                 Log.d("fengshuai",packet.resp+"===="+packet.heartRate);
-                                kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
-                                kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
+//                                kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
+//                                kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
 
                             }
                         });
