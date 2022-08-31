@@ -26,7 +26,7 @@ import okhttp3.WebSocketListener;
 public class WebSocketService extends Service {
     private static final String TAG = WebSocketService.class.getSimpleName();
 //    private static final String WS = "ws://192.168.0.13:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
-    private static final String WS = "ws://rpi.zcc93.cn:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
+    private static final String WS = "ws://rpi.zcc93.cn:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&userId=1888";
 
     private WebSocket webSocket;
     private WebSocketCallback webSocketCallback;
@@ -119,15 +119,15 @@ public class WebSocketService extends Service {
                 webSocketCallback.onMessage(text);
             }
 
-            //收到服务器端发送来的信息后，每隔25秒发送一次心跳包
-     /*       final String message = "{\"type\":\"heartbeat\",\"user_id\":\"heartbeat\"}";
+         /*   //收到服务器端发送来的信息后，每隔10秒发送一次心跳包
+            final String message = "{\"type\":\"heartbeat\",\"user_id\":\"1888\"}";
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     webSocket.send(message);
                 }
-            },100);*/
+            },100,25000);*/
         }
 
         @Override
