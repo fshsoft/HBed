@@ -91,6 +91,11 @@
         <activity android:name=".ble.operation.OperationActivity"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".activity.KSBQActivity"
+            android:screenOrientation="landscape"/>
+
+        <activity android:name="com.java.health.care.test.PickActivity"/>
+
         <service android:name=".service.DataReaderService"
             android:exported="false"/>
 
