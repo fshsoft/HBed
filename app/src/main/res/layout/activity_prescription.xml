@@ -8,11 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="?attr/colorPrimaryVariant"
-        app:backButton="false"
         app:barStyle="light"
         app:title="我的处方"
         app:titleColor="@color/white"
-        app:titleSize="22sp" />
+        app:titleSize="22sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -45,7 +45,7 @@ android {
 
 dependencies {
     implementation 'com.jakewharton:butterknife:10.2.3'
-    implementation 'com.google.android.gms:play-services-wearable:17.1.0'
+
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'                 //必须 1.0.0 以上
@@ -64,12 +64,15 @@ dependencies {
 
 
 
-    //retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
-    //rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.7'
+
+    // Retrofit库
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    // gson解析，可以自行替换
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    // 日志的拦截器，也可以自行选择
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.10'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     //glide
     implementation 'com.github.bumptech.glide:glide:4.13.2'
@@ -91,9 +94,8 @@ dependencies {
     //FastBle
     implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
 
-    implementation 'com.hjq:titlebar:5.0'
+    implementation 'com.github.getActivity:TitleBar:9.5'
 
-    implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.31.Final'
-
+    implementation 'com.kaopiz:kprogresshud:1.2.0'
 }

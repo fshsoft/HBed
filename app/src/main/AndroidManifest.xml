@@ -61,9 +61,6 @@
         <activity android:name=".activity.PrescriptionActivity"
             android:screenOrientation="landscape"/>
 
-        <activity android:name=".activity.PrescriptionActivity2"
-            android:screenOrientation="landscape"/>
-
         <activity android:name=".activity.InputPassWordActivity"
             android:screenOrientation="landscape"/>
 
@@ -71,9 +68,6 @@
             android:screenOrientation="landscape"/>
 
         <activity android:name=".activity.BleSettingActivity"
-            android:screenOrientation="landscape"/>
-
-        <activity android:name=".ble.operation.OperationActivity"
             android:screenOrientation="landscape"/>
 
         <activity android:name=".activity.VitalSignsActivity"
@@ -94,8 +88,7 @@
         <activity android:name=".activity.SweetActivity"
             android:screenOrientation="landscape"/>
 
-        <!--测试接口-->
-        <activity android:name=".test.ParentSquareActivity"
+        <activity android:name=".ble.operation.OperationActivity"
             android:screenOrientation="landscape"/>
 
         <service android:name=".service.DataReaderService"

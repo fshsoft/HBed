@@ -1,7 +1,6 @@
 package com.java.health.care.bed.activity;
 
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import com.java.health.care.bed.R;
@@ -13,7 +12,6 @@ import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.widget.MyEcgView;
-import com.java.health.care.bed.widget.SignalView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -57,8 +55,6 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     TextView kyc_heart_rate_cm22;
     @BindView(R.id.kyc_press)
     TextView kyc_press;
-    @BindView(R.id.kyc_signal_view)
-    SignalView signalView;
     private boolean startDraw = false;
 
     //只启动一个线程

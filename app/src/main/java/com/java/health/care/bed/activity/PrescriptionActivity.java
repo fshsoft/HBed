@@ -15,7 +15,6 @@ import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.fragment.PrescriptionNoFragment;
 import com.java.health.care.bed.fragment.PrescriptionYesFragment;
-import com.java.health.care.bed.test.ParentSquareActivity;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
@@ -58,7 +57,7 @@ public class PrescriptionActivity extends BaseActivity {
 
     @OnClick(R.id.prescription_ch)
     public void onClickCh(){
-        goActivity(ParentSquareActivity.class);
+
 //        goActivity(SoundWaveActivity.class);
     }
 
