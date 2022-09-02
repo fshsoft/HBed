@@ -1,5 +1,7 @@
 package com.java.health.care.bed.widget;
 
+import static java.lang.Float.MAX_VALUE;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -46,7 +48,7 @@ public class MyEcgView extends View { //ECG心电
         mPaint.setColor(mEcgColor);
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(2);// 设置画笔粗细
+        mPaint.setStrokeWidth(5);// 设置画笔粗细
         mPath = new Path();
 
     }
@@ -234,7 +236,6 @@ public class MyEcgView extends View { //ECG心电
             int maxValue = 0xF0000000;;
             int minValue = 0x7FFFFFFF;
 
-//            Log.d("MyEcg===","xStep:"+xStep+"with:"+mViewWidth+"size:"+datas.size());
             float y = 0;
             float oldX = 0;
 
@@ -249,8 +250,8 @@ public class MyEcgView extends View { //ECG心电
                         minValue = datass.get(i);
                     }
                 }
-                float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
-                for (int i = 1; i < datass.size(); i++) {// 绘画波形
+               float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                for (int i = 1; i < datass.size(); i++) {
 
                     y =(maxValue != minValue) ? mViewHeight -(datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
 
@@ -258,7 +259,37 @@ public class MyEcgView extends View { //ECG心电
                     oldX = i * xStep;
                     oldY = y;
                 }
+
             }
+
+           /* float nowX;
+            float nowY;
+
+            for (int i = 1; i < datass.size(); i++) {
+                nowX = i ;
+                float dataValue = datass.get(i);
+                if (dataValue > 0) {
+                    if (dataValue > MAX_VALUE * 0.8f) {
+                        dataValue = MAX_VALUE * 0.8f;
+                    }
+                } else {
+                    if (dataValue < -MAX_VALUE * 0.8f) {
+                        dataValue = -(MAX_VALUE * 0.8f);
+                    }
+                }
+                nowY = mViewHeight / 2 - dataValue ;
+
+                if (i - 1 == showIndex) {
+                    mPath.moveTo(nowX, nowY);
+
+                } else {
+                    mPath.lineTo(nowX, nowY);
+                }
+
+            }
+
+            canvas.drawPath(mPath, mPaint);*/
+
         }
     }
 

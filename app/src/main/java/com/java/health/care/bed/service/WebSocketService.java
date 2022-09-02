@@ -9,14 +9,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.nio.ByteBuffer;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
+import okio.ByteString;
 
 /**
  * @author fsh
@@ -80,6 +79,14 @@ public class WebSocketService extends Service {
         }
     }
 
+    public void send(byte[] data){
+        if(webSocket!=null){
+            ByteBuffer byteBuffer = ByteBuffer.wrap(data);
+            ByteString byteString = ByteString.of(byteBuffer);
+            webSocket.send(byteString);
+            Log.d(TAG, "send " + byteString);
+        }
+    }
     public void close() {
         if (webSocket != null) {
             boolean shutDownFlag = webSocket.close(1000, "manual close");

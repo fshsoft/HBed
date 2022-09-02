@@ -276,9 +276,9 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
 
     @Override
     public void onDataReceived(byte[] packet) {
-//        byte[] packets = new byte[packet.length];
-//        System.arraycopy(packet,0,packets,0,packet.length+1);
-        webSocketService.send(Arrays.toString(packet));
+
+//        webSocketService.send(Arrays.toString(packet));
+        webSocketService.send(packet);
     }
 
     @Override

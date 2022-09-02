@@ -560,10 +560,17 @@ public class DataReaderService extends Service {
                             becgData[i] = (byte) ((secgData[i] >> 4) & 0xff);
                         }
 
+////////////////////////拼接时间戳8字节+96字节ECG心电数据/////////////////////////////////////////////////////////////////////////////////////////////////
+                        byte[] baoEcg = new byte[8+96];
+                        byte[] contentEcg = becgData;
+                        long time = System.currentTimeMillis();
+                        ByteUtil.putLong(baoEcg,time,0);
+                        System.arraycopy(contentEcg,0,baoEcg,8,96);
+                        Log.d("arraycopy====",Arrays.toString(baoEcg));
+                        Log.d("arraycopy====1",Arrays.toString(contentEcg));
                         //写入文件ecg
-                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
-
-
+                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", baoEcg, true);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         int[] irspData = new int[rspData.length / 3];
                         ByteUtil.bbToInts(irspData, rspData);
 
