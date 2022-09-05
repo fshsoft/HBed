@@ -14,6 +14,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,7 @@ import java.util.List;
 public class BleSettingActivity extends BaseActivity implements View.OnClickListener{
 
     private Button btn_scan,btn_see_vital,btn_see_kyc;
+    private TextView back;
     private ImageView img_loading;
 
     private Animation operatingAnim;
@@ -106,6 +108,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     ToastUtils.showShort( R.string.please_connect);
                 }
                 break;
+            case R.id.back:
+                finish();
             default:
                 break;
         }
@@ -122,11 +126,11 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
         btn_scan.setText(getString(R.string.start_scan));
         btn_scan.setOnClickListener(this);
 
-        btn_see_vital = findViewById(R.id.btn_see_vital);
-        btn_see_vital.setOnClickListener(this);
-
         btn_see_kyc = findViewById(R.id.btn_see_kyc);
         btn_see_kyc.setOnClickListener(this);
+
+        back = findViewById(R.id.back);
+        back.setOnClickListener(this);
 
         img_loading = (ImageView) findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);

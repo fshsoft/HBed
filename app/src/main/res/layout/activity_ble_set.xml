@@ -1,44 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:animateLayoutChanges="true"
+    android:background="@drawable/bg"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <TextView
+        android:id="@+id/back"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:title="@string/app_name"
-        app:titleTextColor="@android:color/white" />
+        android:layout_height="50dp"
+        android:text="蓝牙设置"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/back"
+        android:drawablePadding="10dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/barTitleColor"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" >
 
-        <Button
-            android:visibility="gone"
-            android:id="@+id/btn_see_vital"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start_see" />
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_see_kyc"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_toRightOf="@+id/btn_see_vital"
-            android:text="@string/start_see_kyc" />
+            android:background="@drawable/button_bg"
+            android:text="@string/start_see_kyc"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_scan"
             android:layout_marginLeft="50dp"
             android:layout_toRightOf="@id/btn_see_kyc"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
+            android:textColor="@color/white"
+            android:background="@drawable/button_bg"
+            android:textSize="22sp"
             android:layout_height="wrap_content"
             android:text="@string/start_scan" />
         <ImageView
@@ -56,13 +63,16 @@
     <ListView
         android:id="@+id/list_device"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
         android:paddingStart="5dp"
+        android:background="@color/white"
         android:paddingEnd="5dp"
-        android:scrollbars="none" />
+        android:scrollbars="none"
+        android:layout_marginBottom="30dp"/>
 
 
 </LinearLayout>

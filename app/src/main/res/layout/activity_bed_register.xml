@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg">
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="床位注册"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/back"
+        android:drawablePadding="10dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/barTitleColor"/>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/bed_register_choice_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/bed_register_choice_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:layout_marginLeft="40dp"
+                android:textColor="@color/textColor"
+                android:text="科室病区选择"
+                android:layout_centerVertical="true"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/bed_register_choice_text"
+                android:id="@+id/bed_register_choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:textColor="@color/textColor"
+                android:text="12 12 12"
+                android:layout_centerVertical="true"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/go"
+                android:layout_marginRight="40dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/lineColor"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/bed_register_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/bed_register_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:layout_marginLeft="40dp"
+                android:textColor="@color/textColor"
+                android:text="床位编号"
+                android:layout_centerVertical="true"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/bed_register_text"
+                android:id="@+id/bed_register_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:textColor="@color/textColor"
+                android:text="45"
+                android:layout_centerVertical="true"/>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/go"
+                android:layout_marginRight="40dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_marginTop="50dp"
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_bg"
+        android:textSize="28sp"
+        android:text="注册"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

@@ -181,13 +181,13 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver {
     }
 
     //香薰
-    @OnClick(R.id.sweet_on)
+    @OnClick(R.id.sweet_one_on)
     public void sweetOn() {
         EventBus.getDefault().post(Constant.OPEN_SWEET_ONE_HALL + Constant.OPEN_SWEET_TIME +
                 Constant.SWEET_CODE + Constant.OPEN_SWEET_LAST);
     }
 
-    @OnClick(R.id.sweet_off)
+    @OnClick(R.id.sweet_one_off)
     public void sweetOff() {
         EventBus.getDefault().post(Constant.CLOSE_SWEET_ONE_HALL);
     }

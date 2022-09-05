@@ -1,24 +1,13 @@
 package com.java.health.care.bed.activity;
 
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.widget.Button;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
-import com.java.health.care.bed.service.WebSocketService;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
+
 
 /**
  * @author fsh
@@ -26,11 +15,8 @@ import butterknife.Unbinder;
  * @Description
  */
 public class InputPassWordActivity extends BaseActivity {
-    @BindView(R.id.input_password_send)
-    AppCompatButton input_password_send;
-    @BindView(R.id.input_password_close)
-    AppCompatButton input_password_close;
-    WebSocketService webSocketService;
+    @BindView(R.id.pass_edit)
+    AppCompatEditText pass_edit;
 
     @Override
     protected int getLayoutId() {
@@ -44,71 +30,23 @@ public class InputPassWordActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-//        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
-    }
-
-    @OnClick(R.id.input_password_btn)
-    public void inputPassword() {
-        goActivity(SettingActivity.class);
-    }
-
-    /*@OnClick(R.id.input_password_close)
-    public void closeClick() {
-        if (webSocketService != null) {
-            webSocketService.close();
-        }
-    }
-
-    @OnClick(R.id.input_password_send)
-    public void sendClick() {
-        if (webSocketService != null) {
-            webSocketService.send("010205154646100515454");
-        }
     }
 
 
+    @OnClick(R.id.back)
+    public void back() {
+       finish();
+    }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            webSocketService = ((WebSocketService.LocalBinder) service).getService();
-            webSocketService.setWebSocketCallback(webSocketCallback);
+    @OnClick(R.id.pass_confirm)
+    public void confirm(){
+        String pass= pass_edit.getText().toString().trim();
+        if(pass.equals("1234567q")){
+            goActivity(SettingActivity.class);
+            finish();
+        }else {
+            showToast("密码输入错误，请重新输入");
         }
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            webSocketService = null;
-        }
-    };
-    private WebSocketService.WebSocketCallback webSocketCallback = new WebSocketService.WebSocketCallback() {
-        @Override
-        public void onMessage(final String text) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                tvMessage.setText(text);
-                }
-            });
-        }
-
-        @Override
-        public void onOpen() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                tvMessage.setText("onOpen");
-                }
-            });
-        }
-
-        @Override
-        public void onClosed() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-//                tvMessage.setText("onClosed");
-                }
-            });
-        }
-    };*/
 }

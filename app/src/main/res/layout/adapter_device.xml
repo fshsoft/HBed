@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp">
+        android:layout_height="100dp">
 
         <ImageView
             android:id="@+id/img_blue"
@@ -18,7 +18,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="30dp"
             android:layout_toRightOf="@id/img_blue"
             android:gravity="center_vertical"
             android:orientation="vertical">
@@ -28,14 +28,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:textSize="14sp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/txt_mac"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:textSize="12sp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -52,7 +52,7 @@
                 android:id="@+id/txt_rssi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp" />
+                android:textSize="20sp" />
 
             <ImageView
                 android:layout_width="18dp"
@@ -60,13 +60,16 @@
                 android:layout_marginLeft="5dp"
                 android:src="@drawable/ic_rssi" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_connect"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="30dp"
                 android:text="@string/connect"
-                android:textSize="12sp" />
+                android:textColor="@color/white"
+                android:background="@drawable/disconnect_button_bg"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -83,23 +86,27 @@
                 android:layout_height="wrap_content"
                 android:text="@string/connected"
                 android:textColor="@color/colorPrimary"
-                android:textSize="14sp" />
+                android:textSize="20sp" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_disconnect"
-                android:layout_width="100dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="30dp"
                 android:text="@string/disconnect"
-                android:textSize="12sp" />
+                android:textColor="@color/white"
+                android:background="@drawable/connect_button_bg"
+                android:textSize="20sp" />
 
             <Button
+                android:visibility="gone"
                 android:id="@+id/btn_detail"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:text="@string/enter"
-                android:textSize="12sp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
