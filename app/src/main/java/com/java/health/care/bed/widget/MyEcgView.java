@@ -46,9 +46,10 @@ public class MyEcgView extends View { //ECG心电
         mMarginButtom = DpUtil.dp2px(mContext, mMarginButtom);
         mPaint = new Paint();
         mPaint.setColor(mEcgColor);
-        mPaint.setAntiAlias(true);
+        mPaint.setAntiAlias(true); //抗锯齿
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(5);// 设置画笔粗细
+        mPaint.setDither(true); //防抖动
         mPath = new Path();
 
     }
@@ -177,9 +178,9 @@ public class MyEcgView extends View { //ECG心电
         xStep = (float)mViewWidth/MAX_RRLIST_LEN;
         synchronized (lock) {
             datas.add(data);
-            if (datas.size() > MAX_RRLIST_LEN) {
+            if (datas.size() > MAX_RRLIST_LEN*2) {
 
-//                datas.remove(0);
+                datas.clear();
 
             }
 
@@ -218,7 +219,7 @@ public class MyEcgView extends View { //ECG心电
         for(int i=0;i<data.length;i++){
             datass.add((int) data[i]);
         }
-        Log.d("fshman====s", data.length+"======"+Arrays.toString(data));
+        Log.d("fshman====s", "data.length:"+data.length+"===datas.size()==="+datas.size()+"datass.size():"+datass.size());
 
     }
 
@@ -226,20 +227,21 @@ public class MyEcgView extends View { //ECG心电
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if(datass==null){
+        if (datass == null) {
             return;
         }
 
-        Log.d("fshman========",datass.size()+"===");
-        if (!isStop && datass.size()>0) {
+        Log.d("fshman========", datass.size() + "===");
+        if (!isStop && datass.size() > 0) {
 
-            int maxValue = 0xF0000000;;
+            int maxValue = 0xF0000000;
+            ;
             int minValue = 0x7FFFFFFF;
 
             float y = 0;
             float oldX = 0;
 
-            synchronized (lock){
+            synchronized (lock) {
 
                 for (int i = 0; i < datass.size(); i++) {
 
@@ -250,33 +252,34 @@ public class MyEcgView extends View { //ECG心电
                         minValue = datass.get(i);
                     }
                 }
-               float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
                 for (int i = 1; i < datass.size(); i++) {
 
-                    y =(maxValue != minValue) ? mViewHeight -(datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                    y = (maxValue != minValue) ? mViewHeight - (datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
 
                     canvas.drawLine(oldX, oldY, i * xStep, y, mPaint);
                     oldX = i * xStep;
                     oldY = y;
+
                 }
 
             }
 
-           /* float nowX;
+   /*         float nowX;
             float nowY;
-
-            for (int i = 1; i < datass.size(); i++) {
+        int maxValue = 0xF0000000;
+            for (int i = 0; i < datass.size(); i++) {
                 nowX = i ;
                 float dataValue = datass.get(i);
-                if (dataValue > 0) {
-                    if (dataValue > MAX_VALUE * 0.8f) {
-                        dataValue = MAX_VALUE * 0.8f;
-                    }
-                } else {
-                    if (dataValue < -MAX_VALUE * 0.8f) {
-                        dataValue = -(MAX_VALUE * 0.8f);
-                    }
-                }
+//               if (dataValue > 0) {
+//                    if (dataValue > maxValue * 0.8f) {
+//                        dataValue = maxValue * 0.8f;
+//                    }
+//                } else {
+//                    if (dataValue < -maxValue * 0.8f) {
+//                        dataValue = -(maxValue * 0.8f);
+//                    }
+//                }
                 nowY = mViewHeight / 2 - dataValue ;
 
                 if (i - 1 == showIndex) {

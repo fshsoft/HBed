@@ -137,13 +137,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -159,12 +152,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="260dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -176,15 +170,18 @@
                     android:id="@+id/kyc_spo2_data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="70dp"
                     android:textColor="@color/btnColor"
                     android:textSize="20sp"
                     tools:text="99 %SpO₂" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="260dp"
+                android:layout_marginTop="20dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -196,13 +193,15 @@
                     android:id="@+id/kyc_bp_data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="70dp"
                     android:textColor="@color/btnColor"
                     android:textSize="20sp"
                     tools:text="122/76 mmHg" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="260dp"
+                android:layout_marginTop="20dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
@@ -217,7 +216,7 @@
                     android:id="@+id/kyc_irt_data"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="70dp"
                     android:textColor="@color/btnColor"
                     android:textSize="20sp"
                     tools:text="36.6 ℃" />
@@ -225,230 +224,211 @@
 
         </LinearLayout>
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="20dp"
-                android:text="声波通道"
-                android:textColor="@color/textColor"
-                android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_one_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第一通道开启"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_two_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第二通道开启"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_three_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第三通道开启"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_four_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第四通道开启"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_one_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第一通道关闭"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_two_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第二通道关闭"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_three_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第三通道关闭"
-                        android:textColor="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sound_wave_four_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第四通道关闭"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="20dp"
+                android:text="声波通道"
+                android:textColor="@color/textColor"
+                android:textSize="20sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第一通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
+
+
+            <Switch
+                android:id="@+id/sound_wave_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第二通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
+
+
+            <Switch
+                android:id="@+id/sound_wave_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第三通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
+
+
+            <Switch
+                android:id="@+id/sound_wave_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第四通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
+
+
+            <Switch
+                android:id="@+id/sound_wave_four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
                 android:text="香薰通道"
                 android:textColor="@color/textColor"
                 android:textSize="20sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginLeft="40dp"
+                android:text="第一通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
 
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
+            <Switch
+                android:id="@+id/sweet_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_one_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第一通道开启"
-                        android:textColor="@color/white" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第二通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_two_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第二通道开启"
-                        android:textColor="@color/white" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_three_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第三通道开启"
-                        android:textColor="@color/white" />
+            <Switch
+                android:id="@+id/sweet_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_four_on"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第四通道开启"
-                        android:textColor="@color/white" />
-                </LinearLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第三通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_one_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第一通道关闭"
-                        android:textColor="@color/white" />
+            <Switch
+                android:id="@+id/sweet_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_two_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第二通道关闭"
-                        android:textColor="@color/white" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="第四通道："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_three_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第三通道关闭"
-                        android:textColor="@color/white" />
 
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/sweet_four_off"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
-                        android:background="@drawable/button_bg"
-                        android:text="第四通道关闭"
-                        android:textColor="@color/white" />
-                </LinearLayout>
+            <Switch
+                android:id="@+id/sweet_four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
 
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
@@ -456,37 +436,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginTop="20dp"
                 android:text="按钮呼叫"
                 android:textColor="@color/textColor"
                 android:textSize="20sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
+                android:layout_marginLeft="40dp"
+                android:text="呼叫相应："
+                android:textColor="@color/btnColor"
+                android:textSize="20sp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/call_on"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/button_bg"
-                    android:text="按钮呼叫响应"
-                    android:textColor="@color/white" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/call_off"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="50dp"
-                    android:background="@drawable/button_bg"
-                    android:text="按钮取消呼叫"
-                    android:textColor="@color/white" />
-            </LinearLayout>
+            <Switch
+                android:id="@+id/call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:showText="true"
+                android:switchMinWidth="20dp"
+                android:textOff="关"
+                android:textOn="开"
+                android:thumb="@drawable/thumb"
+                android:track="@drawable/track" />
+
+
         </LinearLayout>
-
-
     </LinearLayout>
+
 </LinearLayout>

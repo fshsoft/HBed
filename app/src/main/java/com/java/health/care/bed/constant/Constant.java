@@ -108,7 +108,7 @@ public class Constant {
     public static final String OPEN_SOUND_WAVE_LAST_FOUR = "17FF16";
 
     //关闭声波
-    public static final String CLOSE_SOUND_WAVE_ONE_HALL = "FE0702010AFF16";//FE帧头 08数据长度?? 01功能码关闭（01第一通道）
+    public static final String CLOSE_SOUND_WAVE_ONE_HALL = "FE0702010AFF16";//FE帧头 07数据长度?? 01功能码关闭（01第一通道）
     public static final String CLOSE_SOUND_WAVE_TWO_HALL = "FE0702020BFF16";
     public static final String CLOSE_SOUND_WAVE_THREE_HALL = "FE0702030CFF16";
     public static final String CLOSE_SOUND_WAVE_FOUR_HALL = "FE0702040DFF16";
@@ -116,12 +116,22 @@ public class Constant {
 
     //打开熏香
     public static final String OPEN_SWEET_ONE_HALL = "FE080301";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）
+    public static final String OPEN_SWEET_TWO_HALL = "FE080302";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）
+    public static final String OPEN_SWEET_THREE_HALL = "FE080303";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）
+    public static final String OPEN_SWEET_FOUR_HALL = "FE080304";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）
+
     public static final String OPEN_SWEET_TIME = "0A"; //动态数据时间0A表示10分钟
-    public static final String SWEET_CODE = "16";//校验位要计算 08+03+01+时间
+    public static final String SWEET_CODE_ONE = "16";//校验位要计算 08+03+01+时间(0A-》10) 8+3+1+10=22 ->16
+    public static final String SWEET_CODE_TWO = "17";//校验位要计算 08+03+02+时间(0A-》10) 8+3+2+10=23 ->17
+    public static final String SWEET_CODE_THREE = "18";//校验位要计算 08+03+03+时间(0A-》10) 8+3+3+10=24 ->18
+    public static final String SWEET_CODE_FOUR = "19";//校验位要计算 08+03+04+时间(0A-》10) 8+3+4+10=25 -19
     public static final String OPEN_SWEET_LAST = "FF16";//14校验位 FF16 帧尾
 
     //关闭熏香
-    public static final String CLOSE_SWEET_ONE_HALL = "FE07040112FF16";
+    public static final String CLOSE_SWEET_ONE_HALL = "FE07040112FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_TWO_HALL = "FE07040212FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_THREE_HALL = "FE07040312FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_FOUR_HALL = "FE07040412FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
 
     //打开LED灯
     public static final String OPEN_LED_ONE_HALL = "FE080501";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）
