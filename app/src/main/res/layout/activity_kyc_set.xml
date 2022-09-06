@@ -444,7 +444,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
-                android:text="呼叫相应："
+                android:text="呼叫响应："
                 android:textColor="@color/btnColor"
                 android:textSize="20sp" />
 
