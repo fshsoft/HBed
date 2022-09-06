@@ -269,7 +269,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
                 short[] ecgData = packet.secgdata;
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
-                    if (null != myEcgView) {
+                    if (null != myEcgView && null!= myRespView) {
                         myEcgView.addOneData1((int) ecgData[i]);
                         myRespView.addOneData1((int) packet.irspData[i]);
 
@@ -298,9 +298,9 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
                 short[] ecgData = packet.getsEcgData();
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
-                    if (null != myEcgViewCM22) {
-                        myEcgViewCM22.addOneData((int) ecgData[i]);
-                        myPPGView.addOneData((int) packet.getsPpgData()[i]);
+                    if (null != myEcgViewCM22 && null!= myPPGView) {
+                        myEcgViewCM22.addOneData1((int) ecgData[i]);
+                        myPPGView.addOneData1((int) packet.getsPpgData()[i]);
 
                         runOnUiThread(new Runnable() {
                             @Override
