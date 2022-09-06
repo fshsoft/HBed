@@ -231,15 +231,14 @@ public class MyEcgView extends View { //ECG心电
             return;
         }
 
-        Log.d("fshman========", datass.size() + "===");
         if (!isStop && datass.size() > 0) {
 
             int maxValue = 0xF0000000;
-            ;
+
             int minValue = 0x7FFFFFFF;
 
-            float y = 0;
-            float oldX = 0;
+            float y1 = 0;
+            float y2 = 0;
 
             synchronized (lock) {
 
@@ -252,48 +251,23 @@ public class MyEcgView extends View { //ECG心电
                         minValue = datass.get(i);
                     }
                 }
-                float oldY = (maxValue != minValue) ? (datass.get(0) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+
+
                 for (int i = 1; i < datass.size(); i++) {
 
-                    y = (maxValue != minValue) ? mViewHeight - (datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                    y1 = (maxValue != minValue) ? mViewHeight - (datass.get(i-1) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
+                    y2 = (maxValue != minValue) ? mViewHeight - (datass.get(i) - minValue) * mViewHeight / (maxValue - minValue) : mViewHeight / 2;
 
-                    canvas.drawLine(oldX, oldY, i * xStep, y, mPaint);
-                    oldX = i * xStep;
-                    oldY = y;
+                    Log.d("y1+y2===","y1:"+y1+"==y2:"+y2);
+                    canvas.drawLine(i*xStep-1, y1, i * xStep, y2, mPaint);
+
+                    }
 
                 }
 
             }
 
-   /*         float nowX;
-            float nowY;
-        int maxValue = 0xF0000000;
-            for (int i = 0; i < datass.size(); i++) {
-                nowX = i ;
-                float dataValue = datass.get(i);
-//               if (dataValue > 0) {
-//                    if (dataValue > maxValue * 0.8f) {
-//                        dataValue = maxValue * 0.8f;
-//                    }
-//                } else {
-//                    if (dataValue < -maxValue * 0.8f) {
-//                        dataValue = -(maxValue * 0.8f);
-//                    }
-//                }
-                nowY = mViewHeight / 2 - dataValue ;
 
-                if (i - 1 == showIndex) {
-                    mPath.moveTo(nowX, nowY);
-
-                } else {
-                    mPath.lineTo(nowX, nowY);
-                }
-
-            }
-
-            canvas.drawPath(mPath, mPaint);*/
-
-        }
     }
 
 }
