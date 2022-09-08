@@ -2,10 +2,13 @@ package com.java.health.care.bed.presenter;
 
 import android.content.Context;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.base.BaseObserver;
+import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
 import com.java.health.care.bed.bean.Token;
+import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.net.RetrofitUtil;
 
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
@@ -50,7 +54,7 @@ public class MainPresenter implements MainContract.presenter {
         map.put("grant_type",grant_type);
         map.put("client_id",client_id);
         map.put("client_secret",client_secret);
-        RetrofitUtil.getInstance().initBaseRetrofit(context).getToken(map)
+        RetrofitUtil.getInstance().initBaseRetrofit().getToken(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BaseObserver<Token>(context) {
@@ -70,12 +74,39 @@ public class MainPresenter implements MainContract.presenter {
 
     @Override
     public void getDeptRegion() {
-        RetrofitUtil.getInstance().initRetrofit(context).getDeptRegion()
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        Map<String,String> map=new HashMap<>();
+        RetrofitUtil.getInstance().initRetrofit().getDeptRegion(value,map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new BaseObserver<Dept>(context) {
+                .subscribe(new BaseObserver<List<Dept>>(context) {
                     @Override
-                    protected void onSuccess(BaseEntry<Dept> t) throws Exception {
+                    protected void onSuccess(BaseEntry<List<Dept>> t) {
+                        view.setCode(t.getCode());
+                        view.setMsg(t.getMessage());
+                        view.setObj(t.getData());
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+    }
+
+    @Override
+    public void saveBedInfo(int deptId, int regionId, String number) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        Map<String,String> map=new HashMap<>();
+        map.put("deptId", String.valueOf(deptId));
+        map.put("regionId", String.valueOf(regionId));
+        map.put("number", number);
+        RetrofitUtil.getInstance().initRetrofit().saveBedInfo(value,map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<Bunk>(context) {
+                    @Override
+                    protected void onSuccess(BaseEntry<Bunk> t) throws Exception {
                         view.setCode(t.getCode());
                         view.setMsg(t.getMessage());
                         view.setObj(t.getData());
@@ -86,11 +117,6 @@ public class MainPresenter implements MainContract.presenter {
                         showMessage(e,isNetWorkError);
                     }
                 });
-    }
-
-    @Override
-    public void saveBedInfo(int deptId, int regionId, String number) {
-
     }
 
     @Override

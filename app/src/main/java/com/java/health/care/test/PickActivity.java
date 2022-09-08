@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,7 +23,6 @@ public class PickActivity extends AppCompatActivity {
     private LevelsListDate levelsListDate;
     private ArrayList<JsonBean> jsonBeans;
     private ArrayList<ArrayList<String>> arrayLists;
-    private ArrayList<ArrayList<ArrayList<String>>> arrayLists1;
     private Handler handler1 = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -55,6 +55,9 @@ public class PickActivity extends AppCompatActivity {
                     levelsListDate = new LevelsListDate(PickActivity.this);
                     jsonBeans = levelsListDate.initJsonData("citys_data.json");
                     arrayLists = levelsListDate.initJsonData1("citys_data.json");
+                    for (int i=0;i<arrayLists.size();i++){
+                        Log.d("arrayList===",arrayLists.get(i).toString());
+                    }
 //                    arrayLists1 = levelsListDate.initJsonData2("citys_data.json");
                     handler1.sendEmptyMessage(1);
                 } catch (Exception e) {
@@ -84,6 +87,6 @@ public class PickActivity extends AppCompatActivity {
                 .setTitleText("请选择科室和病区")
                 .setLineSpacingMultiplier(3.0f)
                         .build();
-        pvOptions.setPicker(jsonBeans, arrayLists, arrayLists1);
+        pvOptions.setPicker(jsonBeans, arrayLists);
     }
 }

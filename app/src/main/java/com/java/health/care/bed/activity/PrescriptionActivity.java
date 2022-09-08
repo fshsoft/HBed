@@ -58,10 +58,10 @@ public class PrescriptionActivity extends BaseActivity {
 
     @OnClick(R.id.prescription_ch)
     public void onClickCh(){
-//        goActivity(PickActivity.class);
+        goActivity(PickActivity.class);
 
 //        goActivity(SoundWaveActivity.class);
-        goActivity(VitalSignsActivity.class);
+//        goActivity(VitalSignsActivity.class);
     }
 
     @Override

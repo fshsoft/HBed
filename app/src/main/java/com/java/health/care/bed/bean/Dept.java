@@ -1,5 +1,7 @@
 package com.java.health.care.bed.bean;
 
+import com.contrarywind.interfaces.IPickerViewData;
+
 import java.util.List;
 
 /**
@@ -7,10 +9,10 @@ import java.util.List;
  * @date 2022/09/07 10:25
  * @Description 科室部门
  */
-public class Dept {
+public class Dept implements IPickerViewData {
     private int id;
     private String name;
-    private List<Region> regionList;
+    private List<Region> regions;
 
     public int getId() {
         return id;
@@ -28,11 +30,17 @@ public class Dept {
         this.name = name;
     }
 
-    public List<Region> getRegionList() {
-        return regionList;
+
+    @Override
+    public String getPickerViewText() {
+        return this.name;
     }
 
-    public void setRegionList(List<Region> regionList) {
-        this.regionList = regionList;
+    public List<Region> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<Region> regions) {
+        this.regions = regions;
     }
 }

@@ -44,7 +44,7 @@ public class RetrofitUtil {
     /**
      * 初始化Retrofit
      */
-    public AllApi initBaseRetrofit(Context context) {
+    public AllApi initBaseRetrofit() {
         String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
         if(!ip.isEmpty()){
             String url ="http://"+ip+":1240/";
@@ -55,9 +55,6 @@ public class RetrofitUtil {
                     .readTimeout(TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
                     .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
-                    //cookie
-//                        .addInterceptor(new CookieReadInterceptor())
-//                        .addInterceptor(new CookiesSaveInterceptor())
                     .build();
 
 
@@ -75,12 +72,11 @@ public class RetrofitUtil {
         return allApi;
     }
 
-    public AllApi initRetrofit(Context context) {
+    public AllApi initRetrofit() {
         String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
-        String port = SPUtils.getInstance().getString(SP.IP_SERVER_PORT);
 
-        if(!ip.isEmpty()&&!port.isEmpty()){
-            String url ="http://"+ip+":"+port+"/";
+        if(!ip.isEmpty()){
+            String url ="http://"+ip+":1236/";
 
             //增加超时时间
             OkHttpClient client = new OkHttpClient.Builder()
@@ -88,7 +84,6 @@ public class RetrofitUtil {
                     .readTimeout(TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
                     .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
-                    .addInterceptor(new CommonHeaderInterceptor()) //对Header做修改
                     .build();
 
 

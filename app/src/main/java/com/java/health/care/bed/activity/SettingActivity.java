@@ -16,6 +16,7 @@ import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.presenter.MainPresenter;
+import com.java.health.care.bed.util.VersionUtil;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -35,14 +36,14 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @BindView(R.id.set_server_address)
     AppCompatTextView set_server_address;
 
-    @BindView(R.id.set_server_port_address)
-    AppCompatTextView set_server_port_address;
+    @BindView(R.id.set_bunk_num)
+    AppCompatTextView set_bunk_num;
 
-    @BindView(R.id.set_bed_num)
-    AppCompatTextView set_bed_num;
+    @BindView(R.id.set_version_update_num)
+    AppCompatTextView set_version_update_num;
 
     private String server_ip;
-    private String server_ip_port;
+
 
 
     @Override
@@ -53,28 +54,30 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @Override
     protected void initView() {
         presenter = new MainPresenter(this, this);
-        String token = SPUtils.getInstance().getString(SP.TOKEN);
-        if(token!=null){
-            getToken();
-        }
+        set_version_update_num.setText("V "+VersionUtil.getAppVersionName(this));
 
     }
 
     @Override
     protected void initData() {
         server_ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
-        server_ip_port = SPUtils.getInstance().getString(SP.IP_SERVER_PORT);
+
+        String dept = SPUtils.getInstance().getString(SP.DEPT_NUM);
+        String region = SPUtils.getInstance().getString(SP.REGION_NUM);
+        String bed = SPUtils.getInstance().getString(SP.BUNK_NUM);
+
         if(!server_ip.isEmpty()){
             set_server_address.setText(server_ip);
         }else {
             set_server_address.setText("");
         }
 
-        if(!server_ip_port.isEmpty()){
-            set_server_port_address.setText(server_ip_port);
+        if(!dept.isEmpty() && !region.isEmpty()&&!bed.isEmpty()){
+            set_bunk_num.setText(dept+"    "+region+"    "+bed);
         }else {
-            set_server_port_address.setText("");
+            set_bunk_num.setText("");
         }
+
 
     }
 
@@ -107,6 +110,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     }
 
+
     //点击蓝牙设置
     @OnClick(R.id.set_ble_set_rl)
     public void setBle(){
@@ -125,6 +129,10 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         set_server_address.setText(input);
                         SPUtils.getInstance().put(SP.IP_SERVER_ADDRESS,input.toString());
+                        String token = SPUtils.getInstance().getString(SP.TOKEN);
+                        if(token.isEmpty()){
+                            getToken();
+                        }
                     }
                 })
                 .positiveText("确定")
@@ -145,7 +153,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     }
 
-    //点击服务器地址，弹窗
+   /* //点击服务器地址，弹窗
     @OnClick(R.id.set_server_port_rl)
     public void setPort(){
         MaterialDialog dialog = new MaterialDialog.Builder(this)
@@ -175,12 +183,18 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
         dialog.show();
 
-    }
+    }*/
 
-    //点击床位编号，弹窗
+    //点击床位编号，跳转到注册
     @OnClick(R.id.set_bed_rl)
     public void setBed(){
-        goActivity(BedRegisterActivity.class);
+        //判断是否设置了服务器ip
+        if(set_server_address.getText().toString().trim().isEmpty()){
+            showToast("请先设置服务器地址");
+        }else {
+            goActivity(BedRegisterActivity.class);
+        }
+
     }
     //点击版本更新
     @OnClick(R.id.set_version_update_rl)

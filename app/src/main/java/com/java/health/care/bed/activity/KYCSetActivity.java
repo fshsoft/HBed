@@ -269,7 +269,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
                 short[] ecgData = packet.secgdata;
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
-                    if (null != myEcgView && null!= myRespView) {
+                    if (null != myEcgView ) {
                         myEcgView.addOneData1((int) ecgData[i]);
                         myRespView.addOneData1((int) packet.irspData[i]);
 
@@ -279,8 +279,8 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
                                 refreshEcgData();
 
                                 Log.d("fengshuai",packet.resp+"===="+packet.heartRate);
-//                                kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
-//                                kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
+                                kyc_heart_rate.setText("心率："+packet.heartRate+"次/分");
+                                kyc_resp_rate.setText("呼吸："+packet.resp+"次/分");
 
                             }
                         });
@@ -298,7 +298,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
                 short[] ecgData = packet.getsEcgData();
                 Log.d("TAG", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
-                    if (null != myEcgViewCM22 && null!= myPPGView) {
+                    if (null != myEcgViewCM22) {
                         myEcgViewCM22.addOneData1((int) ecgData[i]);
                         myPPGView.addOneData1((int) packet.getsPpgData()[i]);
 

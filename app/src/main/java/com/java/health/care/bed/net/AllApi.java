@@ -1,17 +1,20 @@
 package com.java.health.care.bed.net;
 
 import com.java.health.care.bed.base.BaseEntry;
+import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
 import com.java.health.care.bed.bean.Token;
 import com.java.health.care.bed.bean.User;
 import com.java.health.care.bed.constant.Api;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface AllApi {
@@ -27,19 +30,19 @@ public interface AllApi {
     * 获取科室和病区
     */
    @POST(Api.getDeptRegion)
-   Observable<BaseEntry<Dept>> getDeptRegion();
+   Observable<BaseEntry<List<Dept>>> getDeptRegion(@Header("authorization") String str, @Body Map<String, String> maps);
 
    /**
     * 提交床位信息
     */
    @POST(Api.saveBedInfo)
-   Observable<BaseEntry> saveBedInfo(@Body Map<String, String> maps);
+   Observable<BaseEntry<Bunk>> saveBedInfo(@Header("authorization") String str, @Body Map<String, String> maps);
 
    /**
     * 根据床位获取患者信息
     */
    @POST(Api.getUser)
-   Observable<BaseEntry<User>> getUser(@Body Map<String, String> maps);
+   Observable<BaseEntry<User>> getUser(@Header("authorization") String str,@Body Map<String, String> maps);
 
    /*/**
      * 获取全部患者列表

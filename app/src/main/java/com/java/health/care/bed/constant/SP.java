@@ -13,6 +13,11 @@ public class SP {
 
     public static final String TOKEN = "access_token";
 
-    public static final String BED_NUM = "bed_num";
+    public static final String BUNK_NUM = "bunk_num";
+    public static final String BUNK_ID = "bunk_id";
+    public static final String DEPT_NUM = "dept_num";
+    public static final String DEPT_ID = "dept_id";
+    public static final String REGION_NUM = "region_num";
+    public static final String REGION_ID = "region_id";
 
 }

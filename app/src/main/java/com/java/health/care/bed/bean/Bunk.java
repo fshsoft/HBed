@@ -7,13 +7,13 @@ package com.java.health.care.bed.bean;
  */
 public class Bunk {
 
-    private int bunkId;
+    private int id;
 
-    public int getBunkId() {
-        return bunkId;
+    public int getId() {
+        return id;
     }
 
-    public void setBunkId(int bunkId) {
-        this.bunkId = bunkId;
+    public void setId(int id) {
+        this.id = id;
     }
 }
