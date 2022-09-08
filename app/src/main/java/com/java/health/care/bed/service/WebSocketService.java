@@ -25,12 +25,14 @@ import okio.ByteString;
 public class WebSocketService extends Service {
     private static final String TAG = WebSocketService.class.getSimpleName();
 //    private static final String WS = "ws://192.168.0.13:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
-    private static final String WS = "ws://rpi.zcc93.cn:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&userId=1888";
+//    private static final String WS = "ws://rpi.zcc93.cn:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&userId=1888";
+    private static final String WS = "ws://192.168.0.12:8000?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&bed_id=111";
 
     private WebSocket webSocket;
     private WebSocketCallback webSocketCallback;
     private int reconnectTimeout = 5000;
     private boolean connected = false;
+    private int connectedNum = 0;
 
     private Handler handler = new Handler();
 
@@ -101,8 +103,16 @@ public class WebSocketService extends Service {
             public void run() {
                 Log.d(TAG, "reconnect...");
                 if (!connected) {
-                    connect();
-                    handler.postDelayed(this, reconnectTimeout);
+                    connectedNum++;
+                    if(connectedNum<5){
+                        connect();
+                        handler.postDelayed(this, reconnectTimeout);
+                    }else {
+                        Log.d(TAG,"重连失败，请检查网络或服务端");
+                    /*    if (webSocketCallback != null) {
+                            webSocketCallback.onMessage("重连失败，请检查网络或服务端");
+                        }*/
+                    }
                 }
             }
         }, reconnectTimeout);
@@ -117,6 +127,7 @@ public class WebSocketService extends Service {
                 webSocketCallback.onOpen();
             }
             connected = true;
+            connectedNum=0;
         }
 
         @Override

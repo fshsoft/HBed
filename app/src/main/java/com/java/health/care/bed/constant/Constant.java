@@ -1,7 +1,4 @@
 package com.java.health.care.bed.constant;
-
-import java.util.UUID;
-
 /**
  * @author fsh
  * @date 2022/08/04 15:14
@@ -9,37 +6,7 @@ import java.util.UUID;
  */
 public class Constant {
 
-    /**
-     * 域名
-     */
-    public static final String BASE_URL = "https://www.wanandroid.com/";
-
-    /**
-     * 获取未完成处方
-     */
-    public static final String BANNER_URL = "/banner/json";
-
-    /**
-     * 获取已完成处方
-     */
-    public static final String BANNER_URL1 = "/banner/json";
-
-    /**
-     * 用户信息
-     */
-    public static final String USER = "/banner/json";
-
-    /**
-     * 广场文章
-     */
-    public static final String HOME_SQUARE_URL = "/user_article/list/{pageNum}/json";
-
-    /**
-     * 获取access_token
-     */
-    public static final String ACCESS_TOKEN = "/cas/user/oauth/token";
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////硬件交互常量///////////////////////////////////////////////////////////////////////////////////////
     public static final String UUID_SERVICE_CM19 ="00001526-1212-efde-1523-785feabcd123";
     public static final String UUID_CHARA_CM19_NOTIFY ="00001527-1212-efde-1523-785feabcd123";
 
@@ -84,10 +51,6 @@ public class Constant {
     public static final String BP_DATA_ERROR = "BP_ERROR";
     public static final String IRT_DATA = "IRT_DATA";
     public static final String SPO2_DATA = "SPO2_DATA";
-
-    public static final String SERVER_IP = "server_ip";
-    public static final String AREA_NUM = "area_num";
-    public static final String BED_NUM = "bed_num";
 
     //==============================================================================================//
     //康养床-声波\熏香\呼叫

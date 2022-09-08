@@ -2,7 +2,14 @@ package com.java.health.care.bed.presenter;
 
 import android.content.Context;
 
+import com.java.health.care.bed.base.BaseEntry;
+import com.java.health.care.bed.base.BaseObserver;
+import com.java.health.care.bed.bean.Dept;
+import com.java.health.care.bed.bean.Token;
 import com.java.health.care.bed.module.MainContract;
+import com.java.health.care.bed.net.RetrofitUtil;
+
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +17,7 @@ import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 public class MainPresenter implements MainContract.presenter {
 
@@ -30,75 +38,72 @@ public class MainPresenter implements MainContract.presenter {
 
     }
 
+    /**
+     * 获取token
+     * @param grant_type
+     * @param client_id
+     * @param client_secret
+     */
     @Override
-    public void userLogin(String user, String pwd) {
+    public void getToken(String grant_type, String client_id, String client_secret) {
+        Map<String,String> map=new HashMap<>();
+        map.put("grant_type",grant_type);
+        map.put("client_id",client_id);
+        map.put("client_secret",client_secret);
+        RetrofitUtil.getInstance().initBaseRetrofit(context).getToken(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<Token>(context) {
+                    @Override
+                    protected void onSuccess(BaseEntry<Token> t)  {
+                        view.setCode(t.getCode());
+                        view.setMsg(t.getMessage());
+                        view.setObj(t.getData());
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError)  {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+    }
+
+    @Override
+    public void getDeptRegion() {
+        RetrofitUtil.getInstance().initRetrofit(context).getDeptRegion()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<Dept>(context) {
+                    @Override
+                    protected void onSuccess(BaseEntry<Dept> t) throws Exception {
+                        view.setCode(t.getCode());
+                        view.setMsg(t.getMessage());
+                        view.setObj(t.getData());
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+    }
+
+    @Override
+    public void saveBedInfo(int deptId, int regionId, String number) {
 
     }
 
     @Override
-    public void getPatientList(String currentPage) {
+    public void getUser(int bunkId) {
 
     }
 
-    @Override
-    public void getOnLinePatientList() {
+    /**
+     * 获取科室和病区
+     */
 
-    }
 
-    @Override
-    public void getRealTimeEcgData(String patientid, String serial, String starttime) {
 
-    }
-
-    @Override
-    public void getRealTimeReportData(String patientid, String time) {
-
-    }
-
-    @Override
-    public void getPatientListBySearch(String currentPage, String keywords) {
-
-    }
-
-    @Override
-    public void getFinishEstimateList(String currentPage, String patientid) {
-
-    }
-
-    @Override
-    public void getBaseInfoReport(String estimateid) {
-
-    }
-
-    @Override
-    public void getHRVInfo(String estimateid, String period) {
-
-    }
-
-    @Override
-    public void getCIRInfo(String estimateid, String period) {
-
-    }
-
-    @Override
-    public void getTrainList(String currentPage, String patientid) {
-
-    }
-
-    @Override
-    public void getTrainBaseInfoReport(String trainId, String preId) {
-
-    }
-
-    @Override
-    public void getTrainHRVInfo(String trainId) {
-
-    }
-
-    @Override
-    public void getTrainCIRInfo(String trainId) {
-
-    }
 
     /*   *//**
      * 登录

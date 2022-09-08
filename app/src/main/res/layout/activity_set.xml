@@ -1,232 +1,295 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/back"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="设置"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:drawableLeft="@drawable/back"
-        android:drawablePadding="10dp"
         android:layout_marginLeft="60dp"
         android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/back"
+        android:drawablePadding="10dp"
         android:gravity="center_vertical"
-        android:textColor="@color/barTitleColor"/>
+        android:text="设置"
+        android:textColor="@color/barTitleColor"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
     <LinearLayout
-        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:layout_marginLeft="60dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="60dp"
+        android:background="@color/white"
         android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/set_ble_set_rl"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:text="蓝牙设置"
-                android:layout_centerVertical="true"
-                android:textColor="@color/textColor"
-                android:textSize="28sp" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/go"
-                android:layout_marginRight="40dp"/>
-        </RelativeLayout>
-
-    </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/lineColor"/>
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/set_server_rl"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="100dp"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/set_server_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:layout_marginLeft="40dp"
-                android:textColor="@color/textColor"
-                android:text="服务器地址"
-                android:layout_centerVertical="true"/>
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@+id/set_server_text"
-                android:id="@+id/set_server_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textColor="@color/textColor"
-                android:text="192.168.1.100"
-                android:layout_centerVertical="true"/>
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/go"
-                android:layout_marginRight="40dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+            <RelativeLayout
+                android:id="@+id/set_ble_set_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        </RelativeLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="蓝牙设置"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+            </RelativeLayout>
 
-    </LinearLayout>
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/lineColor"/>
+            android:background="@color/lineColor" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/set_bed_rl"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="100dp"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/set_bed_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="40dp"
-                android:text="床位注册"
-                android:textColor="@color/textColor"
-                android:textSize="28sp" />
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@+id/set_bed_text"
-                android:id="@+id/set_bed_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textColor="@color/textColor"
-                android:text="20 20  20"
-                android:layout_centerVertical="true"/>
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="40dp"
-                android:background="@drawable/go"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+            <RelativeLayout
+                android:id="@+id/set_server_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        </RelativeLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_server_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="服务器地址"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
 
-    </LinearLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_server_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/set_server_text"
+                    android:text="192.168.1.100"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/lineColor"/>
+            android:background="@color/lineColor" />
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/set_version_update_rl"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="100dp"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/set_version_update_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textColor="@color/textColor"
-                android:text="版本更新"
-                android:layout_marginLeft="40dp"
-                android:layout_centerVertical="true"/>
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/set_version_update_num"
-                android:layout_marginLeft="20dp"
-                android:layout_toRightOf="@+id/set_version_update_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textColor="@color/textColor"
-                android:text="v1.2.0"
-                android:layout_centerVertical="true"/>
+            <RelativeLayout
+                android:id="@+id/set_server_port_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="40dp"
-                android:background="@drawable/go"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_server_port_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="端口号"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
 
-        </RelativeLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_server_port_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/set_server_port_text"
+                    android:text="1234"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
 
-    </LinearLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/lineColor"/>
+            android:background="@color/lineColor" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical">
-        <RelativeLayout
-            android:id="@+id/set_about_us_rl"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="100dp"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="关于我们"
-                android:layout_marginLeft="40dp"
-                android:textColor="@color/textColor"
-                android:textSize="28sp" />
+            <RelativeLayout
+                android:id="@+id/set_bed_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/go"
-                android:layout_marginRight="40dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"/>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_bed_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="床位注册"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
 
-        </RelativeLayout>
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_bed_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/set_bed_text"
+                    android:text="20 20  20"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lineColor" />
 
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/set_version_update_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_version_update_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="版本更新"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/set_version_update_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/set_version_update_text"
+                    android:text="v1.2.0"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lineColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/set_about_us_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="40dp"
+                    android:text="关于我们"
+                    android:textColor="@color/textColor"
+                    android:textSize="28sp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="40dp"
+                    android:background="@drawable/go" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

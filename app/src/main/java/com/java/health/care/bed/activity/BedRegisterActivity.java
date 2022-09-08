@@ -13,6 +13,7 @@ import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.constant.SP;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -55,7 +56,7 @@ public class BedRegisterActivity extends BaseActivity {
                     public void onInput(MaterialDialog dialog, CharSequence input) {
 //                        ToastUtils.showShort(input);
                         bed_register_num.setText(input);
-                        SPUtils.getInstance().put(Constant.BED_NUM,input.toString());
+                        SPUtils.getInstance().put(SP.BED_NUM,input.toString());
                     }
                 })
                 .positiveText("确定")

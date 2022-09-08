@@ -6,40 +6,22 @@ package com.java.health.care.bed.bean;
  * @Description
  */
 public class Token {
-    private String access_token;
-    private String token_type;
-    private String expires_in;
-    private String scope;
+    private String value;
+    private String tokenType;
 
-    public String getAccess_token() {
-        return access_token;
+    public String getValue() {
+        return value;
     }
 
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public String getToken_type() {
-        return token_type;
+    public String getTokenType() {
+        return tokenType;
     }
 
-    public void setToken_type(String token_type) {
-        this.token_type = token_type;
-    }
-
-    public String getExpires_in() {
-        return expires_in;
-    }
-
-    public void setExpires_in(String expires_in) {
-        this.expires_in = expires_in;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
 }

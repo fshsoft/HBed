@@ -1,8 +1,5 @@
 package com.java.health.care.bed.module;
 
-import com.java.health.care.bed.base.BasePresenter;
-import com.java.health.care.bed.base.BaseView;
-
 public interface MainContract {
 
     interface View  {
@@ -16,74 +13,21 @@ public interface MainContract {
         /**
          * 登录
          */
-        void userLogin(String user, String pwd);
+        void getToken(String grant_type, String client_id,String client_secret);
 
         /**
-         * 获取全部患者列表
+         * 获取科室和病区
          */
-        void getPatientList(String currentPage);
+        void getDeptRegion();
 
         /**
-         * 获取在线患者
+         * 提交床位信息
          */
-        void getOnLinePatientList();
+        void saveBedInfo(int deptId,int regionId,String number);
 
         /**
-         * 获取ECG数据
+         * 根据床位获取患者信息
          */
-        void getRealTimeEcgData(String patientid,String serial,String starttime);
-
-        /**
-         * 获取Report数据
-         */
-        void getRealTimeReportData(String patientid,String time);
-
-        /**
-         * 搜索患者列表
-         */
-        void getPatientListBySearch(String currentPage,String keywords);
-
-        /**
-         * 获取在线患者报告列表
-         */
-        void getFinishEstimateList(String currentPage,String patientid);
-
-        /**
-         * 获取报告基本信息
-         */
-        void getBaseInfoReport(String estimateid);
-
-        /**
-         *  查询报告HRV信息
-         */
-        void getHRVInfo(String estimateid,String period);
-
-        /**
-         * 查询报告心肺和谐指数
-         */
-        void getCIRInfo(String estimateid,String period);
-
-        //==============================训练报告=============================//
-
-        /**
-         * 查询训练列表
-         */
-        void getTrainList(String currentPage,String patientid);
-
-        /**
-         * 查询报告基本信息
-         */
-        void getTrainBaseInfoReport(String trainId,String preId);
-
-        /**
-         * 查询报告HRV信息
-         */
-        void getTrainHRVInfo(String trainId);
-
-        /**
-         * 查询报告心肺和谐指数
-         */
-        void getTrainCIRInfo(String trainId);
-
+        void getUser(int bunkId);
     }
 }

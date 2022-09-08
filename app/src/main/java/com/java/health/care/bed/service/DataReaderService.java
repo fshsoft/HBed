@@ -427,7 +427,8 @@ public class DataReaderService extends Service {
             if (true) {
 
                 for (byte[] packet : packets) {
-//                    Log.d("fsh===", Arrays.toString(packet));
+                    Log.d("fsh===", Arrays.toString(packet));
+                    dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
 //                    Log.d("fsh===",len+"===len");

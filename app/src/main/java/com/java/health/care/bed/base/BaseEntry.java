@@ -1,31 +1,12 @@
 package com.java.health.care.bed.base;
 
-
-import com.java.health.care.bed.net.MainUtil;
-
-/**
- * @description:
- */
-
 public class BaseEntry<T> {
 
     private String code;
-    private String msg;
-    private String current;
-    private String total;
+    private String message;
+    private boolean success;
     private T data;
 
-    public boolean isSuccess(){
-        return getCode().equals(MainUtil.SUCCESS_CODE);
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 
     public String getCode() {
         return code;
@@ -35,27 +16,27 @@ public class BaseEntry<T> {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getCurrent() {
-        return current;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setCurrent(String current) {
-        this.current = current;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
-    public String getTotal() {
-        return total;
+    public T getData() {
+        return data;
     }
 
-    public void setTotal(String total) {
-        this.total = total;
+    public void setData(T data) {
+        this.data = data;
     }
 }

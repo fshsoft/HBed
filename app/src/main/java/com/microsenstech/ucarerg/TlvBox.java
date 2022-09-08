@@ -1,6 +1,8 @@
 
 package com.microsenstech.ucarerg;
 
+import com.java.health.care.bed.util.ByteUtil;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ public class TlvBox {
     private int mTotalBytes = 0;
     
     private int serial = 0;
-    private int patientId = 0;
+    private int patientId = 1188;
 
     public TlvBox() {
         mObjects = new HashMap<Integer, byte[]>();
@@ -71,6 +73,7 @@ public class TlvBox {
         
         int parsed = 0;
         while (parsed +offset < length) {
+
             short type = ByteBuffer.wrap(buffer,offset + parsed, 2).order(DEFAULT_BYTE_ORDER).getShort();            
             parsed += 2;
             short size = (short) (ByteBuffer.wrap(buffer,offset + parsed, 2).order(DEFAULT_BYTE_ORDER).getShort()-4);

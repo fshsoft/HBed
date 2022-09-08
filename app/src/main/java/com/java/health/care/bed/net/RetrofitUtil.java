@@ -3,6 +3,9 @@ package com.java.health.care.bed.net;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.blankj.utilcode.util.SPUtils;
+import com.java.health.care.bed.constant.SP;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -41,36 +44,65 @@ public class RetrofitUtil {
     /**
      * 初始化Retrofit
      */
-    public AllApi initRetrofit(Context context) {
-//        String url = SharePreferencesUtils.getString(context,C.IP,"");
-        String url = "http://www.baidu.com";
+    public AllApi initBaseRetrofit(Context context) {
+        String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
+        if(!ip.isEmpty()){
+            String url ="http://"+ip+":1240/";
 
-        if(!TextUtils.isEmpty(url)){
-//            if (allApi == null) {
-                //增加超时时间
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
-                        .readTimeout(TIMEOUT, TimeUnit.SECONDS)
-                        .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
-                        .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
-                        //cookie
-                        .addInterceptor(new CookieReadInterceptor())
-                        .addInterceptor(new CookiesSaveInterceptor())
-                        .build();
+            //增加超时时间
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .readTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
+                    //cookie
+//                        .addInterceptor(new CookieReadInterceptor())
+//                        .addInterceptor(new CookiesSaveInterceptor())
+                    .build();
 
-                Retrofit mRetrofit = new Retrofit.Builder()
-                        // 设置请求的域名
-                        .baseUrl(url)
-                        // 设置解析转换工厂，用自己定义的
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .client(client)
-                        .build();
-                allApi = mRetrofit.create(AllApi.class);
-//            }
+
+            Retrofit mRetrofit = new Retrofit.Builder()
+                    // 设置请求的域名
+                    .baseUrl(url)
+                    // 设置解析转换工厂，用自己定义的
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(client)
+                    .build();
+            allApi = mRetrofit.create(AllApi.class);
         }
 
         return allApi;
     }
 
+    public AllApi initRetrofit(Context context) {
+        String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
+        String port = SPUtils.getInstance().getString(SP.IP_SERVER_PORT);
+
+        if(!ip.isEmpty()&&!port.isEmpty()){
+            String url ="http://"+ip+":"+port+"/";
+
+            //增加超时时间
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .readTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
+                    .addInterceptor(new CommonHeaderInterceptor()) //对Header做修改
+                    .build();
+
+
+            Retrofit mRetrofit = new Retrofit.Builder()
+                    // 设置请求的域名
+                    .baseUrl(url)
+                    // 设置解析转换工厂，用自己定义的
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(client)
+                    .build();
+            allApi = mRetrofit.create(AllApi.class);
+        }
+
+        return allApi;
+    }
 }
