@@ -87,22 +87,8 @@ public class EcgsActivity extends AppCompatActivity implements DataReceiver {
     private Queue<Short> bufferedEcgStore = new LinkedList<>();
     @Override
     public void onDataReceived(DevicePacket packet) {
-        Log.d("mamama======","mamamamam0");
 
-            for (int i =0;i<packet.secgdata.length;i++){
-                bufferedEcg.add(packet.secgdata[i]);
-                Log.d("mamama======","1111111");
-            }
-            Log.d("mamama======","mamamamam1==="+bufferedEcg.size());
-            waveUtil1.showWaveData(bufferedEcg,wave_view1);
-
-
-
-
-        Log.d("mamama======","mamamamam2");
-
-
-
+        waveUtil1.showWaveData(packet.secgdata,wave_view1);
 
 
     }

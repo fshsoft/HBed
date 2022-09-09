@@ -351,7 +351,20 @@ public class WaveView extends View {
             draw_index = temporary_index - 1;
         }
     }
-
+    public void showLinesLoop(short[] lines){
+        int temporary_index = draw_index;
+        for (int i = 0; i < lines.length; i++) {
+            dataArray[temporary_index] = lines[i];
+            temporary_index += 1;
+            if (temporary_index > dataArray.length - 1)
+                temporary_index = 0;
+        }
+        if (temporary_index - 1 < 0) {
+            draw_index = row - 1;
+        } else {
+            draw_index = temporary_index - 1;
+        }
+    }
 
     public WaveView setMaxValue(int max_value) {
         this.MAX_VALUE = max_value;

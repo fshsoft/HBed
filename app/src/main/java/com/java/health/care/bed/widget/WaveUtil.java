@@ -62,15 +62,15 @@ public class WaveUtil {
         timer.schedule(timerTask,500,50);
     }
 
-    public void showWaveData(Queue<Short> buffered, final WaveView waveShowView){
+    public void showWaveData(short[] lines, final WaveView waveShowView){
 
 
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                Log.d("poll===",buffered.poll()+"");
-                waveShowView.showLine(buffered.poll());
+
+                waveShowView.showLinesLoop(lines);
                /* if(buffered.size()>0){
                     waveShowView.showLine(buffered.poll());
                 }*/
