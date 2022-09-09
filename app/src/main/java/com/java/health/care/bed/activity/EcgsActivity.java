@@ -7,13 +7,11 @@ import android.widget.SeekBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.java.health.care.bed.R;
-import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
-import com.java.health.care.bed.widget.WaveUtil;
 import com.java.health.care.bed.widget.WaveView;
 
 import java.util.LinkedList;
@@ -25,7 +23,6 @@ import java.util.Queue;
  * @Description
  */
 public class EcgsActivity extends AppCompatActivity implements DataReceiver {
-    private WaveUtil waveUtil1, waveUtil2;
 
     private WaveView wave_view1, wave_view2;
 
@@ -38,8 +35,6 @@ public class EcgsActivity extends AppCompatActivity implements DataReceiver {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ecgs);
         DataTransmitter.getInstance().addDataReceiver(this);
-        waveUtil1 = new WaveUtil();
-        waveUtil2 = new WaveUtil();
 
         wave_view1 = findViewById(R.id.wave_view1);
         wave_view2 = findViewById(R.id.wave_view2);
@@ -64,8 +59,8 @@ public class EcgsActivity extends AppCompatActivity implements DataReceiver {
 
             }
         });
-        waveUtil1.showWaveDatas(1, wave_view1);
-        waveUtil2.showWaveDatas(1, wave_view2);
+//        waveUtil1.showWaveDatas(1, wave_view1);
+//        waveUtil2.showWaveDatas(1, wave_view2);
 //        findViewById(R.id.tv_wave1).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -80,15 +75,13 @@ public class EcgsActivity extends AppCompatActivity implements DataReceiver {
     protected void onDestroy() {
         super.onDestroy();
 
-        waveUtil1.stop();
-        waveUtil2.stop();
     }
     private Queue<Short> bufferedEcg = new LinkedList<>();
     private Queue<Short> bufferedEcgStore = new LinkedList<>();
     @Override
     public void onDataReceived(DevicePacket packet) {
 
-        waveUtil1.showWaveData(packet.secgdata,wave_view1);
+        wave_view1.setData(packet);
 
 
     }

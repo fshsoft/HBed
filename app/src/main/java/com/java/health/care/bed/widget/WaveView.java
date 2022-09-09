@@ -11,8 +11,14 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.java.health.care.bed.model.DevicePacket;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @Description: 波形图绘制控件
@@ -22,21 +28,13 @@ import java.util.List;
 public class WaveView extends View {
 
     private final String NAMESPACE = "http://schemas.android.com/apk/res-auto";
-
-    /**
-     * 常规绘制模式 不断往后推的方式
-     */
-    public static int NORMAL_MODE = 0;
-
-    /**
-     * 循环绘制模式
-     */
-    public static int LOOP_MODE = 1;
-
-    /**
-     * 绘制模式
-     */
-    private int drawMode;
+    private Object lockObj = new Object();
+    private Queue<Short> bufferedEcg = new LinkedList<>();
+    private Queue<Short> newBufferedEcg = new LinkedList<>();
+    private Queue<Short> storeBufferedEcg = new LinkedList<>();
+    // 是否已缓存够数据包来进行绘制
+    private boolean enoughToDraw = false;
+    private boolean fullToDraw = false;
 
     /**
      * 宽高
@@ -63,7 +61,7 @@ public class WaveView extends View {
     /**
      * 数据最大值，默认-20~20之间
      */
-    private float MAX_VALUE = 20;
+    private float MAX_VALUE = 127;
     /**
      * 线条粗细
      */
@@ -92,31 +90,14 @@ public class WaveView extends View {
 
     private boolean isRefresh;
 
-    /** 常规模式下，需要一次绘制的点的数量*/
-    private int draw_point_length;
 
 
-    /**
-     * 网格是否可见
-     */
-    private boolean gridVisible;
-    /**
-     * 网格的宽高
-     */
-    private final int GRID_WIDTH = 50;
-    /**
-     * 网格的横线和竖线的数量
-     */
-    private int gridHorizontalNum, gridVerticalNum;
     /**
      * 网格线条的粗细
      */
     private final int GRID_LINE_WIDTH = 2;
-    /**
-     * 网格颜色
-     */
-    private int gridLineColor = Color.parseColor("#1b4200");
 
+    private Timer timer = null;
     public WaveView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
@@ -132,14 +113,15 @@ public class WaveView extends View {
         mWidth = w;
         mHeight = h;
         super.onSizeChanged(w, h, oldw, oldh);
+        timer = new Timer();
+        timer.schedule(new DrawSignalTask(), 500, 10);
     }
 
     private void init(AttributeSet attrs) {
         MAX_VALUE = attrs.getAttributeIntValue(NAMESPACE, "max_value", 20);
         WAVE_LINE_WIDTH = attrs.getAttributeIntValue(NAMESPACE, "wave_line_width", 10);
         WAVE_LINE_STROKE_WIDTH = attrs.getAttributeIntValue(NAMESPACE, "wave_line_stroke_width", 3);
-        gridVisible = attrs.getAttributeBooleanValue(NAMESPACE, "grid_visible", true);
-        drawMode = attrs.getAttributeIntValue(NAMESPACE, "draw_mode", NORMAL_MODE);
+
 
 
         String wave_line_color = attrs.getAttributeValue(NAMESPACE, "wave_line_color");
@@ -147,10 +129,6 @@ public class WaveView extends View {
             waveLineColor = Color.parseColor(wave_line_color);
         }
 
-        String grid_line_color = attrs.getAttributeValue(NAMESPACE, "grid_line_color");
-        if (grid_line_color != null && !grid_line_color.isEmpty()) {
-            gridLineColor = Color.parseColor(grid_line_color);
-        }
 
         String wave_background = attrs.getAttributeValue(NAMESPACE, "wave_background");
         if (wave_background != null && !wave_background.isEmpty()) {
@@ -182,9 +160,6 @@ public class WaveView extends View {
         mWidth = getMeasuredWidth();
         mHeight = getMeasuredHeight();
 
-        /** 根据网格的单位长宽，获取能绘制网格横线和竖线的数量*/
-        gridHorizontalNum = (int) (mHeight / GRID_WIDTH);
-        gridVerticalNum = (int) (mWidth / GRID_WIDTH);
 
         /** 根据线条长度，最多能绘制多少个数据点*/
         row = (int) (mWidth / WAVE_LINE_WIDTH);
@@ -195,36 +170,14 @@ public class WaveView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        /** 绘制网格*/
-        if (gridVisible) {
-            drawGrid(canvas);
-        }
-        /** 绘制折线*/
-        switch (drawMode) {
-            case 0:
-                drawWaveLineNormal(canvas);
-                break;
-            case 1:
-                drawWaveLineLoop(canvas);
-                break;
-        }
+        drawWaveLineLoop(canvas);
         draw_index += 1;
         if (draw_index >= row) {
             draw_index = 0;
         }
     }
 
-    /**
-     * 常规模式绘制折线
-     *
-     * @param canvas
-     */
-    private void drawWaveLineNormal(Canvas canvas) {
-        drawPathFromDatas(canvas, 0, row - 1);
-        for (int i = 0; i < row - draw_point_length; i++) {
-            dataArray[i] = dataArray[i + draw_point_length];
-        }
-    }
+
 
     /**
      * 循环模式绘制折线
@@ -269,102 +222,21 @@ public class WaveView extends View {
         canvas.drawPath(mPath, mWavePaint);
     }
 
-    /**
-     * 绘制网格
-     *
-     * @param canvas
-     */
-    private void drawGrid(Canvas canvas) {
-        /** 设置颜色*/
-        mLinePaint.setColor(gridLineColor);
-        /** 绘制横线*/
-        for (int i = 0; i < gridHorizontalNum + 1; i++) {
-            canvas.drawLine(0, i * GRID_WIDTH,
-                    mWidth, i * GRID_WIDTH, mLinePaint);
-        }
-        /** 绘制竖线*/
-        for (int i = 0; i < gridVerticalNum + 1; i++) {
-            canvas.drawLine(i * GRID_WIDTH, 0,
-                    i * GRID_WIDTH, mHeight, mLinePaint);
-        }
-    }
+
 
     /**
      * 添加新的数据
      */
     public void showLine(float line) {
-        switch (drawMode) {
-            case 0:
-                /** 常规模式数据添加至最后一位*/
-                draw_point_length = 1;
-                dataArray[row - 1] = line;
-                break;
-            case 1:
-                /** 循环模式数据添加至当前绘制的位*/
-                dataArray[draw_index] = line;
-                break;
-        }
-        postInvalidate();
+        dataArray[draw_index] = line;
+//        postInvalidate();
+        invalidate();
     }
 
-    /**
-     * 添加多个点
-     */
-    public void showLines(float[] lines) {
-        switch (drawMode){
-            case 0:
-                /** 常规模式绘制多个点*/
-                draw_point_length = lines.length;
-                showLinesNormal(lines);
-                break;
-            case 1:
-                /** 轮询方式添加多个点*/
-                showLinesLoop(lines);
-                break;
-        }
-        postInvalidate();
-    }
 
-    /**
-     * 常规的方式添加多个点
-     * */
-    public void showLinesNormal(float[] lines){
-        for (int i=0;i<lines.length;i++){
-            dataArray[row - (lines.length - i)] = lines[i];
-        }
-    }
 
-    /**
-     * 轮询方式添加多个点
-     * */
-    public void showLinesLoop(float[] lines){
-        int temporary_index = draw_index;
-        for (int i = 0; i < lines.length; i++) {
-            dataArray[temporary_index] = lines[i];
-            temporary_index += 1;
-            if (temporary_index > dataArray.length - 1)
-                temporary_index = 0;
-        }
-        if (temporary_index - 1 < 0) {
-            draw_index = row - 1;
-        } else {
-            draw_index = temporary_index - 1;
-        }
-    }
-    public void showLinesLoop(short[] lines){
-        int temporary_index = draw_index;
-        for (int i = 0; i < lines.length; i++) {
-            dataArray[temporary_index] = lines[i];
-            temporary_index += 1;
-            if (temporary_index > dataArray.length - 1)
-                temporary_index = 0;
-        }
-        if (temporary_index - 1 < 0) {
-            draw_index = row - 1;
-        } else {
-            draw_index = temporary_index - 1;
-        }
-    }
+
+
 
     public WaveView setMaxValue(int max_value) {
         this.MAX_VALUE = max_value;
@@ -390,24 +262,87 @@ public class WaveView extends View {
         return this;
     }
 
-    public WaveView setGridVisible(boolean visible) {
-        this.gridVisible = visible;
-        return this;
-    }
-
-    public WaveView setGridLineColor(String colorString) {
-        this.gridLineColor = Color.parseColor(colorString);
-        return this;
-    }
 
     public WaveView setWaveBackground(String colorString) {
         setBackgroundColor(Color.parseColor(colorString));
         return this;
     }
 
-    public WaveView setWaveDrawMode(int draw_mode) {
-        this.drawMode = draw_mode;
-        return this;
+
+    private class DrawSignalTask extends TimerTask {
+
+        @Override
+        public void run() {
+            drawData();
+        }
+    }
+
+    float[] floats;
+    public void setData(DevicePacket packet) {
+
+
+        if (packet.secgdata.length != 96) {
+            return;
+        }
+        for (int i = 0; i < 3; i++) {
+
+            synchronized (lockObj) {
+                enoughToDraw = false;
+                fullToDraw = false;
+                if (storeBufferedEcg.size() >= 2 * mWidth) {
+                    enoughToDraw = true;
+                }
+                if (bufferedEcg.size() >= 2 * mWidth) {
+                    fullToDraw = true;
+                }
+                if (enoughToDraw) {
+                    storeBufferedEcg.clear();
+                }
+                if (fullToDraw) {
+                    for (int j = i * 32; j < (i + 1) * 32; j++) {
+
+                        storeBufferedEcg.add(packet.secgdata[j]);
+                    }
+                    for (int a = 0; a < storeBufferedEcg.size(); a++) {
+                        bufferedEcg.poll();
+                    }
+                    newBufferedEcg.clear();
+                    newBufferedEcg.addAll(storeBufferedEcg);
+                    newBufferedEcg.addAll(bufferedEcg);
+                } else {
+                    for (int j = i * 32; j < (i + 1) * 32; j++) {
+
+                        storeBufferedEcg.add(packet.secgdata[j]);
+                    }
+                    newBufferedEcg.clear();
+                    newBufferedEcg.addAll(storeBufferedEcg);
+                }
+                bufferedEcg.clear();
+                bufferedEcg.addAll(newBufferedEcg);
+            }
+
+        }
+
+    }
+
+    private void drawData(){
+        synchronized (lockObj) {
+
+            int length = bufferedEcg.size();
+            floats = new float[length];
+            int i = 0;
+            for (short b : bufferedEcg) {
+                showLine(b);
+//                if (i == length) break;
+//                floats[i++] = b;
+
+            }
+
+//            for (float f : floats) {
+//                showLine(f);
+//            }
+
+        }
     }
 
 }

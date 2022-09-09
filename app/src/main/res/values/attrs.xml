@@ -31,11 +31,11 @@
         <attr name="wave_background" format="string" />
         <!--背景网格是否可见-->
         <attr name="grid_visible" format="boolean" />
-        <!--波形图绘制模式，常规和循环-->
-        <attr name="draw_mode" format="enum">
-            <enum name="normal" value="0" />
-            <enum name="loop" value="1" />
-        </attr>
+<!--        &lt;!&ndash;波形图绘制模式，常规和循环&ndash;&gt;-->
+<!--        <attr name="draw_mode" format="enum">-->
+<!--            <enum name="normal" value="0" />-->
+<!--            <enum name="loop" value="1" />-->
+<!--        </attr>-->
     </declare-styleable>
 
 </resources>
