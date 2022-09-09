@@ -267,7 +267,7 @@ public class KYCSetActivity extends BaseActivity implements DataReceiver, Compou
             @Override
             public void run() {
                 short[] ecgData = packet.secgdata;
-                Log.d("TAG", Arrays.toString(ecgData));
+                Log.d("TAG123", Arrays.toString(ecgData));
                 for (int i = 0; i < ecgData.length; i++) {
                     if (null != myEcgView ) {
                         myEcgView.addOneData1((int) ecgData[i]);

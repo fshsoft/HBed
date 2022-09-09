@@ -1,7 +1,6 @@
 package com.java.health.care.bed.activity;
 
 import android.Manifest;
-import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.fragment.PrescriptionNoFragment;
 import com.java.health.care.bed.fragment.PrescriptionYesFragment;
-import com.java.health.care.test.PickActivity;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
@@ -58,8 +56,7 @@ public class PrescriptionActivity extends BaseActivity {
 
     @OnClick(R.id.prescription_ch)
     public void onClickCh(){
-        goActivity(PickActivity.class);
-
+            goActivity(EcgsActivity.class);
 //        goActivity(SoundWaveActivity.class);
 //        goActivity(VitalSignsActivity.class);
     }

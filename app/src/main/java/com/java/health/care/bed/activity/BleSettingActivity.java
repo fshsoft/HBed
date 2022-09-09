@@ -103,7 +103,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
             case R.id.btn_see_kyc: //康养床查看
                 if(deviceListConnect.size()!=0){
                     EventBus.getDefault().post(deviceListConnect);
-                   goActivity(KYCSetActivity.class);
+//                   goActivity(KYCSetActivity.class);
+                    goActivity(EcgsActivity.class);
                 }else {
                     ToastUtils.showShort( R.string.please_connect);
                 }

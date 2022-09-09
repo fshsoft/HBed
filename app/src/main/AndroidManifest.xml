@@ -97,8 +97,13 @@
         <activity android:name=".activity.BedRegisterActivity"
             android:screenOrientation="landscape"/>
 
-        <activity android:name="com.java.health.care.test.PickActivity"/>
+        <activity android:name=".activity.EcgActivity"
+            android:screenOrientation="landscape"/>
 
+        <activity android:name=".activity.EcgsActivity"
+            android:screenOrientation="landscape"/>
+
+        <!--server-->
         <service android:name=".service.DataReaderService"
             android:exported="false"/>
 

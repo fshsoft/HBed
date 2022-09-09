@@ -1,12 +1,8 @@
 package com.java.health.care.bed.activity;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
 import android.text.InputType;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
-import android.view.WindowManager;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -18,15 +14,10 @@ import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.bean.Dept;
-import com.java.health.care.bed.bean.DeptRegions;
 import com.java.health.care.bed.bean.Region;
-import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.presenter.MainPresenter;
-import com.java.health.care.test.JsonBean;
-import com.java.health.care.test.JsonFileReader;
-import com.java.health.care.test.PickActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -238,7 +238,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
      */
     @Override
     public void onDataReceived(DevicePacket packet) {
-        new Thread(new Runnable() {
+       /* new Thread(new Runnable() {
             @Override
             public void run() {
                 short[] ecgData = packet.secgdata;
@@ -257,7 +257,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                     }
                 }
             }
-        }).start();
+        }).start();*/
     }
 
     @Override
