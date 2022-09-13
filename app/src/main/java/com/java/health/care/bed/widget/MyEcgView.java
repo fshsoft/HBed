@@ -1,7 +1,5 @@
 package com.java.health.care.bed.widget;
 
-import static java.lang.Float.MAX_VALUE;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -24,8 +22,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
 
-public class MyEcgView extends View { //ECG心电
-
+/**
+ * 心电和呼吸
+ */
+public class MyEcgView extends View {
     public MyEcgView(Context context) {
         super(context);
         init(context);
@@ -215,6 +215,8 @@ public class MyEcgView extends View { //ECG心电
                 }
             }
         }
+
+
          datass= new ArrayList<>();
         for(int i=0;i<data.length;i++){
             datass.add((int) data[i]);

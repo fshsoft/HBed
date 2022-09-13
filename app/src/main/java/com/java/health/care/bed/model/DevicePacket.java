@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class DevicePacket {
 
-	public static final int ECG_IN_PACKET = (19*4);
+	public static final int ECG_IN_PACKET = 96;
 	
 	public static final int ECG_SAMPLE_RATE = 200;
 

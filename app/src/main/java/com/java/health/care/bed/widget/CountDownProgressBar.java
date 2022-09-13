@@ -19,6 +19,9 @@ import android.view.animation.LinearInterpolator;
 
 import com.java.health.care.bed.R;
 
+/**
+ * 声波和香薰界面进度展示
+ */
 public class CountDownProgressBar extends View {
     /**
      * 进度条最大值

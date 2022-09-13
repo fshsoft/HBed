@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
-
+apply plugin: 'kotlin-android'
 
 android {
 
@@ -20,7 +20,6 @@ android {
             abiFilters 'armeabi'//, 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
     }
-
     buildTypes {
         release {
             minifyEnabled false

@@ -97,9 +97,6 @@
         <activity android:name=".activity.BedRegisterActivity"
             android:screenOrientation="landscape"/>
 
-        <activity android:name=".activity.EcgActivity"
-            android:screenOrientation="landscape"/>
-
         <activity android:name=".activity.EcgsActivity"
             android:screenOrientation="landscape"/>
 

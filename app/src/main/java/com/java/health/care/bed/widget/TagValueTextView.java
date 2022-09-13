@@ -10,6 +10,9 @@ import androidx.core.content.ContextCompat;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.util.DpUtil;
 
+/**
+ * 心肺谐振和自主神经
+ */
 public class TagValueTextView extends View {
 
     public TagValueTextView(Context context) {

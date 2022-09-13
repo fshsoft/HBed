@@ -1,4 +1,4 @@
-package com.java.health.care.bed.widget;
+package com.java.health.care.test;
 
 import android.content.Context;
 import android.graphics.Canvas;
