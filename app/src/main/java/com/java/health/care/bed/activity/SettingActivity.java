@@ -101,12 +101,22 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     }
 
     @Override
+    public void setInfo(String msg) {
+
+    }
+
+    @Override
     public void setObj(Object obj) {
         Token token = (Token) obj;
         if(token!=null){
             Log.d("setting====","token:"+token.getTokenType()+"===="+token.getValue());
             SPUtils.getInstance().put(SP.TOKEN,token.getTokenType()+" "+token.getValue());
         }
+
+    }
+
+    @Override
+    public void setData(Object obj) {
 
     }
 

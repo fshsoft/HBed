@@ -12,18 +12,18 @@ import com.java.health.care.bed.util.DensityUtil.dip2px
 import com.java.health.care.bed.util.Utils
 import java.util.*
 
-class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private var mWidth: Float = 0.toFloat()
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 160f
+    private val INTERVAL_SCROLL_REFRESH = 80f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
 
-    private val MAX_VALUE = 600f
+    private val MAX_VALUE = 400f
     //可以绘制的点数 目前2560*1600 计算为128个
     private var intervalNumHeart: Int = 1
     //间隙 计算得20
@@ -40,6 +40,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var intervalColumn: Float = 0.toFloat()
     private var mGridLinestrokeWidth: Float = 0.toFloat()
     private var mGridstrokeWidthAndHeight: Float = 0.toFloat()
+
 
     init {
         init()
@@ -68,6 +69,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         drawHeartRefresh(canvas)
 
     }
@@ -135,17 +137,19 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             nowX = i * intervalRowHeart
             var dataValue = data!![i]
             Log.d("aaron====888899999", Arrays.toString(data))
-            if (dataValue > 0) {
-                if (dataValue > MAX_VALUE * 0.8f) {
-                    dataValue = MAX_VALUE * 0.8f
-                }
-            } else {
-                if (dataValue < -MAX_VALUE * 0.8f) {
-                    dataValue = -(MAX_VALUE * 0.8f)
-                }
-            }
+//            if (dataValue > 0) {
+//                if (dataValue > MAX_VALUE * 0.8f) {
+//                    dataValue = MAX_VALUE * 0.8f
+//                }
+//            } else {
+//                if (dataValue < -MAX_VALUE * 0.8f) {
+//                    dataValue = -(MAX_VALUE * 0.8f)
+//                }
+//            }
 //            nowY = mHeight / 2 - dataValue * intervalColumnHeart
-            nowY = dataValue * intervalColumnHeart +mHeight/2
+            nowY = dataValue
+
+            Log.d("yyyyyyyyy", nowY.toString())
 
             if (i - 1 == showIndex) {
                 path!!.moveTo(nowX, nowY)

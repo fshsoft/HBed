@@ -6,8 +6,8 @@
         android:gravity="center"
         android:top="0.5dp">
         <shape>
-            <size android:height="50dp" />
-            <corners android:radius="10dp" />
+            <size android:height="100dp" />
+            <corners android:radius="0dp" />
             <solid android:color="@color/colorGray" />
 
         </shape>

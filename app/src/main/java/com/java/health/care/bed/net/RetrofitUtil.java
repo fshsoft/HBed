@@ -47,7 +47,7 @@ public class RetrofitUtil {
     public AllApi initBaseRetrofit() {
         String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
         if(!ip.isEmpty()){
-            String url ="http://"+ip+":1240/";
+            String url ="http://"+ip+":1234/";
 
             //增加超时时间
             OkHttpClient client = new OkHttpClient.Builder()
@@ -76,7 +76,7 @@ public class RetrofitUtil {
         String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
 
         if(!ip.isEmpty()){
-            String url ="http://"+ip+":1236/";
+            String url ="http://"+ip+":1234/";
 
             //增加超时时间
             OkHttpClient client = new OkHttpClient.Builder()

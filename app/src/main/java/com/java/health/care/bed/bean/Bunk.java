@@ -8,6 +8,7 @@ package com.java.health.care.bed.bean;
 public class Bunk {
 
     private int id;
+    private String bunkNo;
 
     public int getId() {
         return id;
@@ -15,5 +16,13 @@ public class Bunk {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getBunkNo() {
+        return bunkNo;
+    }
+
+    public void setBunkNo(String bunkNo) {
+        this.bunkNo = bunkNo;
     }
 }

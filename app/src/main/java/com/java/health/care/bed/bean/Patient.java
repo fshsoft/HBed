@@ -5,7 +5,7 @@ package com.java.health.care.bed.bean;
  * @date 2022/07/29 14:51
  * @Description
  */
-public class User {
+public class Patient {
     private int bunkId; //床位号id
     private String bunkNo; //床位编号
     private int patientId;//患者ID

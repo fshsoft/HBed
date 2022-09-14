@@ -13,6 +13,7 @@ import com.bigkoo.pickerview.view.OptionsPickerView;
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
 import com.java.health.care.bed.bean.Region;
 import com.java.health.care.bed.constant.SP;
@@ -35,7 +36,7 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
     private MainPresenter mainPresenter;
     private OptionsPickerView pvOptions;
 
-    private List<Dept> depts;
+    private List<Dept> depts = new ArrayList<>();
     private List<List<String>> lists = new ArrayList<>();
 
     @BindView(R.id.bed_register_num)
@@ -148,7 +149,7 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
         }else {
             showHyPickerView();
         }
-
+//        showHyPickerView();
     }
 
     @OnClick(R.id.back)
@@ -159,20 +160,42 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
     @Override
     public void setCode(String code) {
         Log.d(TAG, "code:" + code);
+
     }
 
     @Override
     public void setMsg(String msg) {
         Log.d(TAG, "msg:" + msg);
+
+    }
+
+    @Override
+    public void setInfo(String msg) {
+        if(msg.equals("添加成功")){
+            showToast(msg);
+            goActivity(SettingActivity.class);
+            finish();
+        }else {
+            showToast(msg);
+        }
     }
 
     @Override
     public void setObj(Object obj) {
 
         depts = (List<Dept>) obj;
-        Log.d(TAG,depts.get(0).getName()+"dept");
+
         initJsonData(depts);
 
+    }
+
+    @Override
+    public void setData(Object obj) {
+        Bunk bunk = (Bunk) obj;
+        if(bunk!=null){
+            SPUtils.getInstance().put(SP.BUNK_ID, bunk.getId());
+            SPUtils.getInstance().put(SP.BUNK_NUM, bunk.getBunkNo());
+        }
     }
 
 

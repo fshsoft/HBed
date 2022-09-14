@@ -5,8 +5,11 @@ public interface MainContract {
     interface View  {
         void setCode(String code);
         void setMsg(String msg);
+        void setInfo(String msg);
         void setObj(Object obj);
+        void setData(Object obj);
     }
+
 
     interface presenter {
 
@@ -29,5 +32,10 @@ public interface MainContract {
          * 根据床位获取患者信息
          */
         void getUser(int bunkId);
+
+        /**
+         * 获取处方
+         */
+        void getPrescription(int patientId);
     }
 }

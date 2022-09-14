@@ -476,7 +476,7 @@ public class DataReaderService extends Service {
 
                         BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
                         dataTrans.sendData(bpDevicePacket);
-//                        Log.d("fsh===", "===sEcgData" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+                        Log.d("fsh===", "===sEcgData" + sEcgData.length + "===" + Arrays.toString(sEcgData));
 //                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
 //                        Log.d("fsh===", "===sHeartData" + sHeartData.length + "===" + Arrays.toString(sHeartData));
 //                        Log.d("fsh===", "===sSzPressDataData" + sSzPressDataData.length + "===" + Arrays.toString(sSzPressDataData));
@@ -553,8 +553,8 @@ public class DataReaderService extends Service {
                         }
 
                         short[] secgData = new short[length];
-
                         ByteUtil.bbToShorts(secgData, ecgData);
+                        Log.d("fsh===", "===sEcgData1" + secgData.length + "===" + Arrays.toString(secgData));
 
                         byte[] becgData = new byte[length];
                         for (int i = 0; i < length; i++) {

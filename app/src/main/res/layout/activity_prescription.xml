@@ -2,16 +2,57 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     android:orientation="vertical">
 
-    <com.hjq.bar.TitleBar
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="?attr/colorPrimaryVariant"
-        app:barStyle="light"
-        app:title="我的处方"
-        app:titleColor="@color/white"
-        app:titleSize="22sp"/>
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp">
+
+    <ImageView
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/main_logo"/>
+    <View
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="1dp"
+        android:layout_height="30dp"
+        android:background="@color/btnColor"/>
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="我的处方"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/barTitleColor"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right">
+
+            <TextView
+                android:id="@+id/prescription_tv_set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/set"
+                android:text="设置"
+                android:padding="10dp"
+                android:textColor="@color/btnColor"
+                android:layout_marginRight="60dp"
+                android:textSize="28sp" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,50 +64,84 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="9"
+            android:layout_marginLeft="60dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/prescription_user"
+                android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/btnColor"
+                android:textSize="24sp"
                 android:text="姓名：张三" />
+            <View
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="@color/btnColor"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/prescription_sex"
+                android:id="@+id/user_sex"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/btnColor"
+                android:textSize="24sp"
                 android:text="性别：男" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/prescription_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="年龄：40" />
+            <View
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="@color/btnColor"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/prescription_ch"
+                android:id="@+id/user_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/btnColor"
+                android:textSize="24sp"
+                android:text="年龄：40" />
+            <View
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="@color/btnColor"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/user_bunk_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/btnColor"
+                android:textSize="24sp"
                 android:text="床号：52" />
         </LinearLayout>
 
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/prescription_tv_set"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="设置"
-            android:textSize="22sp" />
+
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="60dp"
+        android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/prescription_tab"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/holo_red_light"
+        android:layout_height="100dp"
+        android:background="@color/white"
         app:tabGravity="fill"
         app:tabIndicator="@drawable/shape_full_tab_indicator"
         app:tabMaxWidth="0dp"
@@ -79,5 +154,7 @@
         android:id="@+id/prescription_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    </LinearLayout>
 
 </LinearLayout>

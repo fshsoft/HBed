@@ -1,5 +1,7 @@
 package com.java.health.care.bed.constant;
 
+import retrofit2.http.PUT;
+
 /**
  * @author fsh
  * @date 2022/09/07 13:32
@@ -19,5 +21,6 @@ public class SP {
     public static final String DEPT_ID = "dept_id";
     public static final String REGION_NUM = "region_num";
     public static final String REGION_ID = "region_id";
+    public static final String PATIENT_ID = "patientId";
 
 }

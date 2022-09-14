@@ -68,6 +68,6 @@
     </style>-->
 
     <style name="MyTabLayout">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">28sp</item>
     </style>
 </resources>

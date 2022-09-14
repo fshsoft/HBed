@@ -12,6 +12,7 @@ import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.widget.EcgShowView;
+import com.java.health.care.bed.widget.RespShowView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * @author fsh
@@ -27,77 +29,95 @@ import java.util.TimerTask;
  * @Description
  */
 public class EcgsActivity extends AppCompatActivity implements DataReceiver {
-    private Queue<Short> dataQueue = new LinkedList<>();
+    private Queue<Integer> dataQueue = new LinkedList<>();
+    private Queue<Integer> dataQueueResp = new LinkedList<>();
 
+    private Timer timer;
     EcgShowView ecgView;
-
-    private List<Short> list  = new ArrayList<>();
+    RespShowView respView;
 
     private int index = 0 ;
+    private int indexResp = 0;
 
-    private short[] shorts = new short[15];
+    private int[] shorts = new int[5];
+    private int[] shortsResp = new int[15];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ecgs);
         DataTransmitter.getInstance().addDataReceiver(this);
         ecgView = findViewById(R.id.patient_view_show);
-
-        new Timer().schedule(new TimerTask() {
+        respView = findViewById(R.id.patient_view_show_resp);
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if(dataQueue==null ||dataQueue.size()<32){
-                    return;
-                }
                 //很重要，从队列里面取15个数据
-                //取数据的计算方法：采样率为300，定时器50ms绘制一次，（300/1000）*50 =15ms
-                for(int i=0;i<15;i++){
+                //取数据的计算方法：采样率为300，定时器50ms绘制一次，（320/1000）*50ms =16
 
-                    shorts[i] = dataQueue.poll();
+                for(int i=0;i<5;i++){
+
+                    Integer x = dataQueue.poll();
+                    if(x==null){
+                        continue;
+                    }
+                    shorts[i] = x;
                 }
 
 
-                if(index>=shorts.length){
-                    index = 0 ;
-                }
+                    if(index>=shorts.length){
+                        index = 0 ;
+                    }
 
-                ecgView.showLine((shorts[index]));
-                index++;
-
+                    ecgView.showLine((shorts[index]));
+                    Log.d("ecgView=======",shorts[index]+"");
+                    index++;
 
 
             }
-        },1000,50);
+        },100,20);
+
+
     }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        timer.cancel();
     }
 
     @Override
     public void onDataReceived(DevicePacket packet) {
 
-        short[] sh = packet.secgdata;
-        Log.d("aaron====5555",Arrays.toString(sh));
-        if(sh.length != DevicePacket.ECG_IN_PACKET){
-            Log.d("aaron====5555","return");
-            return;
-        }
-        for(int i=0;i<3;i++){
-            for (int j = i * 32; j < (i + 1) * 32; j++) {
-                dataQueue.add(sh[j]);
-            }
-        }
+        short[] ecg = packet.secgdata;
+//        int[] resp = packet.irspData;
 
+
+            if(ecg.length != DevicePacket.ECG_IN_PACKET){
+                return;
+            }
+
+            for(int i=0;i<96;i++){
+                dataQueue.add((int) ecg[i]);
+            }
 
     }
 
 
     @Override
     public void onDataReceived(BPDevicePacket packet) {
+        short[] ecg = packet.getsEcgData();
+//        int[] resp = packet.irspData;
 
+
+        if(ecg.length != DevicePacket.ECG_IN_PACKET){
+            return;
+        }
+
+        for(int i=0;i<96;i++){
+            dataQueue.add((int) ecg[i]);
+        }
     }
 
     @Override
