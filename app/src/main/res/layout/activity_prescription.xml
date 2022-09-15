@@ -148,7 +148,40 @@
         app:tabMode="fixed"
         app:tabSelectedTextColor="@color/white"
         app:tabTextAppearance="@style/MyTabLayout" />
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:text="处方类型"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:text="时长"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:text="执行时间"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lineColor" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/prescription_viewpager"
