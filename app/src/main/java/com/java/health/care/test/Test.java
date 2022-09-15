@@ -12,16 +12,29 @@ import java.util.Arrays;
  */
 public class Test {
     public static void main(String[] args) {
-        int2bytes(1234);
-        updateArray();
-        insertArray();
+        int2bytes(918);
+        short2bytes((short) 732);
+//        short2bytes((short) 366);
+//        updateArray();
+//        insertArray();
+
     }
 
     private static void int2bytes(int num){
         byte[] bytes = new byte[4];
         ByteUtil.putInt(bytes,num,0);
+
         System.out.println(Arrays.toString(bytes));
     }
+
+
+    private static void short2bytes(short num){
+        byte[] bytes = new byte[2];
+        ByteUtil.short2bytes(bytes,  num,0);
+
+        System.out.println(Arrays.toString(bytes));
+    }
+
 
     /**
      * 数组更改数组的某一段

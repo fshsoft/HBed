@@ -62,19 +62,28 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
 
     @OnClick(R.id.prescription_tv_set)
     public void onClickSet(){
-          goActivity(InputPassWordActivity.class);
+        goActivity(InputPassWordActivity.class);
     }
 
     @OnClick(R.id.user_name)
-    public void onClickUser(){
+    public void onClickAssess(){
         goActivity(AssessActivity.class);
     }
 
+    @OnClick(R.id.user_sex)
+    public void onClickVital(){
+        goActivity(VitalSignsActivity.class);
+    }
+
+    @OnClick(R.id.user_age)
+    public void onClickSound(){
+        goActivity(SoundWaveActivity.class);
+    }
+
+
     @OnClick(R.id.user_bunk_num)
-    public void onClickCh(){
-            goActivity(EcgsActivity.class);
-//        goActivity(SoundWaveActivity.class);
-//        goActivity(VitalSignsActivity.class);
+    public void onClickEcg(){
+        goActivity(EcgsActivity.class);
     }
 
     @Override

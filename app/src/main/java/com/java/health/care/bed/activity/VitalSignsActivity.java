@@ -41,6 +41,11 @@ import butterknife.OnClick;
 public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     private WebSocketService webSocketService;
     private String bleDeviceCm22Mac;
+    private String bleDeviceCm19Mac;
+    private String bleDeviceSpO2Mac;
+    private String bleDeviceBPMac;
+    private String bleDeviceTempMac;
+    private String bleDeviceKYCMac;
     List<BleDevice> deviceListConnect = new ArrayList<>();
     public static final String TAG = VitalSignsActivity.class.getSimpleName();
 
@@ -52,12 +57,26 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     @Override
     protected void initView() {
         bleDeviceCm22Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM22_MAC);
+        bleDeviceCm19Mac=SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
+        bleDeviceSpO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
+        bleDeviceBPMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
+        bleDeviceTempMac =  SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
+        //虽然做生命体征检测，但是康养床蓝牙还是要连接的，因为康养床有呼叫功能，必须保持蓝牙连接
+        bleDeviceKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
         goService(DataReaderService.class);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
 
     }
 
@@ -77,7 +96,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     public void start(){
         scanBle();
     }
-
+    @OnClick(R.id.vital_close)
+    public void close(){
+        if (webSocketService != null) {
+            webSocketService.close();
+        }
+    }
 
     private void scanBle() {
         BleManager.getInstance().scan(new BleScanCallback() {
@@ -98,6 +122,25 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 if (bleDevice.getMac().equals(bleDeviceCm22Mac)) {
                     connectBle(bleDevice);
                 }
+
+                if(bleDevice.getMac().equals(bleDeviceCm19Mac)){
+                    connectBle(bleDevice);
+                }
+
+                if(bleDevice.getMac().equals(bleDeviceSpO2Mac)){
+                    connectBle(bleDevice);
+                }
+                if (bleDevice.getMac().equals(bleDeviceBPMac)) {
+                    connectBle(bleDevice);
+
+                }
+                if(bleDevice.getMac().equals(bleDeviceTempMac)){
+                    connectBle(bleDevice);
+                }
+                if(bleDevice.getMac().equals(bleDeviceKYCMac)){
+                    connectBle(bleDevice);
+                }
+
             }
         });
     }

@@ -26,6 +26,7 @@ import com.java.health.care.bed.constant.ImplementConfig;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
+import com.java.health.care.bed.net.RealTimeStatePacket;
 import com.java.health.care.bed.util.ByteUtil;
 import com.java.health.care.bed.util.DataUtils;
 import com.microsenstech.PPG.model.Ucoherence;
@@ -125,6 +126,12 @@ public class DataReaderService extends Service {
     private boolean isSendCompleteData = false;    //是否发送了一个完整的包
 
     private TlvBox tlvBox;
+
+    private int spo2;
+    private int temp;
+    private int szPress;
+    private int ssPress;
+    private int serialNum = 0;
 
     @Override
     public void onStart(Intent intent, int startId) {
@@ -427,8 +434,8 @@ public class DataReaderService extends Service {
             if (true) {
 
                 for (byte[] packet : packets) {
-                    Log.d("fsh===", Arrays.toString(packet));
-                    dataTrans.sendData(packet);
+//                    Log.d("fsh===", Arrays.toString(packet));
+//                    dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
 //                    Log.d("fsh===",len+"===len");
@@ -473,22 +480,22 @@ public class DataReaderService extends Service {
                         int sEcg = sHeartData[0];
                         int sSzPress = sSzPressDataData[0];
                         int sSsPress = sSsPressDataData[0];
+                        Log.d("fsh===", "===sEcgData0====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+                        if(signalProcessor!=null){
+                            signalProcessor.SmoothBaseLine(sEcgData, 96);
+                        }
 
+                        byte[] realTimeData = new RealTimeStatePacket(122,serialNum++,ecgData,null,ppgData,
+                                (short) sEcg,(short) spo2,(short) sSzPress,(short) sSsPress, (short) 0,(short) temp).buildPacket();
+                        dataTrans.sendData(realTimeData);
                         BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
                         dataTrans.sendData(bpDevicePacket);
-                        Log.d("fsh===", "===sEcgData" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+                        Log.d("fsh===", "===sEcgData====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
 //                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
 //                        Log.d("fsh===", "===sHeartData" + sHeartData.length + "===" + Arrays.toString(sHeartData));
 //                        Log.d("fsh===", "===sSzPressDataData" + sSzPressDataData.length + "===" + Arrays.toString(sSzPressDataData));
 //                        Log.d("fsh===", "===sSsPressDataData" + sSsPressDataData.length + "===" + Arrays.toString(sSsPressDataData));
-                        //打印如下：两组数据，失效时为1000。按时间先后填充
-                        //===sHeartData2===[75, 1000]
-                        //===sSzPressDataData2===[78, 1000]
-                        //===sSsPressDataData2===[131, 1000]
 
-                        //===sHeartData2===[1000, 1000]
-                        //===sSzPressDataData2===[1000, 1000]
-                        //===sSsPressDataData2===[1000, 1000]
 
                     }
 
@@ -500,8 +507,8 @@ public class DataReaderService extends Service {
 
             if (true) {
                 for (byte[] packet : packets) {
-                    dataTrans.sendData(packet);
-                    Log.d(TAG, "===packet" + Arrays.toString(packet));
+//                    dataTrans.sendData(packet);
+//                    Log.d(TAG, "===packet" + Arrays.toString(packet));
                     if (PacketParse.parsePacket(packet)) {
                         byte[] ecgData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ECG);
                         byte[] accData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ACC);
@@ -554,7 +561,7 @@ public class DataReaderService extends Service {
 
                         short[] secgData = new short[length];
                         ByteUtil.bbToShorts(secgData, ecgData);
-                        Log.d("fsh===", "===sEcgData1" + secgData.length + "===" + Arrays.toString(secgData));
+                        Log.d("fsh===", "===sEcgData1===" + secgData.length + "===" + Arrays.toString(secgData));
 
                         byte[] becgData = new byte[length];
                         for (int i = 0; i < length; i++) {
@@ -688,12 +695,12 @@ public class DataReaderService extends Service {
                             if (activity[5] > 0) {
                                 handHeartdata(heartRate[0], ByteUtil.intToByte1(heartRate[0]), battery);
                             }
-
-                          /*  if (!getReadingFlag()) {
-                                break;
-                            }*/
                         }
 
+                        byte[] realTimeData = new RealTimeStatePacket(122,serialNum++,ecgData,rspData,null,
+                                (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp).buildPacket();
+
+                        dataTrans.sendData(realTimeData);
                         DevicePacket devicePacket = new DevicePacket(currentOffset,
                                 becgData, secgnew, secgData, irspData, heartRate[0], 1, (char) 26,
                                 30, 15, null, 26,
@@ -987,7 +994,7 @@ public class DataReaderService extends Service {
                         // 打开通知后，设备发过来的数据将在这里出现
                         Log.d(TAG + "SpO2=======", Arrays.toString(data));
                         if (data.length == 13) {
-                            int spo2 = DataUtils.getSPO2Data(data);
+                            spo2 = DataUtils.getSPO2Data(data);
                             if (spo2 != 0) {
                                 Log.d("fshman", "spo2:" + spo2);
                                 mapEvent.put(Constant.SPO2_DATA, spo2);
@@ -1027,6 +1034,7 @@ public class DataReaderService extends Service {
                         Log.d(TAG + "IRT=======", Arrays.toString(data));
                         if (data.length == 4) {
                             double dataIRT = DataUtils.getIRTData(data);
+                            temp = (int)dataIRT*10;
                             Log.d("fshman" + "IRT=======", "dataIRT:" + dataIRT);
                             mapEvent.put(Constant.IRT_DATA, dataIRT);
                             EventBus.getDefault().post(mapEvent);
@@ -1149,6 +1157,9 @@ public class DataReaderService extends Service {
                         // 打开通知后，设备发过来的数据将在这里出现
                         Log.d(TAG + "bp=======", Arrays.toString(data));
                         if (data.length == 10) {
+
+                            szPress = data[6] & 0xff;
+                            ssPress = data[8] & 0xff;
                             String bpString = DataUtils.getSBPData(data);
                             Log.d("fshman", "BP===" + bpString);
                             mapEvent.put(Constant.BP_DATA, bpString);

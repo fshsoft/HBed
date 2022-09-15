@@ -31,7 +31,10 @@ public class ByteUtil {
 		b[index + 0] = (byte) ((s >> 0) & 0xff);
 	}
 
-	
+	public static void short2bytes(byte b[], short s, int index) {
+		b[index + 0] = (byte) ((s >> 8) & 0xff);
+		b[index + 1] = (byte) ((s >> 0) & 0xff);
+	}
 	
 	/**
 	 * 通过从蓝牙读取的ECG byte数组取到short数组
@@ -146,8 +149,10 @@ public class ByteUtil {
 	public static int getInt(byte[] bb, int index) {
 		return (int) ((((bb[index + 3] & 0xff) << 24)
 				| ((bb[index + 2] & 0xff) << 16)
-				| ((bb[index + 1] & 0xff) << 8) | ((bb[index + 0] & 0xff) << 0)));
+				| ((bb[index + 1] & 0xff) << 8)
+				| ((bb[index + 0] & 0xff) << 0)));
 	}
+
 
 	/**
 	 * 转换long型为byte数组
