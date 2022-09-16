@@ -7,6 +7,7 @@ import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.base.BaseObserver;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
+import com.java.health.care.bed.bean.LLBean;
 import com.java.health.care.bed.bean.Prescription;
 import com.java.health.care.bed.bean.Token;
 import com.java.health.care.bed.bean.Patient;
@@ -178,6 +179,44 @@ public class MainPresenter implements MainContract.presenter {
                     }
                 });
     }
+    /**
+     * 熏香和声波 结束上传
+     *  "duration": 100,
+     * 	"endTime": "2022-12-22 14:30:50",
+     *  "preId": 3,
+     * 	"preType": "SONIC_WAVE",
+     * 	"startTime": "2022-12-22 14:25:50"
+     */
+    @Override
+    public void upExec(int preId, String preType, int duration, String startTime, String endTime) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        Map<String,String> map=new HashMap<>();
+        map.put("preId", String.valueOf(preId));
+        map.put("preType",preType);
+        map.put("duration", String.valueOf(duration));
+        map.put("startTime", startTime);
+        map.put("endTime", endTime);
+        RetrofitUtil.getInstance().initRetrofit().upExec(value,map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<LLBean>(context) {
+                    @Override
+                    protected void onSuccess(BaseEntry<LLBean> t) throws Exception {
+                        view.setCode(t.getCode());
+                        view.setMsg(t.getMessage());
+                        view.setObj(t.getData());
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+    }
+
+    /**
+     * 文件上传
+     */
 
 
 

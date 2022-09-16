@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.module.MainContract;
+import com.java.health.care.bed.presenter.MainPresenter;
 import com.java.health.care.bed.widget.CountDownProgressBar;
 
 /**
@@ -13,7 +15,8 @@ import com.java.health.care.bed.widget.CountDownProgressBar;
  * @date 2022/08/25 16:57
  * @Description 声波理疗界面
  */
-public class SoundWaveActivity extends BaseActivity {
+public class SoundWaveActivity extends BaseActivity implements MainContract.View {
+    private MainPresenter presenter;
     private CountDownProgressBar cpb_countdown;
     @Override
     protected int getLayoutId() {
@@ -41,5 +44,39 @@ public class SoundWaveActivity extends BaseActivity {
 
     @Override
     protected void initData() {
+        /**
+         *   *  "duration": 100,
+         *      * 	"endTime": "2022-12-22 14:30:50",
+         *      *  "preId": 3,
+         *      * 	"preType": "SONIC_WAVE",
+         *      * 	"startTime": "2022-12-22 14:25:50"
+         */
+        presenter = new MainPresenter(this, this);
+        presenter.upExec(3,"SONIC_WAVE",100,"2022-12-22 14:25:50","2022-12-22 14:30:50");
+    }
+
+    @Override
+    public void setCode(String code) {
+
+    }
+
+    @Override
+    public void setMsg(String msg) {
+
+    }
+
+    @Override
+    public void setInfo(String msg) {
+
+    }
+
+    @Override
+    public void setObj(Object obj) {
+
+    }
+
+    @Override
+    public void setData(Object obj) {
+
     }
 }

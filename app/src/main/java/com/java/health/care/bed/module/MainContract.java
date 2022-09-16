@@ -14,7 +14,7 @@ public interface MainContract {
     interface presenter {
 
         /**
-         * 登录
+         * 获取token
          */
         void getToken(String grant_type, String client_id,String client_secret);
 
@@ -37,5 +37,15 @@ public interface MainContract {
          * 获取处方
          */
         void getPrescription(int patientId);
+
+        /**
+         * 文件上传
+         */
+
+
+        /**
+         * 香薰和声波 完成处方上传
+         */
+        void upExec(int preId,String preType,int duration,String startTime,String endTime);
     }
 }

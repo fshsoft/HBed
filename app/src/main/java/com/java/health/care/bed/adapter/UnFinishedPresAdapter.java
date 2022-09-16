@@ -40,6 +40,16 @@ public class UnFinishedPresAdapter extends RecyclerView.Adapter<UnFinishedPresAd
         holder.type.setText(unFinishedPres.getPreType());
         holder.time.setText(unFinishedPres.getDuration()+"秒");
         holder.date.setText(unFinishedPres.getExecTime());
+
+        if(onPresItemClickListener!=null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    onPresItemClickListener.OnPresItemClick(holder.itemView,pos);
+                }
+            });
+        }
     }
 
     @Override

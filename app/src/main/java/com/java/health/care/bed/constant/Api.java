@@ -37,4 +37,24 @@ public class Api {
      *
      */
     public static final String findPrescription = "/cas/open/prescription/find/{patient}";
+
+    /**
+     * APK文件上传,我这边不需要处理这个接口
+     */
+    public static final String uploadFile = "/cas/open/file/upload";
+
+    /**
+     * 文件下载，这个是apk下载
+     */
+    public static final String downloadFile = "/cas/open/file/download";
+
+    /**
+     * 香薰和声波 完成处方上传
+     */
+    public static final String upExec = "cas/open/pre/exec";
+
+    /**
+     * 生命体征检测，心肺谐振评估和训练  完成之后文件上传
+     */
+
 }

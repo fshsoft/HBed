@@ -51,6 +51,11 @@ public class FinishedPresFragment extends BaseFragment implements MainContract.V
     @Override
     protected void initData() {
         mainPresenter = new MainPresenter(getActivity(), this);
+        int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        if(patientID!=0){
+            //调用接口
+            mainPresenter.getPrescription(1);
+        }
         getFinishedPres();
     }
     private void getFinishedPres(){

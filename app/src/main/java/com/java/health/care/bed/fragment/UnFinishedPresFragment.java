@@ -1,6 +1,7 @@
 package com.java.health.care.bed.fragment;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,7 +52,15 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
     @Override
     protected void initData() {
         mainPresenter = new MainPresenter(getActivity(), this);
-        getUnFinishedPres();
+        int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        if(patientID!=0) {
+            //调用接口
+            mainPresenter.getPrescription(1);
+        }
+
+         getUnFinishedPres();
+
+
     }
 
     private void getUnFinishedPres(){
@@ -67,6 +76,7 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
                             //调用接口
                             mainPresenter.getPrescription(1);
                             refreshLayout.finishRefresh();
+
                         }
                     }
                 },0);
@@ -75,6 +85,7 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
 
         //触发自动刷新
 //        refreshLayout.autoRefresh();
+
 
     }
 
@@ -100,6 +111,12 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
             unFinishedPresList = pres.getUnfinished();
             unFinishedPresAdapter = new UnFinishedPresAdapter(getActivity(),unFinishedPresList);
             recyclerView.setAdapter(unFinishedPresAdapter);
+            unFinishedPresAdapter.setPresItemClickListener(new UnFinishedPresAdapter.OnPresItemClickListener() {
+                @Override
+                public void OnPresItemClick(View view, int position) {
+                    showToast("positon:"+unFinishedPresList.get(position).getPreType()+"positon"+position);
+                }
+            });
         }
     }
 

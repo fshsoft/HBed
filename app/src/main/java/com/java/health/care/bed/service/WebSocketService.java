@@ -24,9 +24,8 @@ import okio.ByteString;
  */
 public class WebSocketService extends Service {
     private static final String TAG = WebSocketService.class.getSimpleName();
-//    private static final String WS = "ws://192.168.0.13:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
-//    private static final String WS = "ws://rpi.zcc93.cn:8000/caskyc?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&userId=1888";
-    private static final String WS = "ws://192.168.0.12:8000?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1&bed_id=111";
+
+    private static final String WS = "ws://192.168.0.13:8000?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
 
     private WebSocket webSocket;
     private WebSocketCallback webSocketCallback;
