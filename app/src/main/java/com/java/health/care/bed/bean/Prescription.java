@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class Prescription {
     private String id;
-    private List<FinishedPres> finishedPresList;
-    private List<UnFinishedPres> unFinishedPresList;
+    private List<FinishedPres> finished;
+    private List<UnFinishedPres> unfinished;
 
     public String getId() {
         return id;
@@ -20,19 +20,20 @@ public class Prescription {
         this.id = id;
     }
 
-    public List<FinishedPres> getFinishedPresList() {
-        return finishedPresList;
+
+    public List<FinishedPres> getFinished() {
+        return finished;
     }
 
-    public void setFinishedPresList(List<FinishedPres> finishedPresList) {
-        this.finishedPresList = finishedPresList;
+    public void setFinished(List<FinishedPres> finished) {
+        this.finished = finished;
     }
 
-    public List<UnFinishedPres> getUnFinishedPresList() {
-        return unFinishedPresList;
+    public List<UnFinishedPres> getUnfinished() {
+        return unfinished;
     }
 
-    public void setUnFinishedPresList(List<UnFinishedPres> unFinishedPresList) {
-        this.unFinishedPresList = unFinishedPresList;
+    public void setUnfinished(List<UnFinishedPres> unfinished) {
+        this.unfinished = unfinished;
     }
 }

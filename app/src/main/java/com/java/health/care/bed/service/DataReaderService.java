@@ -23,6 +23,7 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.ImplementConfig;
+import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
@@ -128,7 +129,7 @@ public class DataReaderService extends Service {
     private TlvBox tlvBox;
 
     private int spo2;
-    private int temp;
+    private double temp;
     private int szPress;
     private int ssPress;
     private int serialNum = 0;
@@ -434,7 +435,7 @@ public class DataReaderService extends Service {
             if (true) {
 
                 for (byte[] packet : packets) {
-//                    Log.d("fsh===", Arrays.toString(packet));
+                    Log.d("fsh===", Arrays.toString(packet));
 //                    dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
@@ -485,9 +486,10 @@ public class DataReaderService extends Service {
                             signalProcessor.SmoothBaseLine(sEcgData, 96);
                         }
 
-                        byte[] realTimeData = new RealTimeStatePacket(122,serialNum++,ecgData,null,ppgData,
+                        byte[] realTimeData = new RealTimeStatePacket(111,serialNum++,ecgData,null,ppgData,
                                 (short) sEcg,(short) spo2,(short) sSzPress,(short) sSsPress, (short) 0,(short) temp).buildPacket();
                         dataTrans.sendData(realTimeData);
+
                         BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
                         dataTrans.sendData(bpDevicePacket);
                         Log.d("fsh===", "===sEcgData====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
@@ -507,8 +509,7 @@ public class DataReaderService extends Service {
 
             if (true) {
                 for (byte[] packet : packets) {
-//                    dataTrans.sendData(packet);
-//                    Log.d(TAG, "===packet" + Arrays.toString(packet));
+
                     if (PacketParse.parsePacket(packet)) {
                         byte[] ecgData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ECG);
                         byte[] accData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ACC);
@@ -697,7 +698,8 @@ public class DataReaderService extends Service {
                             }
                         }
 
-                        byte[] realTimeData = new RealTimeStatePacket(122,serialNum++,ecgData,rspData,null,
+                        //实时发送
+                        byte[] realTimeData = new RealTimeStatePacket(100,serialNum++,ecgData,rspData,null,
                                 (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp).buildPacket();
 
                         dataTrans.sendData(realTimeData);
@@ -919,7 +921,10 @@ public class DataReaderService extends Service {
 
                     }
                     if (bleIRTMac != null) {
-                        if (bleMac.equals(bleIRTMac)) getIRTBleDevice(bleDevice);
+                        if (bleMac.equals(bleIRTMac)) {
+                            getIRTBleDevice(bleDevice);
+                        }
+
                     }
                     if (bleKYCMac != null) {
                         if (bleMac.equals(bleKYCMac)) {
@@ -1034,8 +1039,8 @@ public class DataReaderService extends Service {
                         Log.d(TAG + "IRT=======", Arrays.toString(data));
                         if (data.length == 4) {
                             double dataIRT = DataUtils.getIRTData(data);
-                            temp = (int)dataIRT*10;
-                            Log.d("fshman" + "IRT=======", "dataIRT:" + dataIRT);
+                            temp = (double)dataIRT*10;
+                            Log.d("fshman" + "IRT=======", "dataIRT:" + dataIRT+"==="+temp);
                             mapEvent.put(Constant.IRT_DATA, dataIRT);
                             EventBus.getDefault().post(mapEvent);
                         }

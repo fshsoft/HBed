@@ -23,4 +23,6 @@ public class SP {
     public static final String REGION_ID = "region_id";
     public static final String PATIENT_ID = "patientId";
 
+    public static final String TEMP = "TEMP";
+
 }
