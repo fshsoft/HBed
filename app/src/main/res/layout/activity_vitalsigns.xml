@@ -22,7 +22,7 @@
             android:textSize="28sp"
             android:textStyle="bold" />
 
-        <TextView
+        <Button
             android:id="@+id/vital_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,13 +62,13 @@
                 android:layout_height="match_parent">
 
                 <com.java.health.care.bed.widget.EcgShowView
-                    android:id="@+id/patient_view_show"
+                    android:id="@+id/patient_view_ecg"
                     android:layout_width="match_parent"
                     android:background="@color/vitalColor"
                     android:layout_height="250dp" />
 
-                <com.java.health.care.bed.widget.EcgShowView
-                    android:id="@+id/patient_view_res"
+                <com.java.health.care.bed.widget.RespShowView
+                    android:id="@+id/patient_view_resp"
                     android:layout_width="match_parent"
                     android:background="@color/vitalColor"
                     android:layout_height="250dp" />
@@ -92,23 +92,29 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="ECG"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="20dp"
+                            android:text="心率"
                             android:textColor="@color/white"
-                            android:textSize="32sp" />
+                            android:textSize="36sp" />
 
                         <TextView
+                            android:id="@+id/vital_heart_rate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:textSize="48sp"
                             android:layout_centerInParent="true"
-                            android:text="60"/>
+                            android:text="--"
+                            android:textColor="@color/ecgText"
+                            android:textSize="118sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:textSize="48sp"
+                            android:textSize="32sp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginBottom="20dp"
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentRight="true"
                             android:text="次/分"/>
@@ -121,29 +127,36 @@
                     android:layout_height="0dp"
                     android:background="@color/vitalColor"
                     android:layout_weight="2">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="血氧"
+                        android:textColor="@color/white"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/vital_spo2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="--"
+                        android:textColor="@color/spo2Text"
+                        android:textSize="118sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="32sp"
-                        android:text="SpO2"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
-                        android:layout_centerInParent="true"
-                        android:text="98"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
-                        android:text=""/>
+                        android:text="%SpO₂"/>
 
                 </RelativeLayout>
 
@@ -170,29 +183,47 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/vitalColor">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="32sp"
-                        android:text="BP"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="血压"
                         android:textColor="@color/white"
-                        android:textSize="48sp"
+                        android:textSize="36sp" />
+
+                    <TextView
+                        android:id="@+id/vital_bp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="137/83"/>
+                        android:text="--/--"
+                        android:textColor="@color/white"
+                        android:textSize="118sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:textSize="48sp"
+                        android:textSize="36sp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="20dp"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
                         android:text="mmHg"/>
+
+                    <Button
+                        android:id="@+id/vital_start_bp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:text="测量"
+                        android:textColor="@color/btnColor"
+                        android:textSize="28sp" />
 
                 </RelativeLayout>
 
@@ -211,26 +242,33 @@
                     android:layout_height="0dp"
                     android:background="@color/vitalColor"
                     android:layout_weight="2">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="呼吸"
+                        android:textColor="@color/white"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/vital_resp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="--"
+                        android:textColor="@color/respText"
+                        android:textSize="108sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="32sp"
-                        android:text="RESP"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
-                        android:layout_centerInParent="true"
-                        android:text="16"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="20dp"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
                         android:text="次/分"/>
@@ -246,26 +284,32 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
                         android:textColor="@color/white"
                         android:textSize="32sp"
-                        android:text="TEMP"/>
+                        android:text="体温"/>
 
                     <TextView
+                        android:id="@+id/vital_temp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="48sp"
                         android:layout_centerInParent="true"
-                        android:text="37"/>
+                        android:text="--"
+                        android:textColor="@color/white"
+                        android:textSize="108sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:textSize="48sp"
+                        android:textSize="32sp"
+                        android:layout_marginBottom="20dp"
+                        android:layout_marginRight="20dp"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentRight="true"
-                        android:text=""/>
+                        android:text="℃"/>
 
                 </RelativeLayout>
 

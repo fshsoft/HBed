@@ -48,6 +48,8 @@ public class Constant {
     public static final String BLE_DEVICE_KYC_MAC = "BLE_DEVICE_KANGYANGCHUANG_MAC";
 
     public static final String BP_DATA = "BP_DATA";
+    public static final String BP_DATA_SS = "BP_DATA_SS";
+    public static final String BP_DATA_SZ = "BP_DATA_SZ";
     public static final String BP_DATA_ERROR = "BP_ERROR";
     public static final String IRT_DATA = "IRT_DATA";
     public static final String SPO2_DATA = "SPO2_DATA";

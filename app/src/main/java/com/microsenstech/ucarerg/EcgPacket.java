@@ -10,7 +10,7 @@ public enum EcgPacket {
 	HeartRate(0x0042),
 	Spo2(0x0043),
 	DiaBp(0x0044),
-	SysBp(0x0045),
+	SysBp(0x0045), //收缩压
 	RespRate(0x0046),
 	RIndex(0x0047),
 	Motion(0x0048),

@@ -1,7 +1,5 @@
 package com.java.health.care.bed.fragment;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.adapter.FinishedPresAdapter;
-import com.java.health.care.bed.adapter.UnFinishedPresAdapter;
 import com.java.health.care.bed.base.BaseFragment;
 import com.java.health.care.bed.bean.FinishedPres;
 import com.java.health.care.bed.bean.Prescription;
@@ -40,7 +37,7 @@ public class FinishedPresFragment extends BaseFragment implements MainContract.V
     private FinishedPresAdapter finishedPresAdapter;
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_yes;
+        return R.layout.fragment_finished;
     }
 
     @Override

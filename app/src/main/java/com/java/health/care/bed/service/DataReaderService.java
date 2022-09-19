@@ -47,6 +47,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.buffer.ByteBuf;
@@ -123,6 +125,7 @@ public class DataReaderService extends Service {
     private String bleIRTMac;
     private String bleKYCMac;
     private BleDevice bleDeviceKYC;
+    private BleDevice bleDeviceBP;
 
     private boolean isSendCompleteData = false;    //是否发送了一个完整的包
 
@@ -185,6 +188,7 @@ public class DataReaderService extends Service {
         Log.i(TAG, "Service onCreate");
         dataTrans = DataTransmitter.getInstance();
         dataTrans.setServiceRunning(true);
+
     }
 
     /**
@@ -898,7 +902,7 @@ public class DataReaderService extends Service {
                 Log.d(TAG, "康养床bleDevice为空了");
             }
 
-        } else{
+        } else if(event instanceof List){
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
                 Log.d(TAG,"deviceList=="+deviceList.size());
@@ -917,8 +921,11 @@ public class DataReaderService extends Service {
 
                     }
                     if (bleQSMac != null) {
-                        if (bleMac.equals(bleQSMac)) writeBPBleDevice(bleDevice);
+                        if (bleMac.equals(bleQSMac))
 
+//                            writeBPBleDevice(bleDevice);
+                        bleDeviceBP = bleDevice;
+                        getBPBleDevice(bleDeviceBP);
                     }
                     if (bleIRTMac != null) {
                         if (bleMac.equals(bleIRTMac)) {
@@ -934,6 +941,19 @@ public class DataReaderService extends Service {
                     }
                 }
             }
+        }
+        else if (event instanceof Integer){
+            int time = (int) event;
+            if(time == 2){
+                writeBPBleDevice(bleDeviceBP);
+            }
+//            Timer timer = new Timer();
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    writeBPBleDevice(bleDeviceBP);
+//                }
+//            },20,time*60*1000);
         }
 
 
@@ -1122,13 +1142,13 @@ public class DataReaderService extends Service {
 
                     @Override
                     public void onWriteSuccess(int current, int total, byte[] justWrite) {
-                        Log.d(TAG, "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
-                        getBPBleDevice(bleDevice);
+                        Log.d("BP====", "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
+
                     }
 
                     @Override
                     public void onWriteFailure(BleException exception) {
-                        Log.d(TAG, exception.toString());
+                        Log.d("BP=======", exception.toString());
                     }
                 }
 
@@ -1148,32 +1168,32 @@ public class DataReaderService extends Service {
                     @Override
                     public void onNotifySuccess() {
                         // 打开通知操作成功
-                        Log.d(TAG, "bp打开通知成功");
+                        Log.d("BP====", "bp打开通知成功");
+
                     }
 
                     @Override
                     public void onNotifyFailure(BleException exception) {
                         // 打开通知操作失败
-                        Log.d(TAG, exception.toString() + "bp打开通知失败");
+                        Log.d("BP===", exception.toString() + "bp打开通知失败");
                     }
 
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
-                        Log.d(TAG + "bp=======", Arrays.toString(data));
+                        Log.d("BP====", Arrays.toString(data));
                         if (data.length == 10) {
-
-                            szPress = data[6] & 0xff;
-                            ssPress = data[8] & 0xff;
+                            ssPress = data[6] & 0xff;
+                            szPress = data[8] & 0xff;
                             String bpString = DataUtils.getSBPData(data);
-                            Log.d("fshman", "BP===" + bpString);
+
                             mapEvent.put(Constant.BP_DATA, bpString);
                             EventBus.getDefault().post(mapEvent);
+                            Log.d(TAG + "bp=======2", Arrays.toString(data));
                         } else if (data.length == 6) {
                             //测量失败
-                            Log.d("fshman", "BP===测量失败");
-                            mapEvent.put(Constant.BP_DATA_ERROR, "BP_ERROR");
-                            EventBus.getDefault().post(mapEvent);
+//                            mapEvent.put(Constant.BP_DATA_ERROR, "BP_ERROR");
+//                            EventBus.getDefault().post(mapEvent);
                         }
 
                     }
@@ -1182,6 +1202,7 @@ public class DataReaderService extends Service {
         );
 
     }
+
 
     private void getKYCBleDevice(BleDevice bleDevice) {
         BleManager.getInstance().notify(

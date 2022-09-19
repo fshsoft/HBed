@@ -18,6 +18,10 @@
 
     <color name="vitalColor">#091F1D</color>
 
+    <color name="ecgText">#49CC52</color>
+    <color name="spo2Text">#FFAD5C</color>
+    <color name="respText">#FFF45C</color>
+
 
     <color name="colorPrimary">#FF1DE9B6</color>
     <color name="colorPrimaryDark">#2196F3</color>

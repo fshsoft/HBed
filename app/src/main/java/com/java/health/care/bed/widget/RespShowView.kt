@@ -18,12 +18,12 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 80f
+    private val INTERVAL_SCROLL_REFRESH = 160f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
 
-    private val MAX_VALUE = 400f
+    private val MAX_VALUE = 600f
     //可以绘制的点数 目前2560*1600 计算为128个
     private var intervalNumHeart: Int = 1
     //间隙 计算得20
@@ -79,9 +79,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
             refreshList = ArrayList()
             data = FloatArray(intervalNumHeart)
         }
-        Log.d("aaron====8888==", point.toString())
         refreshList!!.add(point)
-        Log.d("aaron====8888111==", refreshList!!.size.toString())
 
         postInvalidate()
     }
@@ -92,8 +90,8 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         paint!!.reset()
         path!!.reset()
         paint!!.style = Paint.Style.STROKE
-        paint!!.color = Color.parseColor("#31CE32")
-        paint!!.strokeWidth = mGridLinestrokeWidth
+        paint!!.color = Color.parseColor("#DB6E7C")
+        paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
         path!!.moveTo(0f, mHeight / 2)
 
@@ -118,7 +116,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 break
             }
 
-            if (nowIndex < intervalNumHeart) {
+            if (nowIndex <= intervalNumHeart) {
                 this.data!![i] = refreshList!![i]
             } else {
                 val times = (nowIndex - 1) / intervalNumHeart
@@ -135,27 +133,49 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         var nowY: Float
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
-            var dataValue = data!![i]
-            Log.d("aaron====888899999", Arrays.toString(data))
-//            if (dataValue > 0) {
-//                if (dataValue > MAX_VALUE * 0.8f) {
-//                    dataValue = MAX_VALUE * 0.8f
-//                }
-//            } else {
-//                if (dataValue < -MAX_VALUE * 0.8f) {
-//                    dataValue = -(MAX_VALUE * 0.8f)
-//                }
-//            }
-//            nowY = mHeight / 2 - dataValue * intervalColumnHeart
-            nowY = dataValue
 
-            Log.d("yyyyyyyyy", nowY.toString())
+            var dataValue = data!![i]
+//            Log.d("aaron====888=====", Arrays.toString(data))
+            Log.d("aaron====888========", dataValue.toString())
+
+            //|| dataValue==32768f
+            if(dataValue==0.0f ){
+                nowY = dataValue * intervalColumnHeart +mHeight/2
+            }else{
+
+                nowY = (dataValue-32768) * intervalColumnHeart +mHeight/2
+
+              Log.d("noy====",nowY.toString())
+
+                if(nowY>=350f){
+                    nowY = 350f
+                }
+
+                if(nowY<=0){
+                    nowY =0.0f
+                }
+
+            }
 
             if (i - 1 == showIndex) {
                 path!!.moveTo(nowX, nowY)
 
             } else {
-                path!!.lineTo(nowX, nowY)
+
+                //坐标= mWidth -2*intervalRowHeart 1401-10 2个间隙
+                if(nowX>mWidth -3*intervalRowHeart){
+                    //坐标x为最后三个的时候，直接跳出循环，不再绘制。 主要是最后三个点会进行bug直线绘制线，结束是到高度为mHeight/2
+                    //偶尔高度会0.很奇怪
+                    break
+                }
+                if(nowX==0f){ //坐标x为0的时候，不绘制，只移动，主要是一开始就会进行绘制，高度是mHeight/2有条竖线
+                    path!!.moveTo(nowX, nowY)
+                }else{
+                    path!!.lineTo(nowX, nowY)
+
+                }
+
+
             }
 
         }
@@ -173,7 +193,6 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         intervalNumHeart = (mWidth / intervalRowHeart).toInt()
         intervalColumnHeart = mHeight / (MAX_VALUE * 2)
 
-        Log.d("aaron==20.0==128==3.125", "$intervalRowHeart====$intervalNumHeart=====$intervalColumnHeart");
     }
 
 

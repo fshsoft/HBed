@@ -37,7 +37,7 @@
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_sound_wave.xml" value="0.34270833333333334" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_sweet.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_sweet_set.xml" value="0.3416666666666667" />
-        <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_vitalsigns.xml" value="0.15" />
+        <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_vitalsigns.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_websocket.xml" value="0.22552083333333334" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/activity_welcome.xml" value="0.20104166666666667" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/adapter_device.xml" value="0.3385416666666667" />
@@ -45,8 +45,10 @@
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/article_item.xml" value="0.36770833333333336" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_characteric_list.xml" value="0.2598958333333333" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_characteric_operation.xml" value="0.2598958333333333" />
+        <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_finished.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_no.xml" value="0.33962264150943394" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_service_list.xml" value="0.2598958333333333" />
+        <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_unfinished.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/fragment_yes.xml" value="0.18" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/homesquare_fragment.xml" value="0.36770833333333336" />
         <entry key="..\:/AndroidStudioProjects/HBed/app/src/main/res/layout/item_finished.xml" value="0.115625" />

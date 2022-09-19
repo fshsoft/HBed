@@ -77,9 +77,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             refreshList = ArrayList()
             data = FloatArray(intervalNumHeart)
         }
-        Log.d("aaron====8888==", point.toString())
         refreshList!!.add(point)
-        Log.d("aaron====8888111==", refreshList!!.size.toString())
 
         postInvalidate()
     }
@@ -90,8 +88,8 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         paint!!.reset()
         path!!.reset()
         paint!!.style = Paint.Style.STROKE
-        paint!!.color = Color.parseColor("#31CE32")
-        paint!!.strokeWidth = mGridLinestrokeWidth
+        paint!!.color = Color.parseColor("#6EDB75")
+        paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
         path!!.moveTo(0f, mHeight / 2)
 
@@ -116,7 +114,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 break
             }
 
-            if (nowIndex < intervalNumHeart) {
+            if (nowIndex <= intervalNumHeart) {
                 this.data!![i] = refreshList!![i]
             } else {
                 val times = (nowIndex - 1) / intervalNumHeart
@@ -134,7 +132,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
             var dataValue = data!![i]
-            Log.d("aaron====888899999", Arrays.toString(data))
+            Log.d("aaron====8888999==", Arrays.toString(data))
             if (dataValue > 0) {
                 if (dataValue > MAX_VALUE * 0.8f) {
                     dataValue = MAX_VALUE * 0.8f
@@ -147,11 +145,23 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 //            nowY = mHeight / 2 - dataValue * intervalColumnHeart
             nowY = dataValue * intervalColumnHeart +mHeight/2
 
+            Log.d("aaron====8888999=====", nowY.toString())
+
+
             if (i - 1 == showIndex) {
                 path!!.moveTo(nowX, nowY)
 
             } else {
-                path!!.lineTo(nowX, nowY)
+                //坐标= mWidth -3*intervalRowHeart 1401-15 2个间隙
+                if(nowX>mWidth -3*intervalRowHeart){  //坐标x为最后三个的时候，直接跳出循环，不再绘制。
+                    break
+                }
+                if(nowX==0f){  //坐标x为0的时候，不绘制，只移动
+                    path!!.moveTo(nowX, nowY)
+                }else{
+                    path!!.lineTo(nowX, nowY)
+
+                }
             }
 
         }

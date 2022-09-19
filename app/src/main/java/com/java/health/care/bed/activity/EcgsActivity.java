@@ -94,6 +94,7 @@ public class EcgsActivity extends AppCompatActivity implements DataReceiver {
 //        int[] resp = packet.irspData;
 
 
+
             if(ecg.length != DevicePacket.ECG_IN_PACKET){
                 return;
             }

@@ -1,6 +1,5 @@
 package com.java.health.care.bed.fragment;
 
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -22,7 +21,6 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
 
-import butterknife.BindAnim;
 import butterknife.BindView;
 
 /**
@@ -41,7 +39,7 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
 
     @Override
     protected int getLayoutId() {
-        return R.layout.fragment_no;
+        return R.layout.fragment_unfinished;
     }
 
     @Override
