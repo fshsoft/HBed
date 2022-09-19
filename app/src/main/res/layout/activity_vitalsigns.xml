@@ -68,7 +68,13 @@
                     android:layout_height="250dp" />
 
                 <com.java.health.care.bed.widget.RespShowView
+                    android:visibility="gone"
                     android:id="@+id/patient_view_resp"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="250dp" />
+                <com.java.health.care.bed.widget.PPGShowView
+                    android:id="@+id/patient_view_ppg"
                     android:layout_width="match_parent"
                     android:background="@color/vitalColor"
                     android:layout_height="250dp" />

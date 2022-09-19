@@ -12,7 +12,7 @@ import com.java.health.care.bed.util.DensityUtil.dip2px
 import com.java.health.care.bed.util.Utils
 import java.util.*
 
-class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+class PPGShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private var mWidth: Float = 0.toFloat()
     private var mHeight: Float = 0.toFloat()
@@ -41,6 +41,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mGridLinestrokeWidth: Float = 0.toFloat()
     private var mGridstrokeWidthAndHeight: Float = 0.toFloat()
 
+
     init {
         init()
     }
@@ -68,6 +69,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
         drawHeartRefresh(canvas)
 
     }
@@ -88,7 +90,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         paint!!.reset()
         path!!.reset()
         paint!!.style = Paint.Style.STROKE
-        paint!!.color = Color.parseColor("#6EDB75")
+        paint!!.color = Color.parseColor("#DB6E7C")
         paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
         path!!.moveTo(0f, mHeight / 2)
@@ -131,37 +133,47 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         var nowY: Float
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
+
             var dataValue = data!![i]
-            Log.d("aaron====8888999==++", Arrays.toString(data))
-            if (dataValue > 0) {
-                if (dataValue > MAX_VALUE * 0.8f) {
-                    dataValue = MAX_VALUE * 0.8f
+
+            //|| dataValue==9100f
+            if(dataValue==0.0f ){
+                nowY = dataValue * intervalColumnHeart +mHeight/2
+            }else{
+
+                nowY = (dataValue-9100) * intervalColumnHeart/2.5f +mHeight/2
+
+//              Log.d("noy====",nowY.toString())
+
+                if(nowY>=350f){
+                    nowY = 350f
                 }
-            } else {
-                if (dataValue < -MAX_VALUE * 0.8f) {
-                    dataValue = -(MAX_VALUE * 0.8f)
+
+                if(nowY<=0){
+                    nowY =0.0f
                 }
+
             }
-//            nowY = mHeight / 2 - dataValue * intervalColumnHeart
-            nowY = dataValue * intervalColumnHeart +mHeight/2
-
-            Log.d("aaron====8888999=====", nowY.toString())
-
 
             if (i - 1 == showIndex) {
                 path!!.moveTo(nowX, nowY)
 
             } else {
-                //坐标= mWidth -3*intervalRowHeart 1401-15 2个间隙
-                if(nowX>mWidth -3*intervalRowHeart){  //坐标x为最后三个的时候，直接跳出循环，不再绘制。
+
+                //坐标= mWidth -2*intervalRowHeart 1401-10 2个间隙
+                if(nowX>mWidth -3*intervalRowHeart){
+                    //坐标x为最后三个的时候，直接跳出循环，不再绘制。 主要是最后三个点会进行bug直线绘制线，结束是到高度为mHeight/2
+                    //偶尔高度会0.很奇怪
                     break
                 }
-                if(nowX==0f){  //坐标x为0的时候，不绘制，只移动
+                if(nowX==0f){ //坐标x为0的时候，不绘制，只移动，主要是一开始就会进行绘制，高度是mHeight/2有条竖线
                     path!!.moveTo(nowX, nowY)
                 }else{
                     path!!.lineTo(nowX, nowY)
 
                 }
+
+
             }
 
         }
@@ -179,7 +191,6 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         intervalNumHeart = (mWidth / intervalRowHeart).toInt()
         intervalColumnHeart = mHeight / (MAX_VALUE * 2)
 
-        Log.d("aaron==20.0==128==3.125", "$intervalRowHeart====$intervalNumHeart=====$intervalColumnHeart");
     }
 
 

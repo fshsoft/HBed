@@ -25,6 +25,7 @@ import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.service.WebSocketService;
 import com.java.health.care.bed.widget.EcgShowView;
+import com.java.health.care.bed.widget.PPGShowView;
 import com.java.health.care.bed.widget.RespShowView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -75,6 +76,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     EcgShowView ecgView;
     @BindView(R.id.patient_view_resp)
     RespShowView respView;
+    @BindView(R.id.patient_view_ppg)
+    PPGShowView ppgView;
 
     private Queue<Integer> dataQueue = new LinkedList<>();
     private Queue<Integer> dataQueueResp = new LinkedList<>();
@@ -86,6 +89,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     private int[] shortsResp = new int[5];
 
 
+    //处方类型 生命体征检测1；无创连续血压2
+    private int preType =1;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_vitalsigns;
@@ -131,12 +136,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
 
         //画心电图和呼吸ppg
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
+      timer = new Timer();
+         /* timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                //很重要，从队列里面取15个数据
-                //取数据的计算方法：采样率为300，定时器50ms绘制一次，（320/1000）*50ms =16
+                //很重要，从队列里面取5个数据
+                //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
 
                 for (int i = 0; i < 5; i++) {
 
@@ -170,33 +175,46 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
 
 
             }
-        }, 100, 20);
+        }, 100, 17);
+*/
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //很重要，从队列里面取5个数据
+                //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据
 
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                //很重要，从队列里面取15个数据
-//                //取数据的计算方法：采样率为300，定时器50ms绘制一次，（320/1000）*50ms =16
-//
-//                for (int i = 0; i < 5; i++) {
-//
-//                    Integer y = dataQueueResp.poll();
-//
-//                    if(y ==null){
-//                        continue;
-//                    }
-//                    shortsResp[i] =y;
-//                }
-//
-//                if(indexResp >=0){
-//                    indexResp = 0;
-//                }
-//                respView.showLine(shortsResp[indexResp]);
-//                indexResp++;
-//
-//
-//            }
-//        }, 100, 20);
+                for (int i = 0; i < 5; i++) {
+
+                    Integer x = dataQueue.poll();
+
+                    Integer y = dataQueueResp.poll();
+
+                    if (x == null) {
+                        continue;
+                    }
+
+                    if(y ==null){
+                        continue;
+                    }
+                    shorts[i] = x;
+                    shortsResp[i] =y;
+                }
+
+
+                if (index >= shorts.length) {
+                    index = 0;
+                }
+
+                if(indexResp >=0){
+                    indexResp = 0;
+                }
+                ecgView.showLine(shorts[index] );
+                ppgView.showLine(shortsResp[indexResp]);
+                index++;
+                indexResp++;
+
+            }
+        }, 100, 25);
     }
 
     @OnClick(R.id.vital_start)
