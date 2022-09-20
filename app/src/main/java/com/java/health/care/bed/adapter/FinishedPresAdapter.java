@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.bean.FinishedPres;
+import com.java.health.care.bed.constant.SP;
+import com.java.health.care.bed.util.TimeUtil;
+
 import java.util.List;
 
 /**
@@ -37,8 +40,19 @@ public class FinishedPresAdapter extends RecyclerView.Adapter<FinishedPresAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         finishedPres = finishedPresList.get(position);
-        holder.type.setText(finishedPres.getPreType());
-        holder.time.setText(finishedPres.getDuration()+"秒");
+        String type = finishedPres.getPreType();
+        if(type.equals(SP.FANGXING)){
+            holder.type.setText("芳香理疗");
+        }else if(type.equals(SP.SHENGBO)){
+            holder.type.setText("声波理疗");
+        }else if(type.equals(SP.SMTZ) || type.equals(SP.WCXY)){
+            holder.type.setText("生命体征监测");
+        }else if(type.equals(SP.ZZSJ)){
+            holder.type.setText("自主神经评估");
+        }else if(type.equals(SP.XFXZ)){
+            holder.type.setText("心肺谐振训练");
+        }
+        holder.time.setText(TimeUtil.second2Time((long) finishedPres.getDuration()));
         holder.date.setText(finishedPres.getExecTime());
     }
 

@@ -1,5 +1,6 @@
 package com.java.health.care.bed.fragment;
 
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -8,8 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.activity.AssessActivity;
+import com.java.health.care.bed.activity.DrillActivity;
+import com.java.health.care.bed.activity.SoundWaveActivity;
+import com.java.health.care.bed.activity.SweetActivity;
+import com.java.health.care.bed.activity.VitalSignsActivity;
 import com.java.health.care.bed.adapter.UnFinishedPresAdapter;
 import com.java.health.care.bed.base.BaseFragment;
+import com.java.health.care.bed.bean.Param;
 import com.java.health.care.bed.bean.Prescription;
 import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.SP;
@@ -113,6 +120,31 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
                 @Override
                 public void OnPresItemClick(View view, int position) {
                     showToast("positon:"+unFinishedPresList.get(position).getPreType()+"positon"+position);
+                    //判断跳转到不同的页面
+                    UnFinishedPres unFinishedPres = unFinishedPresList.get(position);
+                    String type = unFinishedPres.getPreType();
+
+                    Bundle bundle = new Bundle();
+
+                    if(type.equals(SP.FANGXING)){ //芳香理疗
+                        goActivity(SweetActivity.class);
+                    }else if(type.equals(SP.SHENGBO)){ //声波理疗
+                        goActivity(SoundWaveActivity.class);
+                    }else if(type.equals(SP.SMTZ) ){ //生命体征
+                        unFinishedPres.setFlag(1);
+                        bundle.putParcelable(VitalSignsActivity.TAG,unFinishedPres);
+                        goActivity(VitalSignsActivity.class,bundle);
+
+                    }else if(type.equals(SP.WCXY)){//无创连续血压 依然是生命体征
+                        unFinishedPres.setFlag(2);
+                        bundle.putParcelable(VitalSignsActivity.TAG,unFinishedPres);
+                        goActivity(VitalSignsActivity.class,bundle);
+
+                    }else if(type.equals(SP.ZZSJ)){//自主神经评估
+                        goActivity(AssessActivity.class);
+                    }else if(type.equals(SP.XFXZ)){ //心肺谐振训练
+                        goActivity(DrillActivity.class);
+                    }
                 }
             });
         }

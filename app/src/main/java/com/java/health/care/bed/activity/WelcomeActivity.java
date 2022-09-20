@@ -8,6 +8,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.blankj.utilcode.util.SPUtils;
+import com.java.health.care.bed.constant.SP;
 
 
 /**
@@ -23,7 +25,16 @@ public class WelcomeActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(WelcomeActivity.this,PrescriptionActivity.class));
+                //判断是否有IP地址，是否有科室，病区，床号
+                String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
+                String dept = SPUtils.getInstance().getString(SP.DEPT_NUM);
+                String region = SPUtils.getInstance().getString(SP.REGION_NUM);
+                String bunk = SPUtils.getInstance().getString(SP.BUNK_NUM);
+                if(ip.isEmpty() || dept.isEmpty() || region.isEmpty() || bunk.isEmpty()){
+                    startActivity(new Intent(WelcomeActivity.this,SettingActivity.class));
+                }else {
+                    startActivity(new Intent(WelcomeActivity.this,PrescriptionActivity.class));
+                }
 
                 finish();
             }

@@ -132,7 +132,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
             var dataValue = data!![i]
-            Log.d("aaron====8888999==++", Arrays.toString(data))
+//            Log.d("aaron====8888999==++", Arrays.toString(data))
             if (dataValue > 0) {
                 if (dataValue > MAX_VALUE * 0.8f) {
                     dataValue = MAX_VALUE * 0.8f
@@ -145,7 +145,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 //            nowY = mHeight / 2 - dataValue * intervalColumnHeart
             nowY = dataValue * intervalColumnHeart +mHeight/2
 
-            Log.d("aaron====8888999=====", nowY.toString())
+//            Log.d("aaron====8888999=====", nowY.toString())
 
 
             if (i - 1 == showIndex) {
@@ -179,7 +179,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         intervalNumHeart = (mWidth / intervalRowHeart).toInt()
         intervalColumnHeart = mHeight / (MAX_VALUE * 2)
 
-        Log.d("aaron==20.0==128==3.125", "$intervalRowHeart====$intervalNumHeart=====$intervalColumnHeart");
+//        Log.d("aaron==20.0==128==3.125", "$intervalRowHeart====$intervalNumHeart=====$intervalColumnHeart");
     }
 
 

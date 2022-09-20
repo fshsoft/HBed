@@ -40,8 +40,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,6 +68,11 @@ import io.netty.buffer.Unpooled;
 public class DataReaderService extends Service {
 
     public static final String TAG = DataReaderService.class.getSimpleName();
+
+    private FileOutputStream ecgStream = null;
+    private FileOutputStream scoreStream = null;
+    private FileOutputStream respStream = null;
+
     private static final int CM19_BLE_DATA_MSG = 3;
     private static final int CM22_BLE_DATA_MSG = 4;
     //ble
@@ -439,8 +449,7 @@ public class DataReaderService extends Service {
             if (true) {
 
                 for (byte[] packet : packets) {
-                    Log.d("fsh===", Arrays.toString(packet));
-//                    dataTrans.sendData(packet);
+//                    Log.d("fsh===", Arrays.toString(packet));
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
 //                    Log.d("fsh===",len+"===len");
@@ -485,7 +494,7 @@ public class DataReaderService extends Service {
                         int sEcg = sHeartData[0];
                         int sSzPress = sSzPressDataData[0];
                         int sSsPress = sSsPressDataData[0];
-                        Log.d("fsh===", "===sEcgData0====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+//                        Log.d("fsh===", "===sEcgData0====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
                         if(signalProcessor!=null){
                             signalProcessor.SmoothBaseLine(sEcgData, 96);
                         }
@@ -496,7 +505,7 @@ public class DataReaderService extends Service {
 
                         BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
                         dataTrans.sendData(bpDevicePacket);
-                        Log.d("fsh===", "===sEcgData====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
+//                        Log.d("fsh===", "===sEcgData====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
 //                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
 //                        Log.d("fsh===", "===sHeartData" + sHeartData.length + "===" + Arrays.toString(sHeartData));
 //                        Log.d("fsh===", "===sSzPressDataData" + sSzPressDataData.length + "===" + Arrays.toString(sSzPressDataData));
@@ -566,7 +575,7 @@ public class DataReaderService extends Service {
 
                         short[] secgData = new short[length];
                         ByteUtil.bbToShorts(secgData, ecgData);
-                        Log.d("fsh===", "===sEcgData1===" + secgData.length + "===" + Arrays.toString(secgData));
+//                        Log.d("fsh===", "===sEcgData1===" + secgData.length + "===" + Arrays.toString(secgData));
 
                         byte[] becgData = new byte[length];
                         for (int i = 0; i < length; i++) {
@@ -574,7 +583,7 @@ public class DataReaderService extends Service {
                         }
 
 ////////////////////////拼接时间戳8字节+96字节ECG心电数据/////////////////////////////////////////////////////////////////////////////////////////////////
-                        byte[] baoEcg = new byte[8+96];
+                      /*  byte[] baoEcg = new byte[8+96];
                         byte[] contentEcg = becgData;
                         long time = System.currentTimeMillis();
                         ByteUtil.putLong(baoEcg,time,0);
@@ -582,7 +591,8 @@ public class DataReaderService extends Service {
                         Log.d("arraycopy====",Arrays.toString(baoEcg));
                         Log.d("arraycopy====1",Arrays.toString(contentEcg));
                         //写入文件ecg
-                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", baoEcg, true);
+                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", baoEcg, true);*/
+                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         int[] irspData = new int[rspData.length / 3];
                         ByteUtil.bbToInts(irspData, rspData);
@@ -910,7 +920,33 @@ public class DataReaderService extends Service {
                     String bleMac = bleDevice.getMac();
 
                     if (bleCM19Mac != null) {
-                        if (bleMac.equals(bleCM19Mac)) getCM19BleDevice(bleDevice);
+                        if (bleMac.equals(bleCM19Mac)) {
+                            getCM19BleDevice(bleDevice);
+
+                            //上面表示蓝牙连接上了cm19设备
+
+                            Date d = new Date();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                            String dateNowStr = sdf.format(d);
+                            SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME,dateNowStr);
+                            String patientId = SPUtils.getInstance().getString(SP.PATIENT_ID);
+                            String path = "/sdcard/HBed/data/"+patientId+"-"+dateNowStr+"/";
+                            File dir = new File(path);
+                            if (!dir.exists()) {
+                                dir.mkdirs();
+                            }
+
+                            try {
+                                //文件名先进行名称ecgData.respData 后面统一进行更改，改为开始时间和结束时间
+                                ecgStream = new FileOutputStream(path + "ecgData.ecg", true);
+                                respStream = new FileOutputStream(path + "respData.resp", true);
+                                scoreStream = new FileOutputStream(path + "scoreData.score", true);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
 
                     }
                     if (bleDevice != null) {
@@ -945,6 +981,7 @@ public class DataReaderService extends Service {
         else if (event instanceof Integer){
             int time = (int) event;
             if(time == 2){
+                // 手动控制测量
                 writeBPBleDevice(bleDeviceBP);
             }
 //            Timer timer = new Timer();

@@ -1,5 +1,7 @@
 package com.java.health.care.bed.bean;
 
+import java.util.List;
+
 /**
  * @author fsh
  * @date 2022/09/14 16:19
@@ -14,6 +16,9 @@ public class FinishedPres {
     private int duration;
     //执行日期
     private String execTime;
+
+    private List<Param> param;
+
 
     public int getPreId() {
         return preId;
@@ -45,5 +50,13 @@ public class FinishedPres {
 
     public void setExecTime(String execTime) {
         this.execTime = execTime;
+    }
+
+    public List<Param> getParam() {
+        return param;
+    }
+
+    public void setParam(List<Param> param) {
+        this.param = param;
     }
 }

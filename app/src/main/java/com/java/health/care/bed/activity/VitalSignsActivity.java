@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.SPUtils;
@@ -16,6 +17,8 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.bean.Param;
+import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
@@ -61,6 +64,18 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     List<BleDevice> deviceListConnect = new ArrayList<>();
     public static final String TAG = VitalSignsActivity.class.getSimpleName();
 
+    //1、要根据处方来判断显示哪些ble设备，2、根据蓝牙连接与否，来对这些设备颜色变更。
+    @BindView(R.id.vital_ble_press)
+    TextView blePress;//无创连续血压蓝牙
+    @BindView(R.id.vital_ble_cm)
+    TextView bleCM;
+    @BindView(R.id.vital_ble_spo2)
+    TextView bleSpo2;
+    @BindView(R.id.vital_ble_bp)
+    TextView bleBP;
+    @BindView(R.id.vital_ble_temp)
+    TextView bleTemp;
+
     @BindView(R.id.vital_bp)
     TextView bpText;
     @BindView(R.id.vital_heart_rate)
@@ -83,6 +98,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     private Queue<Integer> dataQueueResp = new LinkedList<>();
 
     private Timer timer;
+    private Timer timerBle;
     private int index = 0;
     private int indexResp = 0;
     private int[] shorts = new int[5];
@@ -112,6 +128,40 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     @Override
     protected void onResume() {
         super.onResume();
+        //判断是无创连续血压CM22还是生命体征cm19,从处方列表跳转过来，1为cm19  2为cm22
+        UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
+        int type = unFinishedPres.getFlag();
+        if(type == 1){
+            //cm19需要知道勾选了哪些设备
+            Log.d(TAG,"TYPE===="+type);
+            List<Param> paramList = unFinishedPres.getParam();
+            //1-血压，2-血氧，3-体温 4-心电
+            for(Param param : paramList){
+                String value = param.getValue();
+                if(value.equals("1")){
+                    //血压
+                    bleBP.setVisibility(View.VISIBLE);
+
+                }else if(value.equals("2")){
+                    //血氧
+                    bleSpo2.setVisibility(View.VISIBLE);
+                }else if(value.equals("3")){
+                    //体温
+                    bleTemp.setVisibility(View.VISIBLE);
+                }else if(value.equals("4")){
+                    //心电cm19
+                    bleCM.setVisibility(View.VISIBLE);
+                }
+            }
+
+        }else if(type==2){
+            //无创连续血压
+            Log.d(TAG,"TYPE===="+type);
+            List<Param> paramList = unFinishedPres.getParam();
+            //无需遍历上面的集合，就是cm22无创血压设备
+            blePress.setVisibility(View.VISIBLE);
+        }
+
 
     }
 
@@ -120,9 +170,19 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         super.onDestroy();
         unbindService(serviceConnection);
         EventBus.getDefault().unregister(this);
+        if(timerBle!=null){
+            timerBle.cancel();
+        }
+        if(timer!=null){
+            timer.cancel();
+        }
 
     }
 
+    @OnClick(R.id.back)
+    public void back(){
+        finish();
+    }
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
@@ -134,9 +194,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 .setConnectOverTime(20000)
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
-
+        timerBle = new Timer();
         //画心电图和呼吸ppg
-      timer = new Timer();
+        timer = new Timer();
          /* timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -250,27 +310,40 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             @Override
             public void onScanning(BleDevice bleDevice) {
 
+                //这个里面是否需要连接，还需要根据处方给的设备情况
                 if (bleDevice.getMac().equals(bleDeviceCm22Mac)) {
-                    connectBle(bleDevice);
+                    //判断TextView是否是显示状态，是显示状态才连接
+                    if(blePress.getVisibility()== View.VISIBLE){
+                        connectBle(bleDevice);
+                    }
+
                 }
 
                 if (bleDevice.getMac().equals(bleDeviceCm19Mac)) {
-                    connectBle(bleDevice);
+                    if(bleCM.getVisibility()== View.VISIBLE){
+                        connectBle(bleDevice);
+                    }
+
                 }
 
                 if (bleDevice.getMac().equals(bleDeviceSpO2Mac)) {
-                    connectBle(bleDevice);
+                    if(bleSpo2.getVisibility()== View.VISIBLE){
+                        connectBle(bleDevice);
+                    }
                 }
                 if (bleDevice.getMac().equals(bleDeviceBPMac)) {
-                    connectBle(bleDevice);
-
+                    if(bleBP.getVisibility()== View.VISIBLE){
+                        connectBle(bleDevice);
+                    }
                 }
                 if (bleDevice.getMac().equals(bleDeviceTempMac)) {
-                    connectBle(bleDevice);
+                    if(bleTemp.getVisibility()== View.VISIBLE){
+                        connectBle(bleDevice);
+                    }
                 }
-                if (bleDevice.getMac().equals(bleDeviceKYCMac)) {
-                    connectBle(bleDevice);
-                }
+//                if (bleDevice.getMac().equals(bleDeviceKYCMac)) {
+//                    connectBle(bleDevice);
+//                }
 
             }
         });
@@ -286,13 +359,47 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
                 Log.d(TAG, "onConnectFail:exception:" + exception.toString());
+                //蓝牙连接失败
+           /*     if(bleDevice.getName().contains(Constant.CM19)){
+                    bleCM.setTextColor(getResources().getColor(R.color.black));
+                    retryConnectBle(bleDevice);
+                } else if (bleDevice.getName().contains(Constant.SPO2)) {
+                    bleSpo2.setTextColor(getResources().getColor(R.color.black));
+                    retryConnectBle(bleDevice);
+                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                    bleBP.setTextColor(getResources().getColor(R.color.black));
+                    retryConnectBle(bleDevice);
+                }else if(bleDevice.getName().contains(Constant.IRT)){
+                    bleTemp.setTextColor(getResources().getColor(R.color.black));
+                    retryConnectBle(bleDevice);
+                }else if(bleDevice.getName().contains(Constant.CM22)){
+                    blePress.setTextColor(getResources().getColor(R.color.black));
+                    retryConnectBle(bleDevice);
+                }*/
             }
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 deviceListConnect.add(bleDevice);
-                EventBus.getDefault().post(deviceListConnect);
+                EventBus.getDefault().post(deviceListConnect); //连接成功之后，发送给DataReaderService，进行开启通知，或者写入操作
+                //根据名称进行对设备文字颜色进行变更
+                if(bleDevice.getName().contains(Constant.CM19)){
+                    bleCM.setTextColor(getResources().getColor(R.color.ecgText));
+                    retryNum =1;
+                } else if (bleDevice.getName().contains(Constant.SPO2)) {
+                    bleSpo2.setTextColor(getResources().getColor(R.color.ecgText));
+                    retryNum =1;
+                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                    bleBP.setTextColor(getResources().getColor(R.color.ecgText));
+                    retryNum =1;
+                }else if(bleDevice.getName().contains(Constant.IRT)){
+                    bleTemp.setTextColor(getResources().getColor(R.color.ecgText));
+                    retryNum =1;
+                }else if(bleDevice.getName().contains(Constant.CM22)){
+                    blePress.setTextColor(getResources().getColor(R.color.ecgText));
+                    retryNum =1;
+                }
 //                if(deviceListConnect.size()==1){
 //                    //todo 通知可以开始测量血压和测量的时间频率 假如设置为2分钟一次
 //                    EventBus.getDefault().post(2);
@@ -301,11 +408,67 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
 
             @Override
             public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
-                Log.d(TAG, "onDisConnected:status:" + status);
+                Log.d(TAG, "onDisConnected:status:8" + status);
+                /**
+                 * 连接断开，特指连接后再断开的情况。在这里可以监控设备的连接状态，一旦连接断开，可以根据自身情况考虑对BleDevice对象进行重连操作。
+                 * 需要注意的是，断开和重连之间最好间隔一段时间，否则可能会出现长时间连接不上的情况。
+                 * 此外，如果通过调用disconnect(BleDevice bleDevice)方法，主动断开蓝牙连接的结果也会在这个方法中回调，
+                 * 此时isActiveDisConnected将会是true。
+                 */
+                //蓝牙断开 状态为8
+                if(bleDevice.getName().contains(Constant.CM19)){
+                    bleCM.setTextColor(getResources().getColor(R.color.black));
+                    if(retryNum<5){
+                        retryConnectBle(bleDevice);
+                    }
+                } else if (bleDevice.getName().contains(Constant.SPO2)) {
+                    bleSpo2.setTextColor(getResources().getColor(R.color.black));
+                    if(retryNum<5){
+                        retryConnectBle(bleDevice);
+                    }
+
+                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                    bleBP.setTextColor(getResources().getColor(R.color.black));
+                    if(retryNum<5){
+                        retryConnectBle(bleDevice);
+                    }
+                }else if(bleDevice.getName().contains(Constant.IRT)){
+                    bleTemp.setTextColor(getResources().getColor(R.color.black));
+                    if(retryNum<5){
+                        retryConnectBle(bleDevice);
+                    }
+                }else if(bleDevice.getName().contains(Constant.CM22)){
+                    blePress.setTextColor(getResources().getColor(R.color.black));
+                    if(retryNum<5){
+                        retryConnectBle(bleDevice);
+                    }
+                }
             }
         });
 
     }
+
+    /**
+     * 蓝牙断开，或者连接失败，进行重连操作
+     * 需要开启一个定时器，进行三次重连操作，需要间隔一段时间进行
+     */
+
+    private int retryNum =1;
+    private void retryConnectBle(BleDevice bleDevice){
+
+        timerBle.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                connectBle(bleDevice);
+                retryNum++;
+
+            }
+        },2000,5000);
+
+
+
+    }
+
 
     /**
      * 以下为数据接收器
@@ -318,8 +481,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         short[] ecg = packet.secgdata;
         int[] resp = packet.irspData;
 
-        Log.d("aaron====987",Arrays.toString(ecg));
-        Log.d("aaron====789",Arrays.toString(resp));
+//        Log.d("aaron====987",Arrays.toString(ecg));
+//        Log.d("aaron====789",Arrays.toString(resp));
 
         if (ecg.length != DevicePacket.ECG_IN_PACKET) {
             return;
