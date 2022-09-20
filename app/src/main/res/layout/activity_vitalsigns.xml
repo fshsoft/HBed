@@ -42,7 +42,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/vital_ble_press"
+                android:id="@+id/vital_ble_cm22"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="无创连续血压ble"
@@ -51,7 +51,7 @@
                 android:textSize="28sp" />
 
             <TextView
-                android:id="@+id/vital_ble_cm"
+                android:id="@+id/vital_ble_cm19"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="50dp"

@@ -123,9 +123,8 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
                     //判断跳转到不同的页面
                     UnFinishedPres unFinishedPres = unFinishedPresList.get(position);
                     String type = unFinishedPres.getPreType();
-
+                    //bundle传递对象unFinishedPres，对象里面包含list集合，对象需要实现Parcelable
                     Bundle bundle = new Bundle();
-
                     if(type.equals(SP.FANGXING)){ //芳香理疗
                         goActivity(SweetActivity.class);
                     }else if(type.equals(SP.SHENGBO)){ //声波理疗

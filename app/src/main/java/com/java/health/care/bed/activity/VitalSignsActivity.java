@@ -65,10 +65,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     public static final String TAG = VitalSignsActivity.class.getSimpleName();
 
     //1、要根据处方来判断显示哪些ble设备，2、根据蓝牙连接与否，来对这些设备颜色变更。
-    @BindView(R.id.vital_ble_press)
-    TextView blePress;//无创连续血压蓝牙
-    @BindView(R.id.vital_ble_cm)
-    TextView bleCM;
+    @BindView(R.id.vital_ble_cm22)
+    TextView bleCM22;//无创连续血压蓝牙
+    @BindView(R.id.vital_ble_cm19)
+    TextView bleCM19;
     @BindView(R.id.vital_ble_spo2)
     TextView bleSpo2;
     @BindView(R.id.vital_ble_bp)
@@ -150,7 +150,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     bleTemp.setVisibility(View.VISIBLE);
                 }else if(value.equals("4")){
                     //心电cm19
-                    bleCM.setVisibility(View.VISIBLE);
+                    bleCM19.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -159,7 +159,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             Log.d(TAG,"TYPE===="+type);
             List<Param> paramList = unFinishedPres.getParam();
             //无需遍历上面的集合，就是cm22无创血压设备
-            blePress.setVisibility(View.VISIBLE);
+            bleCM22.setVisibility(View.VISIBLE);
         }
 
 
@@ -313,14 +313,14 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 //这个里面是否需要连接，还需要根据处方给的设备情况
                 if (bleDevice.getMac().equals(bleDeviceCm22Mac)) {
                     //判断TextView是否是显示状态，是显示状态才连接
-                    if(blePress.getVisibility()== View.VISIBLE){
+                    if(bleCM22.getVisibility()== View.VISIBLE){
                         connectBle(bleDevice);
                     }
 
                 }
 
                 if (bleDevice.getMac().equals(bleDeviceCm19Mac)) {
-                    if(bleCM.getVisibility()== View.VISIBLE){
+                    if(bleCM19.getVisibility()== View.VISIBLE){
                         connectBle(bleDevice);
                     }
 
@@ -385,7 +385,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 EventBus.getDefault().post(deviceListConnect); //连接成功之后，发送给DataReaderService，进行开启通知，或者写入操作
                 //根据名称进行对设备文字颜色进行变更
                 if(bleDevice.getName().contains(Constant.CM19)){
-                    bleCM.setTextColor(getResources().getColor(R.color.ecgText));
+                    bleCM19.setTextColor(getResources().getColor(R.color.ecgText));
                     retryNum =1;
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
                     bleSpo2.setTextColor(getResources().getColor(R.color.ecgText));
@@ -397,7 +397,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     bleTemp.setTextColor(getResources().getColor(R.color.ecgText));
                     retryNum =1;
                 }else if(bleDevice.getName().contains(Constant.CM22)){
-                    blePress.setTextColor(getResources().getColor(R.color.ecgText));
+                    bleCM22.setTextColor(getResources().getColor(R.color.ecgText));
                     retryNum =1;
                 }
 //                if(deviceListConnect.size()==1){
@@ -417,7 +417,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                  */
                 //蓝牙断开 状态为8
                 if(bleDevice.getName().contains(Constant.CM19)){
-                    bleCM.setTextColor(getResources().getColor(R.color.black));
+                    bleCM19.setTextColor(getResources().getColor(R.color.black));
                     if(retryNum<5){
                         retryConnectBle(bleDevice);
                     }
@@ -438,7 +438,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                         retryConnectBle(bleDevice);
                     }
                 }else if(bleDevice.getName().contains(Constant.CM22)){
-                    blePress.setTextColor(getResources().getColor(R.color.black));
+                    bleCM22.setTextColor(getResources().getColor(R.color.black));
                     if(retryNum<5){
                         retryConnectBle(bleDevice);
                     }
