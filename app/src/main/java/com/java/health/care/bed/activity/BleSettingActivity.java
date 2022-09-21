@@ -104,7 +104,8 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                 if(deviceListConnect.size()!=0){
                     EventBus.getDefault().post(deviceListConnect);
 //                   goActivity(KYCSetActivity.class);
-                    goActivity(EcgsActivity.class);
+//                    goActivity(EcgsActivity.class);
+                    goActivity(BLESeeAndOperateActivity.class);
                 }else {
                     ToastUtils.showShort( R.string.please_connect);
                 }

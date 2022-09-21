@@ -36,6 +36,9 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @BindView(R.id.set_server_address)
     AppCompatTextView set_server_address;
 
+    @BindView(R.id.set_wc_press_num)
+    AppCompatTextView set_wc_press_num;
+
     @BindView(R.id.set_bunk_num)
     AppCompatTextView set_bunk_num;
 
@@ -65,6 +68,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
         String dept = SPUtils.getInstance().getString(SP.DEPT_NUM);
         String region = SPUtils.getInstance().getString(SP.REGION_NUM);
         String bed = SPUtils.getInstance().getString(SP.BUNK_NUM);
+        String press = SPUtils.getInstance().getString(SP.WCPRESSVALUE);
 
         if(!server_ip.isEmpty()){
             set_server_address.setText(server_ip);
@@ -76,6 +80,12 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
             set_bunk_num.setText(dept+"    "+region+"    "+bed);
         }else {
             set_bunk_num.setText("");
+        }
+
+        if(!press.isEmpty()){
+            set_wc_press_num.setText(press);
+        }else {
+            set_wc_press_num.setText("");
         }
 
 
@@ -127,6 +137,38 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
         goActivity(BleSettingActivity.class);
     }
 
+    //点击血压值标定
+    @OnClick(R.id.set_wc_press_rl)
+    public void setPress(){
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("请输入无创血压值标定")
+                .content("")
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("如：120/80", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                        set_wc_press_num.setText(input);
+                        SPUtils.getInstance().put(SP.WCPRESSVALUE,input.toString());
+
+                    }
+                })
+                .positiveText("确定")
+                .build();
+
+
+        if (dialog.getTitleView() != null){
+            dialog.getTitleView().setTextSize(25);
+        }
+        if (dialog.getContentView() != null){
+            dialog.getInputEditText().setTextSize(25);
+        }
+        if (dialog.getActionButton(DialogAction.POSITIVE) != null){
+            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
+        }
+
+        dialog.show();
+
+    }
     //点击服务器地址，弹窗
     @OnClick(R.id.set_server_rl)
     public void setServer(){

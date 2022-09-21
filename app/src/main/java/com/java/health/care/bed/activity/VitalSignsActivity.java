@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.SPUtils;
@@ -27,6 +29,7 @@ import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.service.WebSocketService;
+import com.java.health.care.bed.widget.EcgCM22ShowView;
 import com.java.health.care.bed.widget.EcgShowView;
 import com.java.health.care.bed.widget.PPGShowView;
 import com.java.health.care.bed.widget.RespShowView;
@@ -87,23 +90,41 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     @BindView(R.id.vital_temp)
     TextView tempText;
 
-    @BindView(R.id.patient_view_ecg)
-    EcgShowView ecgView;
+    @BindView(R.id.patient_view_ecg_cm22)
+    EcgCM22ShowView ecgViewCM22;
     @BindView(R.id.patient_view_resp)
     RespShowView respView;
     @BindView(R.id.patient_view_ppg)
     PPGShowView ppgView;
 
-    private Queue<Integer> dataQueue = new LinkedList<>();
-    private Queue<Integer> dataQueueResp = new LinkedList<>();
+    @BindView(R.id.vital_start_bp)
+    Button vital_start_bp;
 
-    private Timer timer;
+    @BindView(R.id.ll_layout_CM19)
+    LinearLayout ll_layout_CM19;
+    @BindView(R.id.ll_layout_CM22)
+    LinearLayout ll_layout_CM22;
+
+    private Queue<Integer> dataQueueEcgCM19 = new LinkedList<>();
+    private Queue<Integer> getDataQueueEcgCM22 = new LinkedList<>();
+    private Queue<Integer> dataQueueResp = new LinkedList<>();
+    private Queue<Integer> dataQueuePPG= new LinkedList<>();
+
+    private Timer timerCM19;
+    private Timer timerCM22;
+
+    //断开重连
     private Timer timerBle;
-    private int index = 0;
+
+    private int indexEcgCM19 = 0;
     private int indexResp = 0;
-    private int[] shorts = new int[5];
+    private int[] shortsEcgCM19 = new int[5];
     private int[] shortsResp = new int[5];
 
+    private int indexEcgCM22 = 0;
+    private int indexPPG = 0;
+    private int[] shortsEcgCM22 = new int[5];
+    private int[] shortsPPG = new int[5];
 
     //处方类型 生命体征检测1；无创连续血压2
     private int preType =1;
@@ -153,13 +174,18 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     bleCM19.setVisibility(View.VISIBLE);
                 }
             }
-
+            vital_start_bp.setVisibility(View.VISIBLE);
+            ll_layout_CM19.setVisibility(View.VISIBLE);
+            ll_layout_CM22.setVisibility(View.GONE);
         }else if(type==2){
             //无创连续血压
             Log.d(TAG,"TYPE===="+type);
             List<Param> paramList = unFinishedPres.getParam();
             //无需遍历上面的集合，就是cm22无创血压设备
             bleCM22.setVisibility(View.VISIBLE);
+            vital_start_bp.setVisibility(View.GONE);
+            ll_layout_CM19.setVisibility(View.GONE);
+            ll_layout_CM22.setVisibility(View.VISIBLE);
         }
 
 
@@ -173,10 +199,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         if(timerBle!=null){
             timerBle.cancel();
         }
-        if(timer!=null){
-            timer.cancel();
+        if(timerCM19!=null){
+            timerCM19.cancel();
         }
-
+        if(timerCM22!=null){
+            timerCM22.cancel();
+        }
     }
 
     @OnClick(R.id.back)
@@ -196,7 +224,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
         timerBle = new Timer();
         //画心电图和呼吸ppg
-        timer = new Timer();
+        timerCM19 = new Timer();
+        timerCM22 = new Timer();
          /* timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -237,7 +266,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             }
         }, 100, 17);
 */
-        timer.schedule(new TimerTask() {
+
+        //cm22无创连续血压
+        timerCM22.schedule(new TimerTask() {
             @Override
             public void run() {
                 //很重要，从队列里面取5个数据
@@ -245,9 +276,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
 
                 for (int i = 0; i < 5; i++) {
 
-                    Integer x = dataQueue.poll();
+                    Integer x = getDataQueueEcgCM22.poll();
 
-                    Integer y = dataQueueResp.poll();
+                    Integer y = dataQueuePPG.poll();
 
                     if (x == null) {
                         continue;
@@ -256,22 +287,22 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     if(y ==null){
                         continue;
                     }
-                    shorts[i] = x;
-                    shortsResp[i] =y;
+                    shortsEcgCM22[i] = x;
+                    shortsPPG[i] =y;
                 }
 
 
-                if (index >= shorts.length) {
-                    index = 0;
+                if (indexEcgCM22 >= shortsEcgCM22.length) {
+                    indexEcgCM22 = 0;
                 }
 
-                if(indexResp >=0){
-                    indexResp = 0;
+                if(indexPPG >=0){
+                    indexPPG = 0;
                 }
-                ecgView.showLine(shorts[index] );
-                ppgView.showLine(shortsResp[indexResp]);
-                index++;
-                indexResp++;
+                ecgViewCM22.showLine(shortsEcgCM22[indexEcgCM22] );
+                ppgView.showLine(shortsPPG[indexPPG]);
+                indexEcgCM22++;
+                indexPPG++;
 
             }
         }, 100, 25);
@@ -481,15 +512,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         short[] ecg = packet.secgdata;
         int[] resp = packet.irspData;
 
-//        Log.d("aaron====987",Arrays.toString(ecg));
-//        Log.d("aaron====789",Arrays.toString(resp));
-
         if (ecg.length != DevicePacket.ECG_IN_PACKET) {
             return;
         }
 
         for (int i = 0; i < 96; i++) {
-            dataQueue.add((int) ecg[i]);
+            dataQueueEcgCM19.add((int) ecg[i]);
             dataQueueResp.add(resp[i]);
         }
 
@@ -499,13 +527,13 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 if (packet.heartRate >0) {
                     heartRateText.setText(packet.heartRate + "");
                 }else {
-                    heartRateText.setText("--");
+//                    heartRateText.setText("--");
                 }
 
                 if (packet.resp > 0) {
                     respText.setText(packet.resp + "");
                 }else {
-                    respText.setText("--");
+//                    respText.setText("--");
                 }
 
             }
@@ -523,11 +551,27 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             return;
         }
         for (int i = 0; i < 96; i++) {
-            dataQueue.add((int) ecg[i]);
-            dataQueueResp.add((int) ppg[i]);
+            getDataQueueEcgCM22.add((int) ecg[i]);
+            dataQueuePPG.add((int) ppg[i]);
         }
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (packet.getHeartRate() >0 && packet.getHeartRate() <300 ) {
+                    heartRateText.setText(packet.getHeartRate()+"");
+                }else {
+//                    heartRateText.setText("--");
+                }
 
+                if (packet.getsSsPressDataData() > 0 && packet.getsSzPressDataData()>0 && packet.getsSsPressDataData()<300 &&packet.getsSzPressDataData()<300) {
+                    bpText.setText(packet.getsSsPressDataData() + "/"+ packet.getsSzPressDataData());
+                }else {
+//                    bpText.setText("--/--");
+                }
+
+            }
+        });
 
     }
 

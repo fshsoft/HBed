@@ -22,6 +22,14 @@ public class SP {
     public static final String REGION_NUM = "region_num"; //病区
     public static final String REGION_ID = "region_id";
     public static final String PATIENT_ID = "patientId";
+    public static final String PATIENT_NAME = "patientName";
+    public static final String PATIENT_SEX = "patientSex";
+    public static final String PATIENT_AGE = "patientAge";
+    public static final String PATIENT_ARM_LENGTH = "patientArmLength";
+
+
+
+
 
     public static final String TEMP = "TEMP";
 
@@ -39,6 +47,8 @@ public class SP {
     public static final String SMTZ = "LIFE";
     public static final String WCXY = "BLOOD_PRESSURE";
 
+    //无创连续血压值标定
+    public static final String WCPRESSVALUE ="WC_PRESS_VALUE";
 
 
 

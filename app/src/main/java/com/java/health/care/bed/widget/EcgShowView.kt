@@ -114,7 +114,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 break
             }
 
-            if (nowIndex <= intervalNumHeart) {
+            if (nowIndex < intervalNumHeart) {
                 this.data!![i] = refreshList!![i]
             } else {
                 val times = (nowIndex - 1) / intervalNumHeart

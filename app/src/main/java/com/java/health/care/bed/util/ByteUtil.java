@@ -479,4 +479,29 @@ public class ByteUtil {
 		bb[index + 2] = (byte) ((x >> 16)  & 0xff);
 		bb[index + 3] = (byte) ((x >> 24)  & 0xff);
 	}
+	private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5',
+			'6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+	public static String bytesToHexString(byte[] bytes) {
+		char[] buf = new char[bytes.length * 2];
+		int a = 0;
+		int index = 0;
+		for(byte b : bytes) { // 使用除与取余进行转换
+			if(b < 0) {
+				a = 256 + b;
+			} else {
+				a = b;
+
+			}
+			buf[index++] = HEX_CHAR[a / 16];
+			buf[index++] = HEX_CHAR[a % 16];
+		}
+
+		return new String(buf);
+	}
+
+	//Int 转2个字节小端
+	public static void putInttoTwoSmart(byte[] bb, int x, int index) {
+		bb[index + 0] = (byte) ((x >> 8)  & 0xff);
+		bb[index + 1] = (byte) ((x >> 0)  & 0xff);
+	}
 }

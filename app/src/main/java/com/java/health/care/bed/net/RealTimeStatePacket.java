@@ -15,8 +15,8 @@ import java.util.Arrays;
 public class RealTimeStatePacket {
 
     /**
-     * 头部header version 1  code 1  桢长度 2  serial 4  用户id 4
-     * 1+1+2+4+4 = 12
+     * 头部header version 1  code 1  桢长度 2  serial 4  用户id 4  Preserve域为预留域2  Check Code 数据校验码2
+     * 1+1+2+4+4+2+2 = 16
      */
     //版本协议
     private byte version = 2;
@@ -48,6 +48,14 @@ public class RealTimeStatePacket {
     //PPG波
     private byte[] ppgData;
 
+    //R波位置
+    private byte[] rrData;
+
+    //血压收缩压数组
+    private byte[] ssPressBytes;
+
+    //血压舒张压数组
+    private byte[] szPressBytes;
     //心率
     private short heartRate;
 
@@ -65,6 +73,9 @@ public class RealTimeStatePacket {
 
     //体温
     private short temp;
+
+    //开始时间
+    private int startTime;
     /**
      * body数据
      * 心电Type =      0x0010->0 16
@@ -75,7 +86,9 @@ public class RealTimeStatePacket {
      * 舒张压Type =    0x0044 0 68
      * 收缩压Type =    0x0045->0 69
      * 呼吸频率Type =   0x0046->0 70
-     * 体温Type =      0x0047->0 71
+     * R波位置Type =    0x0047 ->0 71
+     * 体温Type =      0x0048->0 72
+     * 开始时间 =       0x0050->0 80
      * 以tlv格式类型(2个字节)，长度（2个字节），
      * 值: 心电192+4 呼吸288+4 PPG192+4
      * 其他都定义2个字节（心率，血氧，舒张压，收缩压，呼吸频率，体温）（2+4）*6=36
@@ -84,19 +97,24 @@ public class RealTimeStatePacket {
      * 体温有小数，比较特殊，比如36.8  乘以10后看成368 进行传输
      */
 
-    public RealTimeStatePacket(int userId,int serialNum,byte[] ecgData,byte[] respData,byte[] ppgData,short heartRate,short spo2,
-                        short szPress,short ssPress,short resp, short temp){
+    public RealTimeStatePacket(int userId,int serialNum,byte[] ecgData,byte[] respData,byte[] ppgData,byte[] rrData,byte[] ssPressBytes,
+                               byte[] szPressBytes,short heartRate,short spo2,
+                        short szPress,short ssPress,short resp, short temp,int startTime){
         this.userId = userId;
         this.serialNum = serialNum;
         this.ecgData = ecgData;
         this.respData=respData;
         this.ppgData = ppgData;
+        this.rrData = rrData;
+        this.ssPressBytes= ssPressBytes;
+        this.szPressBytes = szPressBytes;
         this.heartRate = heartRate;
         this.spo2 = spo2;
         this.szPress = szPress;
         this.ssPress = ssPress;
         this.resp = resp;
         this.temp =temp;
+        this.startTime  =  startTime;
     }
     public byte[] buildPacket() {
         TlvBox tlvBox = new TlvBox();
@@ -105,19 +123,30 @@ public class RealTimeStatePacket {
         /**
          * body TLV TLVBox
          */
-        if(null!=ecgData)tlvBox.putBytesValue(18,ecgData);
-        if(null!=respData)tlvBox.putBytesValue(26,respData);
+        if(null!=ecgData)tlvBox.putBytesValue(16,ecgData);
+        if(null!=respData)tlvBox.putBytesValue(18,respData);
         if(null!=ppgData)tlvBox.putBytesValue(65,ppgData);
+
+        if (null!=rrData) tlvBox.putBytesValue(71,rrData);
+
         if(heartRate!=0)tlvBox.putShortValue(66,heartRate);
         if(spo2!=0)tlvBox.putShortValue(67,spo2);
+
+
         if(szPress!=0)tlvBox.putShortValue(68,szPress);
         if(ssPress!=0)tlvBox.putShortValue(69,ssPress);
+//
+        if(null!=szPressBytes) tlvBox.putBytesValue(68,szPressBytes);
+        if(null!=ssPressBytes) tlvBox.putBytesValue(69,szPressBytes);
+
         if(resp!=0)tlvBox.putShortValue(70,resp);
-        if(temp!=0)tlvBox.putShortValue(71,temp);
+        if(temp!=0)tlvBox.putShortValue(72,temp);
+
+        if(startTime!=0) tlvBox.putIntValue(80,startTime);
 
         byte[] bytes = tlvBox.serialize();
         int length = bytes.length;
-        byte[] bao=new byte[length];
+        byte[] bao=new byte[length+16];
 
         /**
          * header头为16位
@@ -127,7 +156,7 @@ public class RealTimeStatePacket {
         //code 1
         bao[1] =(byte) 1;
         //length 2
-        ByteUtil.short2bytes(bao, (short) length,2);
+        ByteUtil.short2bytes(bao, (short) (length+16),2);
         //serial 4
         ByteUtil.putInt(bao,serialNum,4);
         //userId  4
@@ -137,7 +166,7 @@ public class RealTimeStatePacket {
         //Check Code校验码 2
         ByteUtil.short2bytes(bao,checkCode,14);
 
-        System.arraycopy(bytes,0,bao,16,length-16);
+        System.arraycopy(bytes,0,bao,16,length);
 
 
 

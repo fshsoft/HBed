@@ -113,24 +113,20 @@
 
 
             <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_layout_CM22"
                 android:layout_width="0dp"
                 android:layout_weight="6"
                 android:orientation="vertical"
                 android:background="@color/vitalColor"
                 android:layout_height="match_parent">
 
-                <com.java.health.care.bed.widget.EcgShowView
-                    android:id="@+id/patient_view_ecg"
+                <com.java.health.care.bed.widget.EcgCM22ShowView
+                    android:id="@+id/patient_view_ecg_cm22"
                     android:layout_width="match_parent"
                     android:background="@color/vitalColor"
                     android:layout_height="250dp" />
 
-                <com.java.health.care.bed.widget.RespShowView
-                    android:visibility="gone"
-                    android:id="@+id/patient_view_resp"
-                    android:layout_width="match_parent"
-                    android:background="@color/vitalColor"
-                    android:layout_height="250dp" />
                 <com.java.health.care.bed.widget.PPGShowView
                     android:id="@+id/patient_view_ppg"
                     android:layout_width="match_parent"
@@ -141,9 +137,31 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_layout_CM19"
+                android:visibility="gone"
+                android:layout_width="0dp"
+                android:layout_weight="6"
+                android:orientation="vertical"
+                android:background="@color/vitalColor"
+                android:layout_height="match_parent">
+                <com.java.health.care.bed.widget.EcgShowView
+                    android:id="@+id/patient_view_ecg_cm19"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="250dp" />
+
+                <com.java.health.care.bed.widget.RespShowView
+                    android:id="@+id/patient_view_resp"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="250dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="4"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical"
                 android:layout_height="match_parent">
 
@@ -167,7 +185,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
-                            android:text="--"
+                            android:text=""
                             android:textColor="@color/ecgText"
                             android:textSize="118sp"
                             android:textStyle="bold" />
@@ -186,7 +204,7 @@
                     </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:background="@color/vitalColor"
@@ -206,7 +224,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="--"
+                        android:text=""
                         android:textColor="@color/spo2Text"
                         android:textSize="118sp"
                         android:textStyle="bold" />
@@ -232,7 +250,7 @@
 
 
         <LinearLayout
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="4"
@@ -262,7 +280,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="--/--"
+                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="118sp"
                         android:textStyle="bold" />
@@ -279,6 +297,7 @@
                         android:text="mmHg"/>
 
                     <Button
+                        android:visibility="gone"
                         android:id="@+id/vital_start_bp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -297,7 +316,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_weight="4"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical"
                 android:layout_height="match_parent">
 
@@ -321,7 +340,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="--"
+                        android:text=""
                         android:textColor="@color/respText"
                         android:textSize="108sp"
                         android:textStyle="bold" />
@@ -340,7 +359,7 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:background="@color/vitalColor"
@@ -359,7 +378,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="--"
+                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="108sp"
                         android:textStyle="bold" />

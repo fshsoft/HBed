@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/back"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
+        android:text="查看操作"
+        android:textColor="@color/barTitleColor"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="7"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/vitalColor"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CM19 心电检测仪 "
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_heart_rate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="心率："
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_resp_rate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="呼吸："
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+
+                <com.java.health.care.bed.widget.EcgShowView
+                    android:id="@+id/patient_view_ecg_cm19"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="200dp" />
+
+                <com.java.health.care.bed.widget.RespShowView
+                    android:id="@+id/patient_view_resp"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="200dp" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/vitalColor"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CM22无创连续血压仪"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_heart_rate_cm22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="心率："
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_press"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="血压："
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <com.java.health.care.bed.widget.EcgShowView
+                    android:id="@+id/patient_view_ecg_cm22"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="200dp" />
+
+                <com.java.health.care.bed.widget.PPGShowView
+                    android:id="@+id/patient_view_ppg"
+                    android:layout_width="match_parent"
+                    android:background="@color/vitalColor"
+                    android:layout_height="200dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_marginTop="20dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="60dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="60dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="血氧"
+                        android:textColor="@color/textColor"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_spo2_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="70dp"
+                        android:textColor="@color/btnColor"
+                        android:textSize="20sp"
+                        tools:text="99 %SpO₂" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="260dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="血压"
+                        android:textColor="@color/textColor"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_bp_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="70dp"
+                        android:textColor="@color/btnColor"
+                        android:textSize="20sp"
+                        tools:text="122/76 mmHg" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="260dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="体温"
+                        android:textColor="@color/textColor"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/kyc_irt_data"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="70dp"
+                        android:textColor="@color/btnColor"
+                        android:textSize="20sp"
+                        tools:text="36.6 ℃" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="声波通道"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第一通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sound_wave_one"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第二通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sound_wave_two"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第三通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sound_wave_three"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第四通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sound_wave_four"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="香薰通道"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第一通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sweet_one"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第二通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sweet_two"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第三通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sweet_three"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:text="第四通道："
+                            android:textColor="@color/btnColor"
+                            android:textSize="20sp" />
+
+
+                        <Switch
+                            android:id="@+id/sweet_four"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:showText="true"
+                            android:switchMinWidth="20dp"
+                            android:textOff="关"
+                            android:textOn="开"
+                            android:thumb="@drawable/thumb"
+                            android:track="@drawable/track" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:text="按钮呼叫"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:text="呼叫响应："
+                    android:textColor="@color/btnColor"
+                    android:textSize="20sp" />
+
+
+                <Switch
+                    android:id="@+id/call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:showText="true"
+                    android:switchMinWidth="20dp"
+                    android:textOff="关"
+                    android:textOn="开"
+                    android:thumb="@drawable/thumb"
+                    android:track="@drawable/track" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

@@ -195,6 +195,10 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
             user_age.setText("年龄："+patient.getAge());
             user_bunk_num.setText("床号："+patient.getBunkNo());
             SPUtils.getInstance().put(SP.PATIENT_ID,patient.getPatientId());
+            SPUtils.getInstance().put(SP.PATIENT_NAME,patient.getPatientName());
+            SPUtils.getInstance().put(SP.PATIENT_SEX,patient.getSex());
+            SPUtils.getInstance().put(SP.PATIENT_AGE,patient.getAge());
+
         }
     }
 

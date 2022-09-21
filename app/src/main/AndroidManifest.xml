@@ -82,6 +82,9 @@
         <activity android:name=".activity.KYCSetActivity"
             android:screenOrientation="landscape"/>
 
+        <activity android:name=".activity.BLESeeAndOperateActivity"
+            android:screenOrientation="landscape"/>
+
         <activity android:name=".activity.SoundWaveActivity"
             android:screenOrientation="landscape"/>
 

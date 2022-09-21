@@ -14,8 +14,13 @@ public class Constant {
     public static final String UUID_SERVICE_CM22 = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
     public static final String UUID_CHARA_CM22_NOTIFY = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
     public static final String UUID_CHARA_CM22_WRITE = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
+
+    public static final String Order_PersonInfo = "200200110000000030000009";   //动态获取，请求个人信息之后返回
     public static final String Order_BeginMeasure = "2002000E0000000010000006FEFE";
     public static final String Order_StopMeasure =  "2002000E0000000020000006FEFE";
+    public static final String Order_BeginTime = "200200100000000050000008";
+    public static final String Order_Calibration = "200200100000000060000008";
+    public static final String Order_PersonID = "200200100000000040000008";
 
 
     public static final String UUID_SERVICE_SPO2 ="0000ffb0-0000-1000-8000-00805f9b34fb";

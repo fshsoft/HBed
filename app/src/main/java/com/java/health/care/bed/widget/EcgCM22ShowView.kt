@@ -12,7 +12,7 @@ import com.java.health.care.bed.util.DensityUtil.dip2px
 import com.java.health.care.bed.util.Utils
 import java.util.*
 
-class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     private var mWidth: Float = 0.toFloat()
     private var mHeight: Float = 0.toFloat()
@@ -41,7 +41,6 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var mGridLinestrokeWidth: Float = 0.toFloat()
     private var mGridstrokeWidthAndHeight: Float = 0.toFloat()
 
-
     init {
         init()
     }
@@ -69,7 +68,6 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         drawHeartRefresh(canvas)
 
     }
@@ -90,7 +88,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         paint!!.reset()
         path!!.reset()
         paint!!.style = Paint.Style.STROKE
-        paint!!.color = Color.parseColor("#DB6E7C")
+        paint!!.color = Color.parseColor("#6EDB75")
         paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
         path!!.moveTo(0f, mHeight / 2)
@@ -116,7 +114,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
                 break
             }
 
-            if (nowIndex <= intervalNumHeart) {
+            if (nowIndex < intervalNumHeart) {
                 this.data!![i] = refreshList!![i]
             } else {
                 val times = (nowIndex - 1) / intervalNumHeart
@@ -133,49 +131,39 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         var nowY: Float
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
-
             var dataValue = data!![i]
-//            Log.d("aaron====888=====", Arrays.toString(data))
-//            Log.d("aaron====888========", dataValue.toString())
+            Log.d("aaron====8888999==++", Arrays.toString(data))
+//            if (dataValue > 0) {
+//                if (dataValue > MAX_VALUE * 0.3f) {
+//                    dataValue = MAX_VALUE * 0.3f
+//                }
+//            } else {
+//                if (dataValue < -MAX_VALUE * 0.3f) {
+//                    dataValue = -(MAX_VALUE * 0.3f)
+//                }
+//            }
+//            nowY = mHeight / 2 - dataValue * intervalColumnHeart
 
-            //|| dataValue==32768f
-            if(dataValue==0.0f ){
-                nowY = dataValue * intervalColumnHeart +mHeight/2
-            }else{
+            //坐标y -0偏置值  最后除以1mv电压
+            nowY = (dataValue -128)* intervalColumnHeart*0.2f +mHeight/2
 
-                nowY = (dataValue-32768) * intervalColumnHeart +mHeight/2
+//            Log.d("aaron====8888999=====", nowY.toString())
 
-              Log.d("mHeight====",mHeight.toString())
-
-                if(nowY>=350f){
-                    nowY = 350f
-                }
-
-                if(nowY<=0){
-                    nowY =0.0f
-                }
-
-            }
 
             if (i - 1 == showIndex) {
                 path!!.moveTo(nowX, nowY)
 
             } else {
-
-                //坐标= mWidth -2*intervalRowHeart 1401-10 2个间隙
-                if(nowX>mWidth -3*intervalRowHeart){
-                    //坐标x为最后三个的时候，直接跳出循环，不再绘制。 主要是最后三个点会进行bug直线绘制线，结束是到高度为mHeight/2
-                    //偶尔高度会0.很奇怪
+                //坐标= mWidth -3*intervalRowHeart 1401-15 2个间隙
+                if(nowX>mWidth -3*intervalRowHeart){  //坐标x为最后三个的时候，直接跳出循环，不再绘制。
                     break
                 }
-                if(nowX==0f){ //坐标x为0的时候，不绘制，只移动，主要是一开始就会进行绘制，高度是mHeight/2有条竖线
+                if(nowX==0f){  //坐标x为0的时候，不绘制，只移动
                     path!!.moveTo(nowX, nowY)
                 }else{
                     path!!.lineTo(nowX, nowY)
 
                 }
-
-
             }
 
         }
@@ -193,6 +181,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
         intervalNumHeart = (mWidth / intervalRowHeart).toInt()
         intervalColumnHeart = mHeight / (MAX_VALUE * 2)
 
+//        Log.d("aaron==20.0==128==3.125", "$intervalRowHeart====$intervalNumHeart=====$intervalColumnHeart");
     }
 
 
