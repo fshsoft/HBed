@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -118,7 +119,10 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
     private MediaPlayer bgMediaPlayer;
     private MediaPlayer perMediaPlayer;
     private boolean stopFlag = true;
-
+    private MyCountDownTimer mc;
+    //获取到数据，通知开始倒计时
+    private boolean isGotData = false;
+    private int mMusicDuration;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -158,7 +162,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
         });
         bgMediaPlayer.start();
 
-
+        //获取评估训练时长
+        mMusicDuration = Integer.valueOf("20") * 60 * 1000;
 
 
     }
@@ -235,9 +240,12 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 //蓝牙设备CM19连接成功
-
+                stopFlag = false;
                 deviceListConnect.add(bleDevice);
                 EventBus.getDefault().post(deviceListConnect);
+                //把获取到的时间，进行展示，倒计时展示
+                String timeStr = millisUntilFinishedToMin(Integer.valueOf("20") * 60 * 1000);
+                breatheTime.setText(timeStr);
             }
 
             @Override
@@ -343,6 +351,11 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
         if (bgMediaPlayer != null) {
             bgMediaPlayer.release();
         }
+
+        if (null != mc) {
+            mc.cancel();
+            mc = null;
+        }
     }
     /**
      * 数据接收
@@ -351,6 +364,12 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
      */
     @Override
     public void onDataReceived(DevicePacket packet) {
+
+        if(!isGotData){
+            handler.sendEmptyMessage(3);
+            isGotData = true;
+        }
+
         //这个里面是CM19设备，心电设备（心电和呼吸）
         short[] ecg = packet.secgdata;
         int[] resp = packet.irspData;
@@ -540,7 +559,16 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
 
                     }
                 }
-            }else if (msg.what == 4) {
+            }else if(msg.what==3){
+                //开启倒计时
+                mc = new MyCountDownTimer(mMusicDuration, 1000);
+                mc.start();
+
+
+            }
+
+
+            else if (msg.what == 4) {
                 perMediaPlayer = MediaPlayer.create(DrillActivity.this, R.raw.inhaleexhaleesti);
                 perMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -555,5 +583,52 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
         }
     };
 
+    /**
+     * 倒计时使用
+     */
+    private String millisUntilFinishedToMin(long millisUntilFinished) {
+        StringBuffer sb = new StringBuffer();
+        int min = (int) (millisUntilFinished / 60 / 1000);
+        int s = (int) ((millisUntilFinished % (60 * 1000)) / 1000);
+//        MyLogUtils.d(TAG,"取余剩下的秒数:"+s);
+        if (min > 0) {
+            if (min < 10) {
+                sb.append("0");
+            }
+            sb.append(min);
+            sb.append(":");
+        } else {
+            sb.append("00:");
+        }
+        if (s < 10) {
+            sb.append("0");
+        }
+        sb.append(s);
+        return sb.toString();
+    }
 
+
+    /**
+     * 测评结束的逻辑，时间倒计时
+     */
+    public class MyCountDownTimer extends CountDownTimer {
+
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            //参数：总时长，间隔时长
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            String timeStr = millisUntilFinishedToMin(millisUntilFinished);
+            Log.d(TAG, "MyCountDownTimer====" + timeStr);
+            breatheTime.setText(timeStr);
+        }
+
+        @Override
+        public void onFinish() {
+            //倒计时完成后，处理事物
+        }
+    }
 }
