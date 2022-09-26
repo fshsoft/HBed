@@ -118,8 +118,8 @@
     <string name="patient_data_upload_fail">数据上传失败，请在“历史数据”中重新上传</string>
     <string name="patient_data_disconnect_access">正在进行中 ，您确定要中断吗</string>
     <string name="patient_disconnect_access">中断</string>
-    <string name="patient_breath_value">呼吸:-</string>
-    <string name="patient_breath_score_value">平衡状态评分:-</string>
+    <string name="patient_breath_value">呼吸:</string>
+    <string name="patient_breath_score_value">平衡状态评分:</string>
 
     <string name="patient_heart_rate_value">心率:</string>
     <string name="patient_history_upload_status">报告上传状态</string>

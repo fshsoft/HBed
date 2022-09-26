@@ -36,9 +36,9 @@ public class TagValueTextView extends View {
     private int mViewWidth;
     private int mViewHeight;
     private int mTextColor;
-    private int mValueTextSize = 26;
-    private int mTagTextSize = 14;
-    private int mMargin = 5;
+    private int mValueTextSize = 36;
+    private int mTagTextSize = 26;
+    private int mMargin = 1;
     private int value = 50;
     private String tag = "分";
     private Paint mValuePaint;
@@ -75,7 +75,7 @@ public class TagValueTextView extends View {
 
     private void init(Context context) {
         this.mContext = context;
-        mTextColor = ContextCompat.getColor(mContext, R.color.color_red_FE647C);
+        mTextColor = ContextCompat.getColor(mContext, R.color.vitalColor);
         mValueTextSize = DpUtil.dp2px(mContext,mValueTextSize);
         mTagTextSize = DpUtil.dp2px(mContext,mTagTextSize);
         mMargin = DpUtil.dp2px(mContext,mMargin);

@@ -122,7 +122,10 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 val temp = times * intervalNumHeart + i
 
                 if (temp < nowIndex) {
-                    this.data!![i] = refreshList!![temp]
+                    if(data != null && refreshList !=null){
+                        this.data!![i] = refreshList!![temp]
+                    }
+//                    this.data!![i] = refreshList!![temp]
                 }
             }
         }

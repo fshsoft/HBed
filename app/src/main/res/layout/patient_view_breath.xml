@@ -8,14 +8,13 @@
         android:id="@+id/breath_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/size_90"
-        android:layout_marginBottom="0dp">
+        android:layout_marginTop="60dp">
 
 
         <ImageView
             android:id="@+id/patient_view_breathe"
-            android:layout_width="@dimen/size_210"
-            android:layout_height="@dimen/size_210"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:layout_centerInParent="true" />
 
         <LinearLayout
@@ -30,16 +29,17 @@
                 android:id="@+id/patient_view_breathe_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/patient_breathe_normal"
-                android:textSize="@dimen/text_size_18sp" />
+                android:text="呼吸引导"
+                android:textColor="@color/black"
+                android:textSize="28sp" />
 
             <TextView
                 android:id="@+id/patient_view_breathe_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_9"
+                android:layout_marginTop="10dp"
                 android:text=""
-                android:textSize="@dimen/text_size_26sp" />
+                android:textSize="28sp" />
         </LinearLayout>
 
 
@@ -50,89 +50,119 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/patient_ll_disconnect"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:paddingTop="@dimen/size_10">
+        android:orientation="vertical">
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginEnd="@dimen/size_9"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
             android:orientation="horizontal">
 
 
-            <TextView
-                android:id="@+id/patient_view_tv_breathe_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="@string/patient_breath_score_value"
-                android:textSize="@dimen/text_size_18sp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="right"
+                android:background="@drawable/ppg_bg_orange"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/patient_view_tv_breathe_score"
+                    android:layout_width="wrap_content"
+                    android:gravity="right"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="30dp"
+                    android:textColor="@color/black"
+                    android:text="@string/patient_breath_score_value"
+                    android:textSize="28sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="44sp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:text=""
+                    android:layout_marginRight="30dp"
+                    android:textColor="@color/holo_red_light"/>
 
-            <TextView
-                android:id="@+id/patient_view_tv_breathe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/size_32"
-                android:text="呼吸率:-"
-                android:textSize="@dimen/text_size_18sp"
-                android:visibility="gone" />
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/patient_view_tv_hart_rate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:text="@string/patient_heart_rate_value"
-                android:textSize="@dimen/text_size_18sp" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:background="@drawable/ppg_bg_green"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:paddingLeft="30dp"
+                    android:gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:text="@string/patient_heart_rate_value"
+                    android:textColor="@color/black"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/patient_view_tv_hart_rate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="44sp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:text=""
+                    android:textColor="@color/holo_green_dark"/>
+            </LinearLayout>
+
+
 
         </LinearLayout>
 
 
-        <com.java.health.care.bed.widget.MyEcgView
+        <com.java.health.care.bed.widget.EcgShowView
             android:id="@+id/patient_view_signal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/size_100"
-            android:layout_marginTop="@dimen/size_2"
-            android:layout_marginBottom="@dimen/size_2" />
+            android:layout_height="220dp" />
 
-        <com.java.health.care.bed.widget.MyEcgView
+        <com.java.health.care.bed.widget.RespShowView
             android:id="@+id/patient_view_resp"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/size_100"
-            android:layout_marginTop="@dimen/size_2"
-            android:layout_marginBottom="@dimen/size_2" />
+            android:layout_height="100dp" />
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:layout_marginTop="@dimen/size_80"
+        android:layout_marginTop="30dp"
         android:id="@+id/patient_ll_disconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/breath_rl"
         android:gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/size_80"
+        android:layout_marginBottom="12dp"
         android:orientation="vertical">
 
 
         <TextView
             android:id="@+id/patient_view_time"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="13:30"
-            android:textSize="@dimen/text_size_20sp" />
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="38sp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/patient_view_disconnect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/patient_disconnect_access"
-            android:textSize="@dimen/text_size_18sp" />
+            android:layout_width="160dp"
+            android:layout_height="50dp"
+            android:text="中断"
+            android:background="@drawable/button_bg"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
 
     </LinearLayout>
 

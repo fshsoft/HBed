@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-
-    <TextView
-        android:id="@+id/patient_access_connect_device"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
-        android:text="开始"
-        android:textColor="@color/white"
-        android:textSize="@dimen/size_18" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
 
     <RelativeLayout
+        android:id="@+id/ll_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/size_90">
+        android:layout_marginTop="60dp">
 
 
         <ImageView
             android:id="@+id/patient_breathe_iv"
-            android:layout_width="@dimen/size_210"
-            android:layout_height="@dimen/size_210"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:layout_centerHorizontal="true" />
 
         <LinearLayout
@@ -39,20 +29,55 @@
                 android:id="@+id/patient_access_tv_breathe_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="常规呼吸"
-                android:textColor="@color/white"
-                android:textSize="@dimen/text_size_18sp" />
+                android:text="呼吸引导"
+                android:textColor="@color/black"
+                android:textSize="28sp" />
 
-            <com.java.health.care.bed.widget.TagValueTextView
-                android:id="@+id/patient_access_tv_breathe_time"
-                android:layout_width="wrap_content"
+<!--            <com.java.health.care.bed.widget.TagValueTextView-->
+<!--                android:id="@+id/patient_access_tv_breathe_time"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:layout_marginTop="20dp" />-->
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_9" />
+                android:gravity="center"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50"
+                    android:textColor="@color/barTitleColor"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="28sp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/barTitleColor"
+                    android:text="min"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
 
     </RelativeLayout>
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/patient_access_connect_device"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:text="开始"
+        android:background="@drawable/button_bg"
+        android:layout_gravity="center"
+        android:layout_marginTop="92dp"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
 
-</RelativeLayout>
+
+</LinearLayout>
