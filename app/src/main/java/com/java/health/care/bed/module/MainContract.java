@@ -1,5 +1,7 @@
 package com.java.health.care.bed.module;
 
+import java.io.File;
+
 public interface MainContract {
 
     interface View  {
@@ -41,7 +43,7 @@ public interface MainContract {
         /**
          * 文件上传
          */
-
+        void uploadFile(File file,String strategy, String patientId,String preID,String preType);
 
         /**
          * 香薰和声波 完成处方上传

@@ -1,12 +1,14 @@
 package com.java.health.care.bed.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.base.BaseObserver;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
+import com.java.health.care.bed.bean.FileBean;
 import com.java.health.care.bed.bean.LLBean;
 import com.java.health.care.bed.bean.Prescription;
 import com.java.health.care.bed.bean.Token;
@@ -15,12 +17,19 @@ import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.net.RetrofitUtil;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class MainPresenter implements MainContract.presenter {
 
@@ -179,6 +188,56 @@ public class MainPresenter implements MainContract.presenter {
                     }
                 });
     }
+
+    @Override
+    public void uploadFile(File file, String strategy,String patientId, String preId,String preType) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+
+        RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+
+        Map<String,String> mapReport = new HashMap<>();
+        mapReport.put("preId",preId); //preID
+        mapReport.put("patientId",patientId); //preID
+        mapReport.put("preType",preType);//preType
+        JSONObject json = new JSONObject(mapReport);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(json);
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("source","pad");
+        map.put("strategy",strategy); //报告文件strategy
+        map.put("otherParam",jsonArray);
+        JSONObject jsonObject = new JSONObject(map);
+
+        Log.d(" json.toString()", jsonObject.toString());
+
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .addFormDataPart("file", file.getName(), body)
+                .addFormDataPart("param", jsonObject.toString() )
+                .setType(MultipartBody.FORM)
+                .build();
+
+        RetrofitUtil.getInstance().initRetrofit().uploadFile(value,multipartBody.parts())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new BaseObserver<FileBean >(context){
+
+                        @Override
+                        protected void onSuccess(BaseEntry<FileBean> t) throws Exception {
+                            view.setCode(t.getCode());
+                            view.setMsg(t.getMessage());
+                            view.setObj(t.getData());
+                        }
+
+                        @Override
+                        protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                            showMessage(e,isNetWorkError);
+                        }
+                    });
+
+
+    }
+
     /**
      * 熏香和声波 结束上传
      *  "duration": 100,

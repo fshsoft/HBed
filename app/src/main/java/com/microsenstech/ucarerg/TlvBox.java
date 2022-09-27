@@ -198,7 +198,7 @@ public class TlvBox {
     	else
     	{
     		 mObjects.put(type, value);
-    	     mTotalBytes += value.length + 8;
+    	     mTotalBytes += value.length + 4;
     	}
        
     }

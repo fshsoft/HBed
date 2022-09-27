@@ -65,10 +65,12 @@ public interface AllApi {
    /**
     * 文件上传 Api.uploadFile 这个是apk下载，我这边不需要，需要对生命体征检测和心肺谐振评估和训练上传文件 需要
     */
+/*   @POST(Api.uploadFile)
+   @Multipart
+   Observable<BaseEntry<FileBean>> uploadFile(@PartMap Map<String, RequestBody> maps);*/
    @POST(Api.uploadFile)
    @Multipart
-   Observable<BaseEntry<FileBean>> uploadFile(@PartMap Map<String, RequestBody> maps);
-
+   Observable<BaseEntry<FileBean>> uploadFile(@Header("authorization") String str,@Part List<MultipartBody.Part> parts);
    /**
     * 文件下载
     */

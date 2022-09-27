@@ -29,6 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
@@ -43,6 +44,8 @@ import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.Music;
+import com.java.health.care.bed.module.MainContract;
+import com.java.health.care.bed.presenter.MainPresenter;
 import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
@@ -81,7 +84,7 @@ import butterknife.OnClick;
  * @date 2022/08/11 09:20
  * @Description 评估界面
  */
-public class AssessActivity extends BaseActivity implements DataReceiver {
+public class AssessActivity extends BaseActivity implements DataReceiver, MainContract.View {
 
     @BindView(R.id.assess_user)
     TextView assess_user;
@@ -138,6 +141,9 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     private int mMusicDuration;
 
     private List<Param> paramList;
+
+    private MainPresenter presenter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -161,6 +167,20 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
 
+        presenter = new MainPresenter(this, this);
+
+      /* new Thread(new Runnable() {
+           @Override
+           public void run() {
+               String path = Environment.getExternalStorageDirectory().getPath() + "/Hbed/data/" + "1022" + "-" + "20220727144102" + ".zip";
+
+               //获取文件
+               File file = FileUtils.getFileByPath(path);
+
+               //文件上传
+               presenter.uploadFile(file,"file_uploadReportLfs","111","1212","RESONANCE");
+           }
+       }).start();*/
 
 
         //获取评估训练时长
@@ -719,6 +739,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     }
 
 
+
     /**
      * 测评结束的逻辑，时间倒计时
      */
@@ -777,6 +798,30 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         //关闭服务
         stopService(DataReaderService.class);
 
+
+    }
+    @Override
+    public void setCode(String code) {
+
+    }
+
+    @Override
+    public void setMsg(String msg) {
+
+    }
+
+    @Override
+    public void setInfo(String msg) {
+
+    }
+
+    @Override
+    public void setObj(Object obj) {
+
+    }
+
+    @Override
+    public void setData(Object obj) {
 
     }
 

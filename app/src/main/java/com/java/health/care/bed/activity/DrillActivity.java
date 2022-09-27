@@ -40,6 +40,8 @@ import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
 import com.java.health.care.bed.model.Music;
+import com.java.health.care.bed.module.MainContract;
+import com.java.health.care.bed.presenter.MainPresenter;
 import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.service.WebSocketService;
 import com.java.health.care.bed.util.ImageLoadUtils;
@@ -68,7 +70,7 @@ import butterknife.OnClick;
  * @date 2022/08/11 09:21
  * @Description 训练界面
  */
-public class DrillActivity extends BaseActivity implements DataReceiver {
+public class DrillActivity extends BaseActivity implements DataReceiver, MainContract.View {
     @BindView(R.id.drill_user)
     TextView drill_user;
     @BindView(R.id.drill_id)
@@ -123,6 +125,9 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
     //获取到数据，通知开始倒计时
     private boolean isGotData = false;
     private int mMusicDuration;
+
+    private MainPresenter presenter;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -146,21 +151,9 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
 
-        //开始播放背景音乐
-        if (bgMediaPlayer != null) {
-            bgMediaPlayer.release();
-        }
-        bgMediaPlayer = MediaPlayer.create(DrillActivity.this,
-                R.raw.def_comfort_1);
-        bgMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer media) {
-//                media.reset();
-//                media.release();
-                media.start();
-            }
-        });
-        bgMediaPlayer.start();
+
+
+        presenter = new MainPresenter(this, this);
 
         //获取评估训练时长
         mMusicDuration = Integer.valueOf("20") * 60 * 1000;
@@ -243,9 +236,41 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                 stopFlag = false;
                 deviceListConnect.add(bleDevice);
                 EventBus.getDefault().post(deviceListConnect);
+
+
+
                 //把获取到的时间，进行展示，倒计时展示
                 String timeStr = millisUntilFinishedToMin(Integer.valueOf("20") * 60 * 1000);
                 breatheTime.setText(timeStr);
+
+                //开始播放背景音乐
+                if (bgMediaPlayer != null) {
+                    bgMediaPlayer.release();
+                }
+                bgMediaPlayer = MediaPlayer.create(DrillActivity.this,
+                        R.raw.def_comfort_1);
+                bgMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer media) {
+//                media.reset();
+//                media.release();
+                        media.start();
+                    }
+                });
+                bgMediaPlayer.start();
+
+                //开启倒计时
+                handler.sendEmptyMessageDelayed(3333,1000);
+
+
+                //设备连接之后，
+                //开始发送第一阶段
+                //间隔5分钟后发送，第二阶段
+                //间隔10分钟后发送，第三阶段
+                //间隔15分钟后发送，第四阶段
+                /**
+                 * 必须要通过接口得知，每个阶段的类型和时长，总时长
+                 */
             }
 
             @Override
@@ -498,7 +523,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if(msg.what ==1 ){
+            if(msg.what ==1111 ){
 //                showParticleAnim();
                 breatheStatus.setText("呼");
                 animation = AnimationUtils.loadAnimation(DrillActivity.this, R.anim.anim_set);
@@ -530,7 +555,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
                     }
 
                 }
-            }else if(msg.what ==2){
+            }else if(msg.what ==2222){
                 breatheStatus.setText("吸");
                 animation = AnimationUtils.loadAnimation(DrillActivity.this, R.anim.anim_set_back);
 
@@ -559,7 +584,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
 
                     }
                 }
-            }else if(msg.what==3){
+            }else if(msg.what==3333){
                 //开启倒计时
                 mc = new MyCountDownTimer(mMusicDuration, 1000);
                 mc.start();
@@ -568,7 +593,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
             }
 
 
-            else if (msg.what == 4) {
+            else if (msg.what == 4444) {
                 perMediaPlayer = MediaPlayer.create(DrillActivity.this, R.raw.inhaleexhaleesti);
                 perMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -608,6 +633,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
     }
 
 
+
+
     /**
      * 测评结束的逻辑，时间倒计时
      */
@@ -630,5 +657,30 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
         public void onFinish() {
             //倒计时完成后，处理事物
         }
+    }
+
+    @Override
+    public void setCode(String code) {
+
+    }
+
+    @Override
+    public void setMsg(String msg) {
+
+    }
+
+    @Override
+    public void setInfo(String msg) {
+
+    }
+
+    @Override
+    public void setObj(Object obj) {
+
+    }
+
+    @Override
+    public void setData(Object obj) {
+
     }
 }
