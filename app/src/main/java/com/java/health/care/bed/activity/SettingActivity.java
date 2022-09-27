@@ -182,9 +182,10 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
                         set_server_address.setText(input);
                         SPUtils.getInstance().put(SP.IP_SERVER_ADDRESS,input.toString());
                         String token = SPUtils.getInstance().getString(SP.TOKEN);
-                        if(token.isEmpty()){
-                            getToken();
-                        }
+//                        if(token.isEmpty()){
+//                            getToken();
+//                        }
+                        getToken();
                     }
                 })
                 .positiveText("确定")

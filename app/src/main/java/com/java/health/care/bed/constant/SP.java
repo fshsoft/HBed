@@ -40,12 +40,12 @@ public class SP {
 
     //接口常量1-血压，2-血氧，3-体温 4-心电
     //处方类型"preType": "FRAGRANCE
-    public static final String FANGXING = "FRAGRANCE";
-    public static final String SHENGBO = "SONIC_WAVE";
-    public static final String ZZSJ = "NERVE";
-    public static final String XFXZ = "RESONANCE";
-    public static final String SMTZ = "LIFE";
-    public static final String WCXY = "BLOOD_PRESSURE";
+    public static final String FANGXING = "FRAGRANCE"; //芳香
+    public static final String SHENGBO = "SONIC_WAVE"; //声波
+    public static final String ZZSJ = "NERVE"; //自主神经评估
+    public static final String XFXZ = "RESONANCE"; //心肺谐振训练
+    public static final String SMTZ = "LIFE";  //生命体征
+    public static final String WCXY = "BLOOD_PRESSURE"; //无创血压
 
     //无创连续血压值标定
     public static final String WCPRESSVALUE ="WC_PRESS_VALUE";

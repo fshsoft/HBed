@@ -144,7 +144,8 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
 
     @OnClick(R.id.bed_register_choice_rl)
     public void bedChoice() {
-        if(depts==null || depts.size()==0 || lists==null || lists.size()==0){
+//        if(depts==null || depts.size()==0 || lists==null || lists.size()==0){
+        if(depts==null || depts.size()==0 ){
             showToast("请检查服务器地址或者科室病区数据为空");
         }else {
             showHyPickerView();
@@ -204,12 +205,20 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
         for (int i = 0; i < jsonBean.size(); i++) {
             List<String> regList = new ArrayList<>();
             List<Region> regionList = jsonBean.get(i).getRegions();
+            if(regionList!=null){
+                for (int c = 0; c < regionList.size(); c++) {
+//                String regName = regionList.get(c).getName();
+                    Region region = regionList.get(c);
+                    if(null!=region){
 
-            for (int c = 0; c < regionList.size(); c++) {
-                String regName = regionList.get(c).getName();
-                Log.d(TAG,"dept=="+regName);
-                regList.add(regName);
+                        regList.add(region.getName());
+                    }else {
+                        regList.add("null");
+                    }
+
+                }
             }
+
 
             lists.add(regList);
         }

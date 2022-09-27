@@ -80,7 +80,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver {
     @BindView(R.id.drill_ll)
     LinearLayout drill_ll;
 
-    private static final String TAG = DrillActivity.class.getSimpleName();
+    public static final String TAG = DrillActivity.class.getSimpleName();
     private WebSocketService webSocketService;
     private View connectDeviceView;
     private TextView tvConnectDevice;

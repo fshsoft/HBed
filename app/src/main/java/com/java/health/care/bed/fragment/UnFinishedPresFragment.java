@@ -140,9 +140,11 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
                         goActivity(VitalSignsActivity.class,bundle);
 
                     }else if(type.equals(SP.ZZSJ)){//自主神经评估
-                        goActivity(AssessActivity.class);
+                        bundle.putParcelable(AssessActivity.TAG,unFinishedPres);
+                        goActivity(AssessActivity.class,bundle);
                     }else if(type.equals(SP.XFXZ)){ //心肺谐振训练
-                        goActivity(DrillActivity.class);
+                        bundle.putParcelable(DrillActivity.TAG,unFinishedPres);
+                        goActivity(DrillActivity.class,bundle);
                     }
                 }
             });

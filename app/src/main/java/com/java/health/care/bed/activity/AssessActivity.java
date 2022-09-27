@@ -38,6 +38,8 @@ import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.base.BaseApplication;
+import com.java.health.care.bed.bean.Param;
+import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.Music;
@@ -92,7 +94,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     @BindView(R.id.assess_ll)
     LinearLayout assess_ll;
     private WebSocketService webSocketService;
-    private static final String TAG = AssessActivity.class.getSimpleName();
+    public static final String TAG = AssessActivity.class.getSimpleName();
     private View connectDeviceView;
     private TextView tvConnectDevice;
     private View breatheView;
@@ -102,7 +104,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     private TextView breatheDisconnect;//呼吸中断
     private TextView breatheRate;//呼吸频率
     private TextView tvHeartRate;//心率
-    private TextView tvBreathScore;//和谐指数
+    private TextView tvBreathScore;
     private ImageView ivBreathe;
     private LinearLayout testRlBreath;
 
@@ -124,7 +126,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     List<BleDevice> deviceListConnect = new ArrayList<>();
     private Animation animation;
     private float initBreathRatio = 0.6f;
-    private float initRate = 10;
+    private float initRate = 10f;
     DecimalFormat df = new DecimalFormat("0.00");//格式化小数
     private MediaPlayer mediaPlayer;
     private MediaPlayer bgMediaPlayer;
@@ -134,6 +136,8 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     //获取到数据，通知开始倒计时
     private boolean isGotData = false;
     private int mMusicDuration;
+
+    private List<Param> paramList;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -157,24 +161,23 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
 
-        //开始播放背景音乐
-        if (bgMediaPlayer != null) {
-            bgMediaPlayer.release();
-        }
-        bgMediaPlayer = MediaPlayer.create(AssessActivity.this,
-                R.raw.def_comfort_1);
-        bgMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer media) {
-//                media.reset();
-//                media.release();
-                media.start();
-            }
-        });
-        bgMediaPlayer.start();
+
 
         //获取评估训练时长
-        mMusicDuration = Integer.valueOf("20") * 60 * 1000;
+        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //评估里面 有四个阶段，每个阶段类型不一样，value:自由呼吸-1， 6次/分钟   9次/分钟  12次/分钟
+        UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
+
+        paramList = unFinishedPres.getParam();
 
 
 
@@ -202,10 +205,13 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         tvConnectDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //开始，连接cm19设备
+                //点击开始，连接cm19设备
 //
                 scanBle();
+
+                //设备没连接成功之前，先进行切换界面，体验比较好
                 addBreathView();
+
 
             }
         });
@@ -256,9 +262,98 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                 deviceListConnect.add(bleDevice);
                 EventBus.getDefault().post(deviceListConnect);
 
+
+
                 //把获取到的时间，进行展示，倒计时展示
-                String timeStr = millisUntilFinishedToMin(Integer.valueOf("20") * 60 * 1000);
+                String timeStr = millisUntilFinishedToMin(Integer.valueOf("10") * 60 * 1000);
                 breatheTime.setText(timeStr);
+
+
+                //设备连接成功之后，需要进行背景音乐播放
+                //开始播放背景音乐
+                if (bgMediaPlayer != null) {
+                    bgMediaPlayer.release();
+                }
+                bgMediaPlayer = MediaPlayer.create(AssessActivity.this,
+                        R.raw.def_comfort_1);
+                bgMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer media) {
+
+                        media.start();
+                    }
+                });
+                bgMediaPlayer.start();
+
+                //开启倒计时
+                handler.sendEmptyMessageDelayed(3333,1000);
+
+                //设备连接之后，
+                //开始发送第一阶段
+                //间隔5分钟后发送，第二阶段
+                //间隔10分钟后发送，第三阶段
+                //间隔15分钟后发送，第四阶段
+                /**
+                 * 必须要通过接口得知，每个阶段的类型和时长，总时长
+                 */
+
+                for(Param param : paramList){
+                    String value = param.getValue();
+                    String key = param.getKey();
+                    if(key.equals("0")){
+                        //第一阶段，有可能是这四种情况
+                        if(value.equals("-1")){
+                            //语音提醒：按照语音提醒呼吸引导
+                            handler.sendEmptyMessageDelayed(4444,5*60*1000);
+
+                        }else if(value.equals("6")){
+                            handler.sendEmptyMessage(6666);
+                           handler.sendEmptyMessage(4444);
+
+
+                        }else if(value.equals("9")){
+                            handler.sendEmptyMessage(9999);
+                            handler.sendEmptyMessage(4444);
+
+                        }else if(value.equals("12")){
+                            handler.sendEmptyMessage(1212);
+                            handler.sendEmptyMessage(4444);
+
+                        }
+                    }else if(key.equals("1")){
+                        //第二阶段，有可能三种情况
+                        if(value.equals("6")){
+                            handler.sendEmptyMessageDelayed(6666,5*60*1000);
+
+                        }else if(value.equals("9")){
+                            handler.sendEmptyMessageDelayed(9999,5*60*1000);
+                        }else if(value.equals("12")){
+                            handler.sendEmptyMessageDelayed(1212,5*60*1000);
+                        }
+                    }else if(key.equals("2")){
+                        //第三阶段，有可能三种情况
+                        if(value.equals("6")){
+                            handler.sendEmptyMessageDelayed(6666,10*60*1000);
+                        }else if(value.equals("9")){
+                            handler.sendEmptyMessageDelayed(9999,10*60*1000);
+                        }else if(value.equals("12")){
+                            handler.sendEmptyMessageDelayed(1212,10*60*1000);
+                        }
+                    }else if(key.equals("3")){
+                        //第四阶段，有可能三种情况
+                        if(value.equals("6")){
+                            handler.sendEmptyMessageDelayed(6666,15*60*1000);
+                        }else if(value.equals("9")){
+                            handler.sendEmptyMessageDelayed(9999,15*60*1000);
+                        }else if(value.equals("12")){
+                            handler.sendEmptyMessageDelayed(1212,15*60*1000);
+                        }
+                    }
+                }
+
+
+
+
             }
 
             @Override
@@ -296,7 +391,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         drawDataTimer();
 
         tvHeartRate = breatheView.findViewById(R.id.patient_view_tv_hart_rate);
-        tvBreathScore = breatheView.findViewById(R.id.patient_view_tv_breathe_score);
+        tvBreathScore = breatheView.findViewById(R.id.patient_view_tv_score);
 
         //添加之前必须先移除里面的所有view
         assess_ll.removeAllViews();
@@ -353,22 +448,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-
-        if (perMediaPlayer != null) {
-            perMediaPlayer.release();
-        }
-
-        if (bgMediaPlayer != null) {
-            bgMediaPlayer.release();
-        }
-
-        if (null != mc) {
-            mc.cancel();
-            mc = null;
-        }
+        closeAll();
     }
     /**
      * 数据接收
@@ -419,7 +499,16 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
 
     @Override
     public void onDataReceived(DevicePacket packet, int battery) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
+                if(packet.scoreNew>0){
+                    tvBreathScore.setText(packet.scoreNew+"");
+                }
+
+            }
+        });
     }
 
     @Override
@@ -511,7 +600,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if(msg.what ==1 ){
+            if(msg.what ==1111 ){
 //                showParticleAnim();
                 breatheStatus.setText("呼");
                 animation = AnimationUtils.loadAnimation(AssessActivity.this, R.anim.anim_set);
@@ -538,12 +627,12 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                     mediaPlayer.start();
 
                     if (!stopFlag) {
-                        handler.sendEmptyMessageDelayed(2,
+                        handler.sendEmptyMessageDelayed(2222,
                                 (int) (60 / initRate * initBreathRatio * 1000));
                     }
 
                 }
-            }else if(msg.what ==2){
+            }else if(msg.what ==2222){
                 breatheStatus.setText("吸");
                 animation = AnimationUtils.loadAnimation(AssessActivity.this, R.anim.anim_set_back);
 
@@ -568,20 +657,17 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                     mediaPlayer.start();
 
                     if (!stopFlag) {
-                        handler.sendEmptyMessageDelayed(1, (int) (60 / initRate * (1 - initBreathRatio) * 1000));
+                        handler.sendEmptyMessageDelayed(1111, (int) (60 / initRate * (1 - initBreathRatio) * 1000));
 
                     }
                 }
-            }else if(msg.what==3){
+            }else if(msg.what==3333){
                 //开启倒计时
                 mc = new MyCountDownTimer(mMusicDuration, 1000);
                 mc.start();
 
 
-            }
-
-
-            else if (msg.what == 4) {
+            } else if (msg.what == 4444) {
                 perMediaPlayer = MediaPlayer.create(AssessActivity.this, R.raw.inhaleexhaleesti);
                 perMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -589,9 +675,21 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
                             public void onCompletion(MediaPlayer media) {
                                 media.reset();
                                 media.release();
+                                handler.sendEmptyMessage(1111);
                             }
                         });
                 perMediaPlayer.start();
+
+                // 6次/分  9次/分   12次/分 ,默认呼气吸气比是1:1.5
+            }else if(msg.what==6666){
+                initRate = 6f;
+
+            }else if(msg.what==9999){
+                initRate = 9f;
+
+            }else if(msg.what==1212){
+                initRate = 12f;
+
             }
         }
     };
@@ -642,6 +740,44 @@ public class AssessActivity extends BaseActivity implements DataReceiver {
         @Override
         public void onFinish() {
             //倒计时完成后，处理事物
+
+            closeAll();
+
+            //todo 调用接口，上传文件
+
+            goActivity(PrescriptionActivity.class);
         }
     }
+
+
+    //释放音频，移除handle中message
+    private void closeAll(){
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        if (perMediaPlayer != null) {
+            perMediaPlayer.release();
+        }
+
+        if (bgMediaPlayer != null) {
+            bgMediaPlayer.release();
+        }
+
+        if (null != mc) {
+            mc.cancel();
+            mc = null;
+        }
+
+        handler.removeMessages(1111);
+        handler.removeMessages(2222);
+        handler.removeMessages(3333);
+        handler.removeMessages(4444);
+
+        //关闭服务
+        stopService(DataReaderService.class);
+
+
+    }
+
 }
