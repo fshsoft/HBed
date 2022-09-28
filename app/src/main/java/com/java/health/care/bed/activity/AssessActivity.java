@@ -140,7 +140,6 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     private MyCountDownTimer mc;
     //获取到数据，通知开始倒计时
     private boolean isGotData = false;
-    private int mMusicDuration;
 
     private List<Param> paramList;
 
@@ -151,6 +150,8 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     private int preId;
 
     private String preType;
+
+    private int mMusicDuration;
 
     @Override
     protected int getLayoutId() {
@@ -206,6 +207,9 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
         paramList = unFinishedPres.getParam();
 
+        preId = unFinishedPres.getPreId();
+
+        preType = unFinishedPres.getPreType();
         // 获取评估训练时长
 //        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
         mMusicDuration = unFinishedPres.getDuration();
@@ -286,7 +290,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
 
                 //把获取到的时间，进行展示，倒计时展示
-                String timeStr = millisUntilFinishedToMin(Integer.valueOf("10") * 60 * 1000);
+                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration) * 60 * 1000);
                 breatheTime.setText(timeStr);
 
 

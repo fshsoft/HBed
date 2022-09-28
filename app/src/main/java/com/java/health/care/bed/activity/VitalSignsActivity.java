@@ -1,17 +1,26 @@
 package com.java.health.care.bed.activity;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.CountDownTimer;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleScanCallback;
@@ -22,11 +31,14 @@ import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.bean.Param;
 import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
+import com.java.health.care.bed.module.MainContract;
+import com.java.health.care.bed.presenter.MainPresenter;
 import com.java.health.care.bed.service.DataReaderService;
 import com.java.health.care.bed.service.WebSocketService;
 import com.java.health.care.bed.widget.EcgCM22ShowView;
@@ -38,6 +50,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -56,7 +70,7 @@ import butterknife.OnClick;
  * @date 2022/08/03 14:40
  * @Description 生命体征  蓝牙 缺少断开重连机制
  */
-public class VitalSignsActivity extends BaseActivity implements DataReceiver {
+public class VitalSignsActivity extends BaseActivity implements DataReceiver, MainContract.View {
     private WebSocketService webSocketService;
     private String bleDeviceCm22Mac;
     private String bleDeviceCm19Mac;
@@ -108,7 +122,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     private Queue<Integer> dataQueueEcgCM19 = new LinkedList<>();
     private Queue<Integer> getDataQueueEcgCM22 = new LinkedList<>();
     private Queue<Integer> dataQueueResp = new LinkedList<>();
-    private Queue<Integer> dataQueuePPG= new LinkedList<>();
+    private Queue<Integer> dataQueuePPG = new LinkedList<>();
 
     private Timer timerCM19;
     private Timer timerCM22;
@@ -126,8 +140,18 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
     private int[] shortsEcgCM22 = new int[5];
     private int[] shortsPPG = new int[5];
 
-    //处方类型 生命体征检测1；无创连续血压2
-    private int preType =1;
+    private int patientId;
+
+    private int preId;
+
+    private String preType;
+
+    private int mMusicDuration;
+
+    private MainPresenter presenter;
+
+    private MyCountDownTimer mc;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_vitalsigns;
@@ -151,25 +175,33 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         super.onResume();
         //判断是无创连续血压CM22还是生命体征cm19,从处方列表跳转过来，1为cm19  2为cm22
         UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
+
+        preId = unFinishedPres.getPreId();
+
+        preType = unFinishedPres.getPreType();
+
+        // 获取评估训练时长
+        mMusicDuration = unFinishedPres.getDuration();
+
         int type = unFinishedPres.getFlag();
-        if(type == 1){
-            //cm19需要知道勾选了哪些设备
-            Log.d(TAG,"TYPE===="+type);
+        if (type == 1) {
+            //cm19需要知道勾选了哪些设备,顶部显示设备的蓝牙名称
+            Log.d(TAG, "TYPE====" + type);
             List<Param> paramList = unFinishedPres.getParam();
             //1-血压，2-血氧，3-体温 4-心电
-            for(Param param : paramList){
+            for (Param param : paramList) {
                 String value = param.getValue();
-                if(value.equals("1")){
+                if (value.equals("1")) {
                     //血压
                     bleBP.setVisibility(View.VISIBLE);
 
-                }else if(value.equals("2")){
+                } else if (value.equals("2")) {
                     //血氧
                     bleSpo2.setVisibility(View.VISIBLE);
-                }else if(value.equals("3")){
+                } else if (value.equals("3")) {
                     //体温
                     bleTemp.setVisibility(View.VISIBLE);
-                }else if(value.equals("4")){
+                } else if (value.equals("4")) {
                     //心电cm19
                     bleCM19.setVisibility(View.VISIBLE);
                 }
@@ -177,9 +209,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
             vital_start_bp.setVisibility(View.VISIBLE);
             ll_layout_CM19.setVisibility(View.VISIBLE);
             ll_layout_CM22.setVisibility(View.GONE);
-        }else if(type==2){
+        } else if (type == 2) {
             //无创连续血压
-            Log.d(TAG,"TYPE===="+type);
+            Log.d(TAG, "TYPE====" + type);
             List<Param> paramList = unFinishedPres.getParam();
             //无需遍历上面的集合，就是cm22无创血压设备
             bleCM22.setVisibility(View.VISIBLE);
@@ -196,21 +228,22 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         super.onDestroy();
         unbindService(serviceConnection);
         EventBus.getDefault().unregister(this);
-        if(timerBle!=null){
+        if (timerBle != null) {
             timerBle.cancel();
         }
-        if(timerCM19!=null){
+        if (timerCM19 != null) {
             timerCM19.cancel();
         }
-        if(timerCM22!=null){
+        if (timerCM22 != null) {
             timerCM22.cancel();
         }
     }
 
     @OnClick(R.id.back)
-    public void back(){
+    public void back() {
         finish();
     }
+
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
@@ -222,6 +255,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 .setConnectOverTime(20000)
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
+        presenter = new MainPresenter(this, this);
         timerBle = new Timer();
         //画心电图和呼吸ppg
         timerCM19 = new Timer();
@@ -284,11 +318,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                         continue;
                     }
 
-                    if(y ==null){
+                    if (y == null) {
                         continue;
                     }
                     shortsEcgCM22[i] = x;
-                    shortsPPG[i] =y;
+                    shortsPPG[i] = y;
                 }
 
 
@@ -296,10 +330,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     indexEcgCM22 = 0;
                 }
 
-                if(indexPPG >=0){
+                if (indexPPG >= 0) {
                     indexPPG = 0;
                 }
-                ecgViewCM22.showLine(shortsEcgCM22[indexEcgCM22] );
+                ecgViewCM22.showLine(shortsEcgCM22[indexEcgCM22]);
                 ppgView.showLine(shortsPPG[indexPPG]);
                 indexEcgCM22++;
                 indexPPG++;
@@ -320,8 +354,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         }
     }
 
+    //手动点击开始测量血压
     @OnClick(R.id.vital_start_bp)
-    public void startBp(){
+    public void startBp() {
         EventBus.getDefault().post(2);
     }
 
@@ -344,31 +379,31 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 //这个里面是否需要连接，还需要根据处方给的设备情况
                 if (bleDevice.getMac().equals(bleDeviceCm22Mac)) {
                     //判断TextView是否是显示状态，是显示状态才连接
-                    if(bleCM22.getVisibility()== View.VISIBLE){
+                    if (bleCM22.getVisibility() == View.VISIBLE) {
                         connectBle(bleDevice);
                     }
 
                 }
 
                 if (bleDevice.getMac().equals(bleDeviceCm19Mac)) {
-                    if(bleCM19.getVisibility()== View.VISIBLE){
+                    if (bleCM19.getVisibility() == View.VISIBLE) {
                         connectBle(bleDevice);
                     }
 
                 }
 
                 if (bleDevice.getMac().equals(bleDeviceSpO2Mac)) {
-                    if(bleSpo2.getVisibility()== View.VISIBLE){
+                    if (bleSpo2.getVisibility() == View.VISIBLE) {
                         connectBle(bleDevice);
                     }
                 }
                 if (bleDevice.getMac().equals(bleDeviceBPMac)) {
-                    if(bleBP.getVisibility()== View.VISIBLE){
+                    if (bleBP.getVisibility() == View.VISIBLE) {
                         connectBle(bleDevice);
                     }
                 }
                 if (bleDevice.getMac().equals(bleDeviceTempMac)) {
-                    if(bleTemp.getVisibility()== View.VISIBLE){
+                    if (bleTemp.getVisibility() == View.VISIBLE) {
                         connectBle(bleDevice);
                     }
                 }
@@ -415,26 +450,32 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 deviceListConnect.add(bleDevice);
                 EventBus.getDefault().post(deviceListConnect); //连接成功之后，发送给DataReaderService，进行开启通知，或者写入操作
                 //根据名称进行对设备文字颜色进行变更
-                if(bleDevice.getName().contains(Constant.CM19)){
+                if (bleDevice.getName().contains(Constant.CM19)) {
                     bleCM19.setTextColor(getResources().getColor(R.color.ecgText));
-                    retryNum =1;
+                    retryNum = 1;
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
                     bleSpo2.setTextColor(getResources().getColor(R.color.ecgText));
-                    retryNum =1;
-                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                    retryNum = 1;
+                } else if (bleDevice.getName().contains(Constant.QIANSHAN)) {
                     bleBP.setTextColor(getResources().getColor(R.color.ecgText));
-                    retryNum =1;
-                }else if(bleDevice.getName().contains(Constant.IRT)){
+                    retryNum = 1;
+                } else if (bleDevice.getName().contains(Constant.IRT)) {
                     bleTemp.setTextColor(getResources().getColor(R.color.ecgText));
-                    retryNum =1;
-                }else if(bleDevice.getName().contains(Constant.CM22)){
+                    retryNum = 1;
+                } else if (bleDevice.getName().contains(Constant.CM22)) {
                     bleCM22.setTextColor(getResources().getColor(R.color.ecgText));
-                    retryNum =1;
+                    retryNum = 1;
                 }
 //                if(deviceListConnect.size()==1){
 //                    //todo 通知可以开始测量血压和测量的时间频率 假如设置为2分钟一次
 //                    EventBus.getDefault().post(2);
 //                }
+
+                //把获取到的时间，进行展示，倒计时展示
+//                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration) * 60 * 1000);
+//                breatheTime.setText(timeStr);
+                //开启倒计时
+                handler.sendEmptyMessageDelayed(3333,1000);
             }
 
             @Override
@@ -447,30 +488,30 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                  * 此时isActiveDisConnected将会是true。
                  */
                 //蓝牙断开 状态为8
-                if(bleDevice.getName().contains(Constant.CM19)){
+                if (bleDevice.getName().contains(Constant.CM19)) {
                     bleCM19.setTextColor(getResources().getColor(R.color.black));
-                    if(retryNum<5){
+                    if (retryNum < 5) {
                         retryConnectBle(bleDevice);
                     }
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
                     bleSpo2.setTextColor(getResources().getColor(R.color.black));
-                    if(retryNum<5){
+                    if (retryNum < 5) {
                         retryConnectBle(bleDevice);
                     }
 
-                }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
+                } else if (bleDevice.getName().contains(Constant.QIANSHAN)) {
                     bleBP.setTextColor(getResources().getColor(R.color.black));
-                    if(retryNum<5){
+                    if (retryNum < 5) {
                         retryConnectBle(bleDevice);
                     }
-                }else if(bleDevice.getName().contains(Constant.IRT)){
+                } else if (bleDevice.getName().contains(Constant.IRT)) {
                     bleTemp.setTextColor(getResources().getColor(R.color.black));
-                    if(retryNum<5){
+                    if (retryNum < 5) {
                         retryConnectBle(bleDevice);
                     }
-                }else if(bleDevice.getName().contains(Constant.CM22)){
+                } else if (bleDevice.getName().contains(Constant.CM22)) {
                     bleCM22.setTextColor(getResources().getColor(R.color.black));
-                    if(retryNum<5){
+                    if (retryNum < 5) {
                         retryConnectBle(bleDevice);
                     }
                 }
@@ -484,8 +525,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
      * 需要开启一个定时器，进行三次重连操作，需要间隔一段时间进行
      */
 
-    private int retryNum =1;
-    private void retryConnectBle(BleDevice bleDevice){
+    private int retryNum = 1;
+
+    private void retryConnectBle(BleDevice bleDevice) {
 
         timerBle.schedule(new TimerTask() {
             @Override
@@ -494,8 +536,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                 retryNum++;
 
             }
-        },2000,5000);
-
+        }, 2000, 5000);
 
 
     }
@@ -524,16 +565,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (packet.heartRate >0) {
+                if (packet.heartRate > 0) {
                     heartRateText.setText(packet.heartRate + "");
-                }else {
-//                    heartRateText.setText("--");
                 }
 
                 if (packet.resp > 0) {
                     respText.setText(packet.resp + "");
-                }else {
-//                    respText.setText("--");
                 }
 
             }
@@ -545,8 +582,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         //这个里面是CM22设备，无创连续血压（心电和PPG）
         short[] ecg = packet.getsEcgData();
         short[] ppg = packet.getsPpgData();
-        Log.d("onDataReceived=====",Arrays.toString(ecg));
-        Log.d("onDataReceived",Arrays.toString(ppg));
+        Log.d("onDataReceived=====", Arrays.toString(ecg));
+        Log.d("onDataReceived", Arrays.toString(ppg));
         if (ecg.length != DevicePacket.ECG_IN_PACKET) {
             return;
         }
@@ -558,16 +595,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (packet.getHeartRate() >0 && packet.getHeartRate() <300 ) {
-                    heartRateText.setText(packet.getHeartRate()+"");
-                }else {
-//                    heartRateText.setText("--");
+                if (packet.getHeartRate() > 0 && packet.getHeartRate() < 300) {
+                    heartRateText.setText(packet.getHeartRate() + "");
                 }
 
-                if (packet.getsSsPressDataData() > 0 && packet.getsSzPressDataData()>0 && packet.getsSsPressDataData()<300 &&packet.getsSzPressDataData()<300) {
-                    bpText.setText(packet.getsSsPressDataData() + "/"+ packet.getsSzPressDataData());
-                }else {
-//                    bpText.setText("--/--");
+                if (packet.getsSsPressDataData() > 0 && packet.getsSzPressDataData() > 0 && packet.getsSsPressDataData() < 300 && packet.getsSzPressDataData() < 300) {
+                    bpText.setText(packet.getsSsPressDataData() + "/" + packet.getsSzPressDataData());
                 }
 
             }
@@ -657,7 +690,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-        if(event instanceof Map){
+        if (event instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) event;
             if (map != null) {
 
@@ -669,7 +702,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
                     tempText.setText(map.get(Constant.IRT_DATA) + "");
                 }
 
-                Log.d("vital====1",map.get(Constant.BP_DATA)+"");
+                Log.d("vital====1", map.get(Constant.BP_DATA) + "");
                 if (map.containsKey(Constant.BP_DATA)) {
                     bpText.setText(map.get(Constant.BP_DATA) + "");
                 }
@@ -681,4 +714,152 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver {
 
     }
 
+    @Override
+    public void setCode(String code) {
+
+    }
+
+    @Override
+    public void setMsg(String msg) {
+
+    }
+
+    @Override
+    public void setInfo(String msg) {
+
+    }
+
+    @Override
+    public void setObj(Object obj) {
+
+    }
+
+    @Override
+    public void setData(Object obj) {
+
+    }
+
+    /**
+     * 测评结束的逻辑，时间倒计时
+     */
+    public class MyCountDownTimer extends CountDownTimer {
+
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            //参数：总时长，间隔时长
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            String timeStr = millisUntilFinishedToMin(millisUntilFinished);
+            Log.d(TAG, "MyCountDownTimer====" + timeStr);
+//            breatheTime.setText(timeStr);
+        }
+
+        @Override
+        public void onFinish() {
+            //倒计时完成后，处理事物
+
+            closeAll();
+
+            //todo 语音提醒检测完成
+
+
+            //调用接口，上传文件
+            presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+
+
+        }
+    }
+    //压缩文件
+    private File zipFiles(){
+
+        String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        //原保存的文件路径
+        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr;
+
+        //将要压缩的文件zip
+        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+patientId+"-"+dateNowStr + ".zip";
+
+        //判断zip文件是否存在并创建文件
+        FileUtils.createOrExistsFile(zip);
+        //压缩文件
+        try {
+            ZipUtils.zipFile(src,zip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //获取压缩文件
+        File file = FileUtils.getFileByPath(zip);
+        return file;
+    }
+    /**
+     * 倒计时使用
+     */
+    private String millisUntilFinishedToMin(long millisUntilFinished) {
+        StringBuffer sb = new StringBuffer();
+        int min = (int) (millisUntilFinished / 60 / 1000);
+        int s = (int) ((millisUntilFinished % (60 * 1000)) / 1000);
+//        MyLogUtils.d(TAG,"取余剩下的秒数:"+s);
+        if (min > 0) {
+            if (min < 10) {
+                sb.append("0");
+            }
+            sb.append(min);
+            sb.append(":");
+        } else {
+            sb.append("00:");
+        }
+        if (s < 10) {
+            sb.append("0");
+        }
+        sb.append(s);
+        return sb.toString();
+    }
+
+    //释放音频，移除handle中message
+    private void closeAll() {
+/*        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        if (perMediaPlayer != null) {
+            perMediaPlayer.release();
+        }
+
+        if (bgMediaPlayer != null) {
+            bgMediaPlayer.release();
+        }
+
+        handler.removeMessages(1111);
+        handler.removeMessages(2222);
+        handler.removeMessages(4444);*/
+
+        if (null != mc) {
+            mc.cancel();
+            mc = null;
+        }
+        handler.removeMessages(3333);
+        //关闭服务
+        stopService(DataReaderService.class);
+
+
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 3333) {
+                //开启倒计时
+                mc = new MyCountDownTimer(mMusicDuration*1000, 1000);
+                mc.start();
+            }
+
+        }
+    };
 }
