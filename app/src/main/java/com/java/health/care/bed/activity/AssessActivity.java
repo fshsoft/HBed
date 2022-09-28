@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleScanCallback;
@@ -42,6 +43,7 @@ import com.java.health.care.bed.base.BaseApplication;
 import com.java.health.care.bed.bean.Param;
 import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.Music;
 import com.java.health.care.bed.module.MainContract;
@@ -144,6 +146,12 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
     private MainPresenter presenter;
 
+    private int patientId;
+
+    private int preId;
+
+    private String preType;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -172,7 +180,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
       /* new Thread(new Runnable() {
            @Override
            public void run() {
-               String path = Environment.getExternalStorageDirectory().getPath() + "/Hbed/data/" + "1022" + "-" + "20220727144102" + ".zip";
+               String path = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + "1022" + "-" + "20220727144102" + ".zip";
 
                //获取文件
                File file = FileUtils.getFileByPath(path);
@@ -183,8 +191,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
        }).start();*/
 
 
-        //获取评估训练时长
-        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
+
 
 
 
@@ -199,19 +206,13 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
         paramList = unFinishedPres.getParam();
 
+        // 获取评估训练时长
+//        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
+        mMusicDuration = unFinishedPres.getDuration();
 
 
     }
 
-    @OnClick(R.id.hu)
-    public void hu(){
-        handler.sendEmptyMessage(1);
-    }
-
-    @OnClick(R.id.xi)
-    public void xi(){
-        handler.sendEmptyMessage(2);
-    }
 
     /**
      * 开始前的状态
@@ -683,7 +684,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
                 }
             }else if(msg.what==3333){
                 //开启倒计时
-                mc = new MyCountDownTimer(mMusicDuration, 1000);
+                mc = new MyCountDownTimer(mMusicDuration*1000, 1000);
                 mc.start();
 
 
@@ -765,9 +766,36 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
             closeAll();
 
             //todo 调用接口，上传文件
+            //文件上传
+            presenter.uploadFile(zipFiles(),"file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId),preType);
 
-            goActivity(PrescriptionActivity.class);
+
         }
+    }
+
+    //压缩文件
+    private File zipFiles(){
+
+        String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        //原保存的文件路径
+        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr;
+
+        //将要压缩的文件zip
+        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+patientId+"-"+dateNowStr + ".zip";
+
+        //判断zip文件是否存在并创建文件
+        FileUtils.createOrExistsFile(zip);
+        //压缩文件
+        try {
+            ZipUtils.zipFile(src,zip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //获取压缩文件
+        File file = FileUtils.getFileByPath(zip);
+        return file;
     }
 
 
@@ -802,7 +830,10 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     }
     @Override
     public void setCode(String code) {
+        if(code.equals("200")){
+            goActivity(PrescriptionActivity.class);
 
+        }
     }
 
     @Override

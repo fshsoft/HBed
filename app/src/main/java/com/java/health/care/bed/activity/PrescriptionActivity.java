@@ -1,6 +1,7 @@
 package com.java.health.care.bed.activity;
 
 import android.Manifest;
+import android.os.Environment;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -9,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.java.health.care.bed.R;
@@ -25,6 +28,8 @@ import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
 import com.permissionx.guolindev.request.ExplainScope;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,11 +132,31 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
     protected void initData() {
         checkPermissions();
         mainPresenter = new MainPresenter(this, this);
+        //床ID：bunkId
         bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
         if(bunkId!=0){
             mainPresenter.getUser(bunkId);
         }
 
+
+
+//        String src = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + "1022" + "-" + "20220727144102";
+//
+//        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+ "1022" + "-" + "20220727144102.zip";
+//
+//        //创建文件夹
+//        FileUtils.createOrExistsFile(zip);
+//        //测试压缩文件
+//        try {
+//            ZipUtils.zipFile(src,zip);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+      /*  FileUtils.createOrExistsFile(zip);
+        //删除文件
+        File file = FileUtils.getFileByPath(zip);
+        file.delete();*/
     }
 
 

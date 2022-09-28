@@ -92,8 +92,7 @@ public class DataReaderService extends Service {
 
     private AtomicBoolean isReading = new AtomicBoolean(false);
 
-    //    String path = "/sdcard/Patient/data/"+useId+"-"+dateNowStr+"/";
-    private String path = Environment.getExternalStorageDirectory().getPath() + "/Hbed/data/" + "1022" + "-" + "20220727144102" + "/";
+    private String path;
 
     private long HRcounts = 0;
     private Queue<Integer> hrtRateQue = new LinkedList<Integer>();
@@ -606,7 +605,7 @@ public class DataReaderService extends Service {
 
                         Log.i("methodecg_rsp_int", Arrays.toString(irspData));
                         //写入文件rsp
-                        FileIOUtils.writeFileFromBytesByStream(path + "rspData.resp", ByteUtil.get16Bitint(irspData), true);
+                        FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
                         short[] saccData = new short[length];
                         ByteUtil.bbToShorts(saccData, accData);
 
@@ -851,7 +850,8 @@ public class DataReaderService extends Service {
             }
             pkt.respRate = respRate;
             dataTrans.sendData(pkt, battery);
-
+            //写RR到文件
+            FileIOUtils.writeFileFromString(path+"rrData.rr",String.valueOf(pkt.rrNew)+"\n",true);
         }
 
 
@@ -928,33 +928,9 @@ public class DataReaderService extends Service {
 
                     if (bleCM19Mac != null) {
                         if (bleMac.equals(bleCM19Mac)) {
+                            //蓝牙已经连接上了cm19设备，打开通知
                             getCM19BleDevice(bleDevice);
-
-                            //上面表示蓝牙连接上了cm19设备
-
-                            Date d = new Date();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-                            String dateNowStr = sdf.format(d);
-                            SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME,dateNowStr);
-                            int patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
-                            String path = "/sdcard/HBed/data/"+patientId+"-"+dateNowStr+"/";
-                            File dir = new File(path);
-                            if (!dir.exists()) {
-                                dir.mkdirs();
-                            }
-
-                            try {
-                                //文件名先进行名称ecgData.respData 后面统一进行更改，改为开始时间和结束时间
-                                ecgStream = new FileOutputStream(path + "ecgData.ecg", true);
-                                respStream = new FileOutputStream(path + "respData.resp", true);
-                                scoreStream = new FileOutputStream(path + "scoreData.score", true);
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-
                         }
-
-
                     }
                     if (bleDevice != null) {
                         if (bleMac.equals(bleCM22Mac)) {
@@ -994,17 +970,29 @@ public class DataReaderService extends Service {
                 // 手动控制测量
                 writeBPBleDevice(bleDeviceBP);
             }
-//            Timer timer = new Timer();
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    writeBPBleDevice(bleDeviceBP);
-//                }
-//            },20,time*60*1000);
+
         }
 
 
     }
+
+    /**
+     * 记录读写数据时间和创建文件
+     */
+    private void recordTimeAndCreateFile(){
+
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dateNowStr = sdf.format(d);
+        SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME,dateNowStr);
+        int patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        path = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr+"/";
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+    }
+
 
     /**
      * 收到CM19的bleDevice
@@ -1020,7 +1008,7 @@ public class DataReaderService extends Service {
                     public void onNotifySuccess() {
                         // 打开通知操作成功
                         Log.d(TAG, "cm19打开通知成功");
-
+                        recordTimeAndCreateFile();
                     }
 
                     @Override
@@ -1136,7 +1124,7 @@ public class DataReaderService extends Service {
                     @Override
                     public void onWriteSuccess(int current, int total, byte[] justWrite) {
                         Log.d("cm22========2", "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
-
+                        recordTimeAndCreateFile();
                     }
 
                     @Override

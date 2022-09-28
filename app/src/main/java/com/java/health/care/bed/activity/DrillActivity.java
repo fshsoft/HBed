@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -24,7 +25,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleScanCallback;
@@ -33,7 +36,10 @@ import com.clj.fastble.exception.BleException;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.base.BaseApplication;
+import com.java.health.care.bed.bean.Param;
+import com.java.health.care.bed.bean.UnFinishedPres;
 import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.model.BPDevicePacket;
 import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
@@ -53,6 +59,8 @@ import com.plattysoft.leonids.ParticleSystem;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,6 +136,14 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     private MainPresenter presenter;
 
+    private List<Param> paramList;
+
+    private int patientId;
+
+    private int preId;
+
+    private String preType;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_assess;
@@ -155,21 +171,26 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
         presenter = new MainPresenter(this, this);
 
-        //获取评估训练时长
-        mMusicDuration = Integer.valueOf("20") * 60 * 1000;
-
 
     }
 
-    @OnClick(R.id.hu)
-    public void hu(){
-        handler.sendEmptyMessage(1);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //评估里面 有四个阶段，每个阶段类型不一样，value:自由呼吸-1， 6次/分钟   9次/分钟  12次/分钟
+        UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
+
+        paramList = unFinishedPres.getParam();
+
+        preId = unFinishedPres.getPreId();
+
+        preType = unFinishedPres.getPreType();
+        // 获取评估训练时长
+//        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
+        mMusicDuration = unFinishedPres.getDuration();
     }
 
-    @OnClick(R.id.xi)
-    public void xi(){
-        handler.sendEmptyMessage(2);
-    }
 
     /**
      * 开始前的状态
@@ -264,13 +285,40 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
 
                 //设备连接之后，
-                //开始发送第一阶段
-                //间隔5分钟后发送，第二阶段
-                //间隔10分钟后发送，第三阶段
-                //间隔15分钟后发送，第四阶段
+                //训练，只有一个阶段，需要知道 呼吸频率，呼气吸气比
                 /**
-                 * 必须要通过接口得知，每个阶段的类型和时长，总时长
+                 * 必须要通过接口得知，类型和时长，总时长
+                 * resprate, 呼吸频率
+                 * respratio,呼气吸气比
                  */
+                String resprateValue = null;
+                String respratioValue = null;
+                for(Param param : paramList) {
+                    if(param.getKey().equals("resprate")){
+                        //赋值呼吸频率
+                        resprateValue = param.getValue();
+                    }else if(param.getKey().equals("respratio")){
+                        respratioValue = param.getValue();
+                    }
+                }
+
+                //呼吸频率
+                if(null!=resprateValue){
+                    initRate = Integer.parseInt(resprateValue);
+                }
+
+                //计算吸气呼吸比initBreathRatio的值，默认是1:1.5  initBreathRatio为0.6f
+                //吸气：呼气 = 1：hu 这种格式
+                if(null!= respratioValue){
+                    String[] resp =  respratioValue.split(":");
+                    float xi = Float.parseFloat(resp[0]);
+                    float hu = Float.parseFloat(resp[1]);
+
+                    //xi 都是1
+                    initBreathRatio =  (hu/xi)/(1+hu/xi);
+                }
+
+                handler.sendEmptyMessage(4444);
             }
 
             @Override
@@ -308,7 +356,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         drawDataTimer();
 
         tvHeartRate = breatheView.findViewById(R.id.patient_view_tv_hart_rate);
-        tvBreathScore = breatheView.findViewById(R.id.patient_view_tv_breathe_score);
+        tvBreathScore = breatheView.findViewById(R.id.patient_view_tv_score);
 
         //添加之前必须先移除里面的所有view
         drill_ll.removeAllViews();
@@ -365,22 +413,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-
-        if (perMediaPlayer != null) {
-            perMediaPlayer.release();
-        }
-
-        if (bgMediaPlayer != null) {
-            bgMediaPlayer.release();
-        }
-
-        if (null != mc) {
-            mc.cancel();
-            mc = null;
-        }
+        closeAll();
     }
     /**
      * 数据接收
@@ -431,7 +464,16 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     @Override
     public void onDataReceived(DevicePacket packet, int battery) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
+                if(packet.scoreNew>0){
+                    tvBreathScore.setText(packet.scoreNew+"");
+                }
+
+            }
+        });
     }
 
     @Override
@@ -501,23 +543,6 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         }
     };
 
-    /**
-     * 发射粒子动画
-     */
-
-    private void showParticleAnim() {
-        ParticleSystem particleSystem = new ParticleSystem(this, 120, ContextCompat.getDrawable(this, R.drawable.circle), 8000);
-        particleSystem.setSpeedModuleAndAngleRange(0f, 0.05f, 0, 360)
-                .setRotationSpeed(360)//设置旋转
-                .setAcceleration(0.00001f, 360)//设置加速度
-                .setScaleRange(0.0f, 1.5f)//设置缩放范围
-                .setFadeOut(5000)
-//                .emit(testCenterContentLl,30);//从一个特定的角度开始发射粒子。如果在某一时刻这个数字超过了create上可用粒子的数量不会产生新的粒子
-//                .emitWithGravity(testRlBreath, Gravity.CENTER,30);//此方法会自动循环播放粒子动画
-                .oneShot(testRlBreath, 50);//此方法只会播放一次
-    }
-
-
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler(){
         @Override
@@ -550,7 +575,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
                     mediaPlayer.start();
 
                     if (!stopFlag) {
-                        handler.sendEmptyMessageDelayed(2,
+                        handler.sendEmptyMessageDelayed(2222,
                                 (int) (60 / initRate * initBreathRatio * 1000));
                     }
 
@@ -580,13 +605,13 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
                     mediaPlayer.start();
 
                     if (!stopFlag) {
-                        handler.sendEmptyMessageDelayed(1, (int) (60 / initRate * (1 - initBreathRatio) * 1000));
+                        handler.sendEmptyMessageDelayed(1111, (int) (60 / initRate * (1 - initBreathRatio) * 1000));
 
                     }
                 }
             }else if(msg.what==3333){
                 //开启倒计时
-                mc = new MyCountDownTimer(mMusicDuration, 1000);
+                mc = new MyCountDownTimer(mMusicDuration*1000, 1000);
                 mc.start();
 
 
@@ -601,6 +626,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
                     public void onCompletion(MediaPlayer media) {
                         media.reset();
                         media.release();
+                        handler.sendEmptyMessage(1111);
                     }
                 });
                 perMediaPlayer.start();
@@ -656,12 +682,80 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         @Override
         public void onFinish() {
             //倒计时完成后，处理事物
+
+            closeAll();
+
+            //todo 调用接口，上传文件
+
+            //文件上传
+            presenter.uploadFile(zipFiles(),"file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId),preType);
+
         }
     }
 
+    //压缩文件
+    private File zipFiles(){
+
+        String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        //原保存的文件路径
+        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr;
+
+        //将要压缩的文件zip
+        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+patientId+"-"+dateNowStr + ".zip";
+
+        //判断zip文件是否存在并创建文件
+        FileUtils.createOrExistsFile(zip);
+        //压缩文件
+        try {
+            ZipUtils.zipFile(src,zip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //获取压缩文件
+        File file = FileUtils.getFileByPath(zip);
+        return file;
+    }
+
+
+    //释放音频，移除handle中message
+    private void closeAll(){
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        if (perMediaPlayer != null) {
+            perMediaPlayer.release();
+        }
+
+        if (bgMediaPlayer != null) {
+            bgMediaPlayer.release();
+        }
+
+        if (null != mc) {
+            mc.cancel();
+            mc = null;
+        }
+
+        handler.removeMessages(1111);
+        handler.removeMessages(2222);
+        handler.removeMessages(3333);
+        handler.removeMessages(4444);
+
+        //关闭服务
+        stopService(DataReaderService.class);
+
+
+    }
+
+
     @Override
     public void setCode(String code) {
+        if(code.equals("200")){
+            goActivity(PrescriptionActivity.class);
 
+        }
     }
 
     @Override
