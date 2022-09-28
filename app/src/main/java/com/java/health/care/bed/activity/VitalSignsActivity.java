@@ -317,7 +317,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
 
                 }
-            }, 100, 17);
+            }, 100, 16);
 
 
         } else if (cmType == 2) {

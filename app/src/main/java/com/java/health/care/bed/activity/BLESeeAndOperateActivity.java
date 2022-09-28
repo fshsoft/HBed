@@ -172,7 +172,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
 
 
             }
-        }, 100, 17);
+        }, 100, 16);
 
 
         //无创连续血压

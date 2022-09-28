@@ -150,6 +150,8 @@ public class DataReaderService extends Service {
     private int ssPress;
     private int serialNum = 0;
 
+    //患者ID
+    private int patientId;
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -166,6 +168,7 @@ public class DataReaderService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
         return super.onStartCommand(intent, flags, startId);
+
     }
 
     @Override
@@ -202,6 +205,7 @@ public class DataReaderService extends Service {
         dataTrans = DataTransmitter.getInstance();
         dataTrans.setServiceRunning(true);
 
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
     }
 
     /**
@@ -505,7 +509,7 @@ public class DataReaderService extends Service {
                             signalProcessor.SmoothBaseLine(sEcgData, 96);
                         }
 
-                        byte[] realTimeData = new RealTimeStatePacket(111,serialNum++,ecgData,null,ppgData,rrData,szPressData,ssPressData,
+                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,null,ppgData,rrData,szPressData,ssPressData,
                                 (short) sEcg,(short) 0,(short) 0,(short) 0, (short) 0,(short) 0,startTime).buildPacket();
                         dataTrans.sendData(realTimeData);
 
@@ -719,7 +723,7 @@ public class DataReaderService extends Service {
                         }
 
                         //实时发送
-                        byte[] realTimeData = new RealTimeStatePacket(100,serialNum++,ecgData,rspData,null,null,null,null,
+                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,null,null,null,null,
                                 (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp,startTime).buildPacket();
 
                         dataTrans.sendData(realTimeData);
