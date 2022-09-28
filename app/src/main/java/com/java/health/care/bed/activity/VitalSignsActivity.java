@@ -10,7 +10,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ZipUtils;
@@ -106,6 +110,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     @BindView(R.id.patient_view_ecg_cm22)
     EcgCM22ShowView ecgViewCM22;
+    @BindView(R.id.patient_view_ecg_cm19)
+    EcgShowView ecgViewCM19;
     @BindView(R.id.patient_view_resp)
     RespShowView respView;
     @BindView(R.id.patient_view_ppg)
@@ -119,6 +125,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @BindView(R.id.ll_layout_CM22)
     LinearLayout ll_layout_CM22;
 
+    @BindView(R.id.patient_view_time)
+    TextView patient_view_time;
+
+    @BindView(R.id.vital_start)
+    Button vital_start;
     private Queue<Integer> dataQueueEcgCM19 = new LinkedList<>();
     private Queue<Integer> getDataQueueEcgCM22 = new LinkedList<>();
     private Queue<Integer> dataQueueResp = new LinkedList<>();
@@ -152,6 +163,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     private MyCountDownTimer mc;
 
+    private int cmType;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_vitalsigns;
@@ -173,6 +186,41 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @Override
     protected void onResume() {
         super.onResume();
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+        EventBus.getDefault().unregister(this);
+        if (timerBle != null) {
+            timerBle.cancel();
+        }
+        if (timerCM19 != null) {
+            timerCM19.cancel();
+        }
+        if (timerCM22 != null) {
+            timerCM22.cancel();
+        }
+    }
+
+
+
+    @Override
+    protected void initData() {
+        EventBus.getDefault().register(this);
+        DataTransmitter.getInstance().addDataReceiver(VitalSignsActivity.this);
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(1, 5000)
+                .setConnectOverTime(20000)
+                .setOperateTimeout(5000);
+        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
+        presenter = new MainPresenter(this, this);
+
         //判断是无创连续血压CM22还是生命体征cm19,从处方列表跳转过来，1为cm19  2为cm22
         UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
 
@@ -183,10 +231,13 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         // 获取评估训练时长
         mMusicDuration = unFinishedPres.getDuration();
 
-        int type = unFinishedPres.getFlag();
-        if (type == 1) {
+        cmType = unFinishedPres.getFlag();
+
+        Log.d(TAG,"preId:"+preId+"==preType:"+preType+"==mMusicDuration:"+mMusicDuration+"==cmType:"+cmType);
+
+        if (cmType == 1) {
             //cm19需要知道勾选了哪些设备,顶部显示设备的蓝牙名称
-            Log.d(TAG, "TYPE====" + type);
+            Log.d(TAG, "TYPE====" + cmType);
             List<Param> paramList = unFinishedPres.getParam();
             //1-血压，2-血氧，3-体温 4-心电
             for (Param param : paramList) {
@@ -209,9 +260,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             vital_start_bp.setVisibility(View.VISIBLE);
             ll_layout_CM19.setVisibility(View.VISIBLE);
             ll_layout_CM22.setVisibility(View.GONE);
-        } else if (type == 2) {
+        } else if (cmType == 2) {
             //无创连续血压
-            Log.d(TAG, "TYPE====" + type);
+            Log.d(TAG, "TYPE====" + cmType);
             List<Param> paramList = unFinishedPres.getParam();
             //无需遍历上面的集合，就是cm22无创血压设备
             bleCM22.setVisibility(View.VISIBLE);
@@ -220,131 +271,158 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             ll_layout_CM22.setVisibility(View.VISIBLE);
         }
 
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(serviceConnection);
-        EventBus.getDefault().unregister(this);
-        if (timerBle != null) {
-            timerBle.cancel();
-        }
-        if (timerCM19 != null) {
-            timerCM19.cancel();
-        }
-        if (timerCM22 != null) {
-            timerCM22.cancel();
-        }
-    }
-
-    @OnClick(R.id.back)
-    public void back() {
-        finish();
-    }
-
-    @Override
-    protected void initData() {
-        EventBus.getDefault().register(this);
-        DataTransmitter.getInstance().addDataReceiver(VitalSignsActivity.this);
-        BleManager.getInstance().init(getApplication());
-        BleManager.getInstance()
-                .enableLog(true)
-                .setReConnectCount(1, 5000)
-                .setConnectOverTime(20000)
-                .setOperateTimeout(5000);
-        bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
-        presenter = new MainPresenter(this, this);
         timerBle = new Timer();
         //画心电图和呼吸ppg
-        timerCM19 = new Timer();
-        timerCM22 = new Timer();
-         /* timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                //很重要，从队列里面取5个数据
-                //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
 
-                for (int i = 0; i < 5; i++) {
+        if (cmType == 1) {
+            Log.d(TAG,"GO=====ON========CM19");
+            //cm19
+            timerCM19 = new Timer();
+            //cm19
+            timerCM19.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //很重要，从队列里面取5个数据
+                    //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
 
-                    Integer x = dataQueue.poll();
+                    for (int i = 0; i < 5; i++) {
 
-                    Integer y = dataQueueResp.poll();
+                        Integer x = dataQueueEcgCM19.poll();
 
-                    if (x == null) {
-                        continue;
+                        Integer y = dataQueueResp.poll();
+
+                        if (x == null) {
+                            continue;
+                        }
+
+                        if(y ==null){
+                            continue;
+                        }
+                        shortsEcgCM19[i] = x;
+                        shortsResp[i] =y;
                     }
 
-                    if(y ==null){
-                        continue;
-                    }
-                    shorts[i] = x;
-                    shortsResp[i] =y;
-                }
 
-
-                if (index >= shorts.length) {
-                    index = 0;
-                }
-
-                if(indexResp >=0){
-                    indexResp = 0;
-                }
-                ecgView.showLine(shorts[index] );
-                respView.showLine(shortsResp[indexResp]);
-                index++;
-                indexResp++;
-
-
-            }
-        }, 100, 17);
-*/
-
-        //cm22无创连续血压
-        timerCM22.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                //很重要，从队列里面取5个数据
-                //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据
-
-                for (int i = 0; i < 5; i++) {
-
-                    Integer x = getDataQueueEcgCM22.poll();
-
-                    Integer y = dataQueuePPG.poll();
-
-                    if (x == null) {
-                        continue;
+                    if (indexEcgCM19 >= shortsEcgCM19.length) {
+                        indexEcgCM19 = 0;
                     }
 
-                    if (y == null) {
-                        continue;
+                    if(indexResp >=0){
+                        indexResp = 0;
                     }
-                    shortsEcgCM22[i] = x;
-                    shortsPPG[i] = y;
+                    ecgViewCM19.showLine(shortsEcgCM19[indexEcgCM19] );
+                    respView.showLine(shortsResp[indexResp]);
+                    indexEcgCM19++;
+                    indexResp++;
+
+
                 }
+            }, 100, 17);
 
 
-                if (indexEcgCM22 >= shortsEcgCM22.length) {
-                    indexEcgCM22 = 0;
+        } else if (cmType == 2) {
+            //cm22
+            timerCM22 = new Timer();
+            //cm22无创连续血压
+            timerCM22.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    //很重要，从队列里面取5个数据
+                    //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据
+
+                    for (int i = 0; i < 5; i++) {
+
+                        Integer x = getDataQueueEcgCM22.poll();
+
+                        Integer y = dataQueuePPG.poll();
+
+                        if (x == null) {
+                            continue;
+                        }
+
+                        if (y == null) {
+                            continue;
+                        }
+                        shortsEcgCM22[i] = x;
+                        shortsPPG[i] = y;
+                    }
+
+
+                    if (indexEcgCM22 >= shortsEcgCM22.length) {
+                        indexEcgCM22 = 0;
+                    }
+
+                    if (indexPPG >= 0) {
+                        indexPPG = 0;
+                    }
+                    ecgViewCM22.showLine(shortsEcgCM22[indexEcgCM22]);
+                    ppgView.showLine(shortsPPG[indexPPG]);
+                    indexEcgCM22++;
+                    indexPPG++;
+
                 }
-
-                if (indexPPG >= 0) {
-                    indexPPG = 0;
-                }
-                ecgViewCM22.showLine(shortsEcgCM22[indexEcgCM22]);
-                ppgView.showLine(shortsPPG[indexPPG]);
-                indexEcgCM22++;
-                indexPPG++;
-
-            }
-        }, 100, 25);
+            }, 100, 25);
+        }
     }
 
+    //弹窗提示
+    private void showDialog(){
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("你确定要中断此次检测吗？")
+                .positiveText("确定")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Log.d(TAG,"MaterialDialog确定");
+                    }
+                })
+                .build();
+
+
+        if (dialog.getTitleView() != null) {
+            dialog.getTitleView().setTextSize(25);
+        }
+
+        if (dialog.getActionButton(DialogAction.POSITIVE) != null) {
+            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
+        }
+
+        if(dialog.getActionButton(DialogAction.NEGATIVE)!=null){
+            dialog.getActionButton(DialogAction.NEGATIVE).setTextSize(25);
+        }
+
+        dialog.show();
+    }
     @OnClick(R.id.vital_start)
     public void start() {
-        scanBle();
+        if(vital_start.getText().toString().equals("开始")){
+            scanBle();
+        }else if(vital_start.getText().toString().equals("中断")){
+            //todo 中断操作
+            showDialog();
+        }
+
+    }
+
+    //按键返回
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            showDialog();
+        }
+        return false;
+
+    }
+
+    //返回箭头
+    @OnClick(R.id.back)
+    public void back() {
+        //todo
+        showDialog();
+//        finish();
     }
 
     @OnClick(R.id.vital_close)
@@ -471,11 +549,19 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 //                    EventBus.getDefault().post(2);
 //                }
 
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        vital_start.setText("中断");
+                    }
+                });
+
+
                 //把获取到的时间，进行展示，倒计时展示
-//                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration) * 60 * 1000);
-//                breatheTime.setText(timeStr);
+                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration)  * 1000);
+                patient_view_time.setText(timeStr);
                 //开启倒计时
-                handler.sendEmptyMessageDelayed(3333,1000);
+                handler.sendEmptyMessageDelayed(3333, 1000);
             }
 
             @Override
@@ -753,8 +839,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         @Override
         public void onTick(long millisUntilFinished) {
             String timeStr = millisUntilFinishedToMin(millisUntilFinished);
-            Log.d(TAG, "MyCountDownTimer====" + timeStr);
-//            breatheTime.setText(timeStr);
+            patient_view_time.setText(timeStr);
         }
 
         @Override
@@ -772,22 +857,23 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
         }
     }
+
     //压缩文件
-    private File zipFiles(){
+    private File zipFiles() {
 
         String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         //原保存的文件路径
-        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr;
+        String src = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + patientId + "-" + dateNowStr;
 
         //将要压缩的文件zip
-        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+patientId+"-"+dateNowStr + ".zip";
+        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/" + patientId + "-" + dateNowStr + ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
         //压缩文件
         try {
-            ZipUtils.zipFile(src,zip);
+            ZipUtils.zipFile(src, zip);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -796,6 +882,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         File file = FileUtils.getFileByPath(zip);
         return file;
     }
+
     /**
      * 倒计时使用
      */
@@ -856,7 +943,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             super.handleMessage(msg);
             if (msg.what == 3333) {
                 //开启倒计时
-                mc = new MyCountDownTimer(mMusicDuration*1000, 1000);
+                mc = new MyCountDownTimer(mMusicDuration * 1000, 1000);
                 mc.start();
             }
 

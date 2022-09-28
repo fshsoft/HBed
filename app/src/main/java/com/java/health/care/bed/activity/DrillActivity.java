@@ -190,6 +190,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         // 获取评估训练时长
 //        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
         mMusicDuration = unFinishedPres.getDuration();
+
+        Log.d(TAG,"preId:"+preId+"==preType:"+preType+"==mMusicDuration:"+mMusicDuration);
     }
 
 
@@ -262,7 +264,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
 
                 //把获取到的时间，进行展示，倒计时展示
-                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration) * 60 * 1000);
+                String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration)  * 1000);
                 breatheTime.setText(timeStr);
 
                 //开始播放背景音乐
