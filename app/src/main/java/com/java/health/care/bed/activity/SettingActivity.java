@@ -1,8 +1,12 @@
 package com.java.health.care.bed.activity;
 
+import android.Manifest;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -17,6 +21,13 @@ import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.presenter.MainPresenter;
 import com.java.health.care.bed.util.VersionUtil;
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.ExplainReasonCallback;
+import com.permissionx.guolindev.callback.RequestCallback;
+import com.permissionx.guolindev.request.ExplainScope;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -58,7 +69,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     protected void initView() {
         presenter = new MainPresenter(this, this);
         set_version_update_num.setText("V "+VersionUtil.getAppVersionName(this));
-
+        checkPermissions();
     }
 
     @Override
@@ -141,8 +152,6 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @OnClick(R.id.set_wc_press_rl)
     public void setPress(){
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("请输入无创血压值标定")
-                .content("")
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input("如：120/80", null, new MaterialDialog.InputCallback() {
                     @Override
@@ -173,8 +182,6 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @OnClick(R.id.set_server_rl)
     public void setServer(){
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("请输入服务器地址")
-                .content("")
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input("如：192.168.1.100", null, new MaterialDialog.InputCallback() {
                     @Override
@@ -263,9 +270,55 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     @OnClick(R.id.back)
     public void back(){
+//        finish();
+        goActivity(PrescriptionActivity.class);
         finish();
     }
 
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            goActivity(PrescriptionActivity.class);
+            finish();
+        }
+        return false;
+
+    }
+
+    /**
+     * 权限申请
+     */
+
+    private void checkPermissions() {
+
+        List requestList = new ArrayList();
+        //文件读写需要的三个权限
+        requestList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        requestList.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+
+        if(!requestList.isEmpty()){
+            PermissionX.init(this)
+                    .permissions(requestList)
+                    .onExplainRequestReason(new ExplainReasonCallback() {
+                        @Override
+                        public void onExplainReason(@NonNull ExplainScope scope, @NonNull List<String> deniedList) {
+                            scope.showRequestReasonDialog(deniedList,"需要您同意以下权限才能正常使用","同意","拒绝");
+                        }
+                    })
+                    .request(new RequestCallback() {
+                        @Override
+                        public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                            if (allGranted) {
+                            } else {
+                                Toast.makeText(SettingActivity.this, "您拒绝了如下权限"+deniedList, Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+        }
+
+    }
 
 
 }

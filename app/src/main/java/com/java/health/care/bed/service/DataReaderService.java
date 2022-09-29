@@ -156,12 +156,7 @@ public class DataReaderService extends Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         Log.d(TAG, "onStart()");
-        bleCM19Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
-        bleCM22Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM22_MAC);
-        bleSPO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
-        bleQSMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
-        bleIRTMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
-        bleKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
+
     }
 
     @Override
@@ -928,6 +923,12 @@ public class DataReaderService extends Service {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
+        bleCM19Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
+        bleCM22Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM22_MAC);
+        bleSPO2Mac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_SPO2_MAC);
+        bleQSMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_QIANSHAN_MAC);
+        bleIRTMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
+        bleKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
         if (event instanceof String) {
             String str = (String) event;
             if (bleDeviceKYC != null) {
@@ -936,7 +937,8 @@ public class DataReaderService extends Service {
                 Log.d(TAG, "康养床bleDevice为空了");
             }
 
-        } else if(event instanceof List){
+        }
+        if(event instanceof List){
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
                 Log.d(TAG,"deviceList=="+deviceList.size());
@@ -1433,10 +1435,12 @@ public class DataReaderService extends Service {
         byte height = (byte) 170;
         byte weight = (byte)80;
         byte armLength = (byte)65;
-        int sexValue =SPUtils.getInstance().getString(SP.PATIENT_SEX).equals("男")? 1: 0;
+     /*   int sexValue =SPUtils.getInstance().getString(SP.PATIENT_SEX).equals("男")? 1: 0;
         byte sex = (byte) sexValue;
         String ageValue = SPUtils.getInstance().getString(SP.PATIENT_AGE);
-        byte age = (byte) Integer.parseInt(ageValue);
+        byte age = (byte) Integer.parseInt(ageValue);*/
+        byte sex = (byte)1;
+        byte age = (byte)32;
         byte[] patientBytes = {height,weight,armLength,sex,age};
         String HexPersonStr = ByteUtil.bytesToHexString(patientBytes);
         return ByteUtil.HexString2Bytes(Constant.Order_PersonInfo+HexPersonStr);

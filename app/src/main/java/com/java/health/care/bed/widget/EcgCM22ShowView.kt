@@ -18,7 +18,7 @@ class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, att
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 160f
+    private val INTERVAL_SCROLL_REFRESH = 280f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0

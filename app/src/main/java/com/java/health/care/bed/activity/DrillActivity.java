@@ -153,7 +153,6 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     @Override
     protected void initView() {
         addConnectDeviceView();
-//        goService(DataReaderService.class);
     }
 
     @Override
@@ -746,8 +745,6 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         handler.removeMessages(3333);
         handler.removeMessages(4444);
 
-        //关闭服务
-//        stopService(DataReaderService.class);
 
         //断开cm19蓝牙
         if(deviceListConnect!=null){

@@ -12,6 +12,7 @@ import com.java.health.care.bed.model.DataReceiver;
 import com.java.health.care.bed.model.DataTransmitter;
 import com.java.health.care.bed.model.DevicePacket;
 import com.java.health.care.bed.model.EstimateRet;
+import com.java.health.care.bed.widget.EcgCM22ShowView;
 import com.java.health.care.bed.widget.EcgShowView;
 import com.java.health.care.bed.widget.PPGShowView;
 import com.java.health.care.bed.widget.RespShowView;
@@ -41,7 +42,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
     @BindView(R.id.patient_view_resp)
     RespShowView respShowView;
     @BindView(R.id.patient_view_ecg_cm22)
-    EcgShowView ecgShowViewCM22;
+    EcgCM22ShowView ecgShowViewCM22;
     @BindView(R.id.patient_view_ppg)
     PPGShowView ppgShowView;
 
@@ -95,13 +96,13 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
 
     private int indexEcgCM19 = 0;
     private int indexResp = 0;
-    private int[] shortsEcgCM19 = new int[5];
-    private int[] shortsResp = new int[5];
+    private int[] shortsEcgCM19 = new int[2];
+    private int[] shortsResp = new int[2];
 
     private int indexEcgCM22 = 0;
     private int indexPPG = 0;
-    private int[] shortsEcgCM22 = new int[5];
-    private int[] shortsPPG = new int[5];
+    private int[] shortsEcgCM22 = new int[2];
+    private int[] shortsPPG = new int[2];
 
     //判断是cm19设备 还是cm22设备
     private boolean flag ;
@@ -138,9 +139,9 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
             @Override
             public void run() {
                 //很重要，从队列里面取5个数据
-                //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
+                //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据  5 5 5 16
 
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 2; i++) {
 
                     Integer x = dataQueueEcgCM19.poll();
 
@@ -172,7 +173,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
 
 
             }
-        }, 100, 16);
+        }, 960, 6);
 
 
         //无创连续血压
@@ -182,7 +183,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                 //很重要，从队列里面取5个数据
                 //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据
 
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 2; i++) {
 
                     Integer x = dataQueueEcgCM22.poll();
 
@@ -213,7 +214,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                 indexPPG++;
 
             }
-        }, 100, 25);
+        }, 500, 10);
 
     }
 
@@ -328,14 +329,10 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
             public void run() {
                 if (packet.heartRate >0) {
                     kyc_heart_rate.setText("心率："+packet.heartRate);
-                }else {
-                    kyc_heart_rate.setText("心率："+"--");
                 }
 
                 if (packet.resp > 0) {
                     kyc_resp_rate.setText("呼吸："+packet.resp + "");
-                }else {
-                    kyc_resp_rate.setText("呼吸："+"--");
                 }
 
             }
@@ -359,14 +356,10 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
             public void run() {
                 if (packet.getHeartRate() >0) {
                     kyc_heart_rate_cm22.setText("心率："+packet.getHeartRate());
-                }else {
-                    kyc_heart_rate_cm22.setText("心率："+"--");
                 }
 
                 if (packet.getsSsPressDataData() > 0 && packet.getsSzPressDataData()>0) {
                     kyc_press.setText("血压："+packet.getsSsPressDataData() + "/"+ packet.getsSzPressDataData());
-                }else {
-                    kyc_press.setText("血压："+"--/--");
                 }
 
             }

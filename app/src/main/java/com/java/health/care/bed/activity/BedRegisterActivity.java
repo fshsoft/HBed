@@ -102,8 +102,6 @@ public class BedRegisterActivity extends BaseActivity implements MainContract.Vi
     @OnClick(R.id.bed_register_rl)
     public void setBed() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("请输入床位编号")
-                .content("")
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input("如：20", null, (dialog1, input) -> {
                     bed_register_num.setText(input);

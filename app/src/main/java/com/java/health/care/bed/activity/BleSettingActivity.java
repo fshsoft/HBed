@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -86,8 +87,6 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
             deviceListConnect=null;
         }
 
-        stopService(DataReaderService.class);
-
     }
 
     @Override
@@ -102,9 +101,6 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.btn_see_kyc: //康养床查看
                 if(deviceListConnect.size()!=0){
-                    EventBus.getDefault().post(deviceListConnect);
-//                   goActivity(KYCSetActivity.class);
-//                    goActivity(EcgsActivity.class);
                     goActivity(BLESeeAndOperateActivity.class);
                 }else {
                     ToastUtils.showShort( R.string.please_connect);
@@ -269,6 +265,10 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                     SPUtils.getInstance().put(Constant.BLE_DEVICE_CM22_MAC,bleDevice.getMac());
                 }
                 Log.d(TAG,"deviceList1==="+deviceListConnect.size());
+                if(deviceListConnect.size()!=0) {
+                    EventBus.getDefault().post(deviceListConnect);
+                }
+
             }
 
             @Override

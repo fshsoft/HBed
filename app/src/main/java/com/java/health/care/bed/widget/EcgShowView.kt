@@ -18,7 +18,7 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 160f
+    private val INTERVAL_SCROLL_REFRESH = 420f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
@@ -133,17 +133,17 @@ class EcgShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
             nowX = i * intervalRowHeart
             var dataValue = data!![i]
 //            Log.d("aaron====8888999==++", Arrays.toString(data))
-            if (dataValue > 0) {
-                if (dataValue > MAX_VALUE * 0.8f) {
-                    dataValue = MAX_VALUE * 0.8f
-                }
-            } else {
-                if (dataValue < -MAX_VALUE * 0.8f) {
-                    dataValue = -(MAX_VALUE * 0.8f)
-                }
-            }
+//            if (dataValue > 0) {
+//                if (dataValue > MAX_VALUE * 0.8f) {
+//                    dataValue = MAX_VALUE * 0.8f
+//                }
+//            } else {
+//                if (dataValue < -MAX_VALUE * 0.8f) {
+//                    dataValue = -(MAX_VALUE * 0.8f)
+//                }
+//            }
 //            nowY = mHeight / 2 - dataValue * intervalColumnHeart
-            nowY = dataValue * intervalColumnHeart +mHeight/2
+            nowY = dataValue * intervalColumnHeart*0.6f +mHeight/2
 
 //            Log.d("aaron====8888999=====", nowY.toString())
 

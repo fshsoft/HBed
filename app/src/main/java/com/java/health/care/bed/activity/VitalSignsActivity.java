@@ -1,6 +1,7 @@
 package com.java.health.care.bed.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothGatt;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -143,8 +144,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     private int indexEcgCM19 = 0;
     private int indexResp = 0;
-    private int[] shortsEcgCM19 = new int[5];
-    private int[] shortsResp = new int[5];
+    private int[] shortsEcgCM19 = new int[2];
+    private int[] shortsResp = new int[2];
 
     private int indexEcgCM22 = 0;
     private int indexPPG = 0;
@@ -165,6 +166,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     private int cmType;
 
+    private ProgressDialog progressDialog;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_vitalsigns;
@@ -179,7 +182,6 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         bleDeviceTempMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
         //虽然做生命体征检测，但是康养床蓝牙还是要连接的，因为康养床有呼叫功能，必须保持蓝牙连接
         bleDeviceKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
-//        goService(DataReaderService.class);
 
     }
 
@@ -275,7 +277,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                     //很重要，从队列里面取5个数据
                     //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
 
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         Integer x = dataQueueEcgCM19.poll();
 
@@ -290,6 +292,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                         }
                         shortsEcgCM19[i] = x;
                         shortsResp[i] =y;
+
                     }
 
 
@@ -307,7 +310,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
 
                 }
-            }, 100, 16);
+            }, 50, 6);
 
 
         } else if (cmType == 2) {
@@ -318,7 +321,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 @Override
                 public void run() {
                     //很重要，从队列里面取5个数据
-                    //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据
+                    //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据  5 5 5 25
 
                     for (int i = 0; i < 5; i++) {
 
@@ -408,6 +411,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @OnClick(R.id.vital_start)
     public void start() {
         if(vital_start.getText().toString().equals("开始")){
+            progressDialog = new ProgressDialog(this);
+            progressDialog.show();
             scanBle();
         }else if(vital_start.getText().toString().equals("中断")){
             //todo 中断操作
@@ -513,28 +518,31 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
+                progressDialog.dismiss();
+                showToast("蓝牙连接失败");
                 Log.d(TAG, "onConnectFail:exception:" + exception.toString());
                 //蓝牙连接失败
-           /*     if(bleDevice.getName().contains(Constant.CM19)){
-                    bleCM.setTextColor(getResources().getColor(R.color.black));
+                if(bleDevice.getName().contains(Constant.CM19)){
+
                     retryConnectBle(bleDevice);
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
-                    bleSpo2.setTextColor(getResources().getColor(R.color.black));
+
                     retryConnectBle(bleDevice);
                 }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
-                    bleBP.setTextColor(getResources().getColor(R.color.black));
+
                     retryConnectBle(bleDevice);
                 }else if(bleDevice.getName().contains(Constant.IRT)){
-                    bleTemp.setTextColor(getResources().getColor(R.color.black));
+
                     retryConnectBle(bleDevice);
                 }else if(bleDevice.getName().contains(Constant.CM22)){
-                    blePress.setTextColor(getResources().getColor(R.color.black));
+
                     retryConnectBle(bleDevice);
-                }*/
+                }
             }
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                progressDialog.dismiss();
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 deviceListConnect.add(bleDevice);
                 EventBus.getDefault().post(deviceListConnect); //连接成功之后，发送给DataReaderService，进行开启通知，或者写入操作
@@ -953,8 +961,6 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         }
         //关闭倒计时
         handler.removeMessages(3333);
-        //关闭服务
-//        stopService(DataReaderService.class);
 
 
     }
