@@ -138,6 +138,12 @@ public class ByteUtil {
 		bb[index + 3] = (byte) ((x >> 0)  & 0xff);
 	}
 
+	public static void putIntBig(byte[] bb, int x, int index) {
+		bb[index + 3] = (byte) ((x >> 24)  & 0xff);
+		bb[index + 2] = (byte) ((x >> 16)  & 0xff);
+		bb[index + 1] = (byte) ((x >> 8)  & 0xff);
+		bb[index + 0] = (byte) ((x >> 0)  & 0xff);
+	}
 	/**
 	 * 通过byte数组取到int
 	 * 

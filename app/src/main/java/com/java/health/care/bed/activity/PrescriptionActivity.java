@@ -1,7 +1,9 @@
 package com.java.health.care.bed.activity;
 
 import android.Manifest;
+import android.bluetooth.BluetoothGatt;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,16 +15,23 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ZipUtils;
+import com.clj.fastble.BleManager;
+import com.clj.fastble.callback.BleGattCallback;
+import com.clj.fastble.callback.BleScanCallback;
+import com.clj.fastble.data.BleDevice;
+import com.clj.fastble.exception.BleException;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.bean.Patient;
+import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.fragment.UnFinishedPresFragment;
 import com.java.health.care.bed.fragment.FinishedPresFragment;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.presenter.MainPresenter;
+import com.java.health.care.bed.service.DataReaderService;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
@@ -42,6 +51,8 @@ import butterknife.OnClick;
  * @Description 我的处方,获取User信息，跳转未完成和已完成界面fragment
  */
 public class PrescriptionActivity extends BaseActivity implements MainContract.View {
+    private static final String TAG = PrescriptionActivity.class.getSimpleName();
+
     private MainPresenter mainPresenter;
     private int bunkId;
     @BindView(R.id.prescription_tab)
@@ -63,6 +74,7 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
 
     private String[] titles = {"未完成","已完成"};
 
+    private String bleDeviceMac;
 
 
     @OnClick(R.id.prescription_tv_set)
@@ -138,25 +150,20 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
             mainPresenter.getUser(bunkId);
         }
 
+        bleDeviceMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
+        BleManager.getInstance().init(getApplication());
+        BleManager.getInstance()
+                .enableLog(true)
+                .setReConnectCount(1, 5000)
+                .setConnectOverTime(20000)
+                .setOperateTimeout(5000);
 
 
-//        String src = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + "1022" + "-" + "20220727144102";
-//
-//        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+ "1022" + "-" + "20220727144102.zip";
-//
-//        //创建文件夹
-//        FileUtils.createOrExistsFile(zip);
-//        //测试压缩文件
-//        try {
-//            ZipUtils.zipFile(src,zip);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        //开启服务，保持康养床的蓝牙连接
+        goService(DataReaderService.class);
+        //自动先进行扫描康养床ble,然后进行连接，前提需要在设置里面先连接过康养床设备获取mac地址
+        scanBle();
 
-      /*  FileUtils.createOrExistsFile(zip);
-        //删除文件
-        File file = FileUtils.getFileByPath(zip);
-        file.delete();*/
     }
 
 
@@ -230,5 +237,55 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
     @Override
     public void setData(Object obj) {
 
+    }
+
+
+    private void scanBle() {
+        BleManager.getInstance().scan(new BleScanCallback() {
+            @Override
+            public void onScanFinished(List<BleDevice> scanResultList) {
+
+
+            }
+
+            @Override
+            public void onScanStarted(boolean success) {
+                Log.d(TAG, "bleDeviceMac:success:" + success);
+            }
+
+            @Override
+            public void onScanning(BleDevice bleDevice) {
+
+                if (bleDevice.getMac().equals(bleDeviceMac)) {
+                    connectBle(bleDevice);
+                }
+            }
+        });
+    }
+    private void connectBle(BleDevice bleDevice) {
+        BleManager.getInstance().connect(bleDevice, new BleGattCallback() {
+
+            @Override
+            public void onStartConnect() {
+                Log.d(TAG, "onStartConnect:");
+            }
+
+            @Override
+            public void onConnectFail(BleDevice bleDevice, BleException exception) {
+                Log.d(TAG, "onConnectFail:exception:" + exception.toString());
+            }
+
+            @Override
+            public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                Log.d(TAG, "onConnectSuccess:status:" + status);
+
+                //todo
+            }
+
+            @Override
+            public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
+                Log.d(TAG, "onDisConnected:status:" + status);
+            }
+        });
     }
 }

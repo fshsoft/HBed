@@ -153,7 +153,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     @Override
     protected void initView() {
         addConnectDeviceView();
-        goService(DataReaderService.class);
+//        goService(DataReaderService.class);
     }
 
     @Override
@@ -747,9 +747,14 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         handler.removeMessages(4444);
 
         //关闭服务
-        stopService(DataReaderService.class);
+//        stopService(DataReaderService.class);
 
-
+        //断开cm19蓝牙
+        if(deviceListConnect!=null){
+            for (BleDevice bleDevice: deviceListConnect) {
+                BleManager.getInstance().disconnect(bleDevice);
+            }
+        }
     }
 
 

@@ -195,13 +195,26 @@ public class MainPresenter implements MainContract.presenter {
 
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"),file);
 
-        Map<String,String> mapReport = new HashMap<>();
-        mapReport.put("preId",preId); //preID
-        mapReport.put("patientId",patientId); //preID
-        mapReport.put("preType",preType);//preType
-        JSONObject json = new JSONObject(mapReport);
+        Map<String,String> map1 = new HashMap<>();
+        map1.put("key","preId"); //preID
+        map1.put("value",preId);
+
+        Map<String,String> map2 = new HashMap<>();
+        map2.put("key","preType"); //preID
+        map2.put("value",preType);
+
+        Map<String,String> map3 = new HashMap<>();
+        map3.put("key","patientId"); //preID
+        map3.put("value",patientId);
+
+        JSONObject json1 = new JSONObject(map1);
+        JSONObject json2 = new JSONObject(map2);
+        JSONObject json3 = new JSONObject(map3);
+
         JSONArray jsonArray = new JSONArray();
-        jsonArray.put(json);
+        jsonArray.put(json1);
+        jsonArray.put(json2);
+        jsonArray.put(json3);
 
         Map<String,Object> map = new HashMap<>();
         map.put("source","pad");

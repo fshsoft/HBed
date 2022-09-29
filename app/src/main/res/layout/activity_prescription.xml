@@ -179,7 +179,7 @@
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:gravity="center"
-                android:text="执行时间"/>
+                android:text="时间"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"

@@ -205,7 +205,7 @@ public class DataReaderService extends Service {
         dataTrans = DataTransmitter.getInstance();
         dataTrans.setServiceRunning(true);
 
-        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+
     }
 
     /**
@@ -457,6 +457,10 @@ public class DataReaderService extends Service {
 
                 for (byte[] packet : packets) {
                     Log.d("fsh===", Arrays.toString(packet));
+                    //进行写入数据
+                    FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg",packet, true);
+                    //发送整包数据，和CM19有区别组包
+                    dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
 //                    Log.d("fsh===",len+"===len");
@@ -509,9 +513,9 @@ public class DataReaderService extends Service {
                             signalProcessor.SmoothBaseLine(sEcgData, 96);
                         }
 
-                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,null,ppgData,rrData,szPressData,ssPressData,
+                    /*    byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,null,ppgData,rrData,szPressData,ssPressData,
                                 (short) sEcg,(short) 0,(short) 0,(short) 0, (short) 0,(short) 0,startTime).buildPacket();
-                        dataTrans.sendData(realTimeData);
+                        dataTrans.sendData(realTimeData);*/
 
                         BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
                         dataTrans.sendData(bpDevicePacket);
@@ -532,6 +536,8 @@ public class DataReaderService extends Service {
 
             if (true) {
                 for (byte[] packet : packets) {
+
+                    Log.d("fsh===", Arrays.toString(packet));
 
                     if (PacketParse.parsePacket(packet)) {
                         byte[] ecgData = PacketParse.getTlv(ImplementConfig.TLV_CODE_SYS_DATA_TYPE_ECG);
@@ -602,14 +608,15 @@ public class DataReaderService extends Service {
                         Log.d("arraycopy====1",Arrays.toString(contentEcg));
                         //写入文件ecg
                         FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", baoEcg, true);*/
-                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
+                        //针对心肺谐振的写入
+//                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         int[] irspData = new int[rspData.length / 3];
                         ByteUtil.bbToInts(irspData, rspData);
 
                         Log.i("methodecg_rsp_int", Arrays.toString(irspData));
-                        //写入文件rsp
-                        FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
+                        //写入文件rsp //针对心肺谐振的写入
+//                        FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
                         short[] saccData = new short[length];
                         ByteUtil.bbToShorts(saccData, accData);
 
@@ -746,15 +753,21 @@ public class DataReaderService extends Service {
 
                         devicePacket.score = score;
 
+                        //针对心肺谐振的写入
+                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
+                        FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
                         if (score > 0) {
-                            //写入文件score
                             byte[] baos = new byte[4];
                             ByteUtil.intToByte(baos, score, 0);
                             FileIOUtils.writeFileFromBytesByStream(path + "scoreData.score", baos, true);
-
                         }
 
 
+                        //生命体征检测：重新组包，把数据写入文件
+
+                        byte[] realDatas = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,(short) heartRate[0],
+                                (short) respRate,devicePacket.rrNew,getSecondTimestamp(new Date())).buildPacket();
+                        FileIOUtils.writeFileFromBytesByStream(path + "LIFE.life", realDatas, true);
                         // 向监听器发送数据
                         dataTrans.sendData(devicePacket);
 
@@ -989,7 +1002,7 @@ public class DataReaderService extends Service {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String dateNowStr = sdf.format(d);
         SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME,dateNowStr);
-        int patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         path = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr+"/";
         File dir = new File(path);
         if (!dir.exists()) {
@@ -1152,6 +1165,69 @@ public class DataReaderService extends Service {
                     public void onWriteSuccess(int current, int total, byte[] justWrite) {
                         Log.d("cm22========0", "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
                         //需要先写入个人信息和标定值，最后点击开始
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        writeCM22BPBleDevicePatientID(bleDevice);
+                    }
+
+                    @Override
+                    public void onWriteFailure(BleException exception) {
+                        Log.d(TAG, exception.toString());
+                    }
+                }
+
+        );
+    }
+
+    private void writeCM22BPBleDevicePatientID(BleDevice bleDevice) {
+        BleManager.getInstance().write(
+                bleDevice,
+                Constant.UUID_SERVICE_CM22,
+                Constant.UUID_CHARA_CM22_WRITE,
+                patientID(),
+                new BleWriteCallback() {
+
+                    @Override
+                    public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                        Log.d("cm22========0", "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
+                        //需要先写入个人信息和标定值，最后点击开始
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        writeCM22BPBleDeviceTime(bleDevice);
+                    }
+
+                    @Override
+                    public void onWriteFailure(BleException exception) {
+                        Log.d(TAG, exception.toString());
+                    }
+                }
+
+        );
+    }
+
+    private void writeCM22BPBleDeviceTime(BleDevice bleDevice) {
+        BleManager.getInstance().write(
+                bleDevice,
+                Constant.UUID_SERVICE_CM22,
+                Constant.UUID_CHARA_CM22_WRITE,
+                writeSyncTime(),
+                new BleWriteCallback() {
+
+                    @Override
+                    public void onWriteSuccess(int current, int total, byte[] justWrite) {
+                        Log.d("cm22========0", "current:" + current + "==total:" + total + "===byte[]:" + Arrays.toString(justWrite));
+                        //需要先写入个人信息和标定值，最后点击开始
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         writeCM22BPBleDeviceBD(bleDevice);
                     }
 
@@ -1364,6 +1440,25 @@ public class DataReaderService extends Service {
         byte[] patientBytes = {height,weight,armLength,sex,age};
         String HexPersonStr = ByteUtil.bytesToHexString(patientBytes);
         return ByteUtil.HexString2Bytes(Constant.Order_PersonInfo+HexPersonStr);
+    }
+
+    //CM22 用户ID
+    private byte[] patientID(){
+        byte[] IDbytes = new byte[4];
+        Log.d(TAG,"patientId:"+patientId);
+        ByteUtil.putIntBig(IDbytes,patientId,0);
+        String HexID = ByteUtil.bytesToHexString(IDbytes);
+        return ByteUtil.HexString2Bytes(Constant.Order_PersonID+HexID);
+    }
+
+    //cm22 发送开始时间
+    private byte[] writeSyncTime(){
+        int curTimestamp =  getSecondTimestamp(new Date());
+        byte[] timeByte = new byte[4];
+        ByteUtil.putIntBig(timeByte,curTimestamp,0);
+        String HexTime =  ByteUtil.bytesToHexString(timeByte);
+        return ByteUtil.HexString2Bytes(Constant.Order_BeginTime+HexTime);
+
     }
 
     //CM22无创连续血压值标定

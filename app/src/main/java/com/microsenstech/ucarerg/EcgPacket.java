@@ -17,6 +17,7 @@ public enum EcgPacket {
 	Step(0x0049),
 	//PatientId(0x4000),
 	StartTime(0x0050),
+	RR(0x0051),
 	;
 	
 	

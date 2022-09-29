@@ -179,7 +179,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         bleDeviceTempMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_IRT_MAC);
         //虽然做生命体征检测，但是康养床蓝牙还是要连接的，因为康养床有呼叫功能，必须保持蓝牙连接
         bleDeviceKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
-        goService(DataReaderService.class);
+//        goService(DataReaderService.class);
 
     }
 
@@ -193,17 +193,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(serviceConnection);
-        EventBus.getDefault().unregister(this);
-        if (timerBle != null) {
-            timerBle.cancel();
-        }
-        if (timerCM19 != null) {
-            timerCM19.cancel();
-        }
-        if (timerCM22 != null) {
-            timerCM22.cancel();
-        }
+        closeAll();
     }
 
 
@@ -363,6 +353,19 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 }
             }, 100, 25);
         }
+
+        //测试数据上传
+    /*    new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+ "1" + "-" + "20220928180120.zip";
+                //获取文件
+                File file = FileUtils.getFileByPath(zip);
+
+                //文件上传
+                presenter.uploadFile(file,"file_uploadReportLfs","1","15","RESONANCE");
+            }
+        }).start();*/
     }
 
     //弹窗提示
@@ -375,6 +378,14 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         Log.d(TAG,"MaterialDialog确定");
+                        //断开cm19蓝牙
+                        if(deviceListConnect!=null){
+                            for (BleDevice bleDevice: deviceListConnect) {
+                                BleManager.getInstance().disconnect(bleDevice);
+                            }
+                        }
+
+                        finish();
                     }
                 })
                 .build();
@@ -925,13 +936,25 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         handler.removeMessages(2222);
         handler.removeMessages(4444);*/
 
+        unbindService(serviceConnection);
+        EventBus.getDefault().unregister(this);
+        if (timerBle != null) {
+            timerBle.cancel();
+        }
+        if (timerCM19 != null) {
+            timerCM19.cancel();
+        }
+        if (timerCM22 != null) {
+            timerCM22.cancel();
+        }
         if (null != mc) {
             mc.cancel();
             mc = null;
         }
+        //关闭倒计时
         handler.removeMessages(3333);
         //关闭服务
-        stopService(DataReaderService.class);
+//        stopService(DataReaderService.class);
 
 
     }

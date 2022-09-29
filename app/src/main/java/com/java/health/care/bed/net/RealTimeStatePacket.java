@@ -76,6 +76,15 @@ public class RealTimeStatePacket {
 
     //开始时间
     private int startTime;
+
+    //实时时间
+    private int realTime;
+
+    //平衡分
+    private int score;
+
+    //rr间期
+    private float rr;
     /**
      * body数据
      * 心电Type =      0x0010->0 16
@@ -88,6 +97,8 @@ public class RealTimeStatePacket {
      * 呼吸频率Type =   0x0046->0 70
      * R波位置Type =    0x0047 ->0 71
      * 体温Type =      0x0048->0 72
+     *
+     * rr              49 -->73
      * 开始时间 =       0x0050->0 80
      * 以tlv格式类型(2个字节)，长度（2个字节），
      * 值: 心电192+4 呼吸288+4 PPG192+4
@@ -116,6 +127,22 @@ public class RealTimeStatePacket {
         this.temp =temp;
         this.startTime  =  startTime;
     }
+
+
+    public RealTimeStatePacket(int userId,int serialNum,byte[] ecgData,byte[] respData,
+                               short heartRate, short resp,float rr,int realTime){
+        this.userId = userId;
+        this.serialNum = serialNum;
+        this.ecgData = ecgData;
+        this.respData=respData;
+        this.heartRate = heartRate;
+        this.score = score;
+        this.resp = resp;
+        this.rr = rr;
+        this.realTime  =  realTime;
+    }
+
+
     public byte[] buildPacket() {
         TlvBox tlvBox = new TlvBox();
 
@@ -143,6 +170,10 @@ public class RealTimeStatePacket {
         if(temp!=0)tlvBox.putShortValue(72,temp);
 
         if(startTime!=0) tlvBox.putIntValue(80,startTime);
+
+        if(realTime!=0) tlvBox.putIntValue(80,realTime);
+
+        if(rr!=0) tlvBox.putFloatValue(81,rr);
 
         byte[] bytes = tlvBox.serialize();
         int length = bytes.length;

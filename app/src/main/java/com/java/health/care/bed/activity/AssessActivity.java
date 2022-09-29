@@ -161,7 +161,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     @Override
     protected void initView() {
         addConnectDeviceView();
-        goService(DataReaderService.class);
+//        goService(DataReaderService.class);
     }
 
     @Override
@@ -178,18 +178,6 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
         presenter = new MainPresenter(this, this);
 
-      /* new Thread(new Runnable() {
-           @Override
-           public void run() {
-               String path = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + "1022" + "-" + "20220727144102" + ".zip";
-
-               //获取文件
-               File file = FileUtils.getFileByPath(path);
-
-               //文件上传
-               presenter.uploadFile(file,"file_uploadReportLfs","111","1212","RESONANCE");
-           }
-       }).start();*/
 
 
 
@@ -828,7 +816,15 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
         handler.removeMessages(4444);
 
         //关闭服务
-        stopService(DataReaderService.class);
+//        stopService(DataReaderService.class);
+
+        //断开cm19蓝牙
+        if(deviceListConnect!=null){
+            for (BleDevice bleDevice: deviceListConnect) {
+                BleManager.getInstance().disconnect(bleDevice);
+            }
+        }
+
 
 
     }
