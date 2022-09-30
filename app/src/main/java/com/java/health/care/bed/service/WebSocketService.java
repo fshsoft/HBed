@@ -8,6 +8,10 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
+
+import com.blankj.utilcode.util.SPUtils;
+import com.java.health.care.bed.constant.SP;
 
 import java.nio.ByteBuffer;
 import okhttp3.OkHttpClient;
@@ -25,7 +29,10 @@ import okio.ByteString;
 public class WebSocketService extends Service {
     private static final String TAG = WebSocketService.class.getSimpleName();
 
-    private static final String WS = "ws://192.168.0.13:8000?app_key=client_001&secret=ef9b84b83b693bbf&inpatient_ward=1001&type=1";
+
+    //inpatient_ward 为病区id
+    private int regionId;
+    private static final String WS = "ws://192.168.0.13:8000?app_key=client_001&secret=ef9b84b83b693bbf&type=1&inpatient_ward=";
 
     private WebSocket webSocket;
     private WebSocketCallback webSocketCallback;
@@ -67,9 +74,9 @@ public class WebSocketService extends Service {
     }
 
     private WebSocket connect() {
-        Log.d(TAG, "connect " + WS);
+        regionId = SPUtils.getInstance().getInt(SP.REGION_ID);
         OkHttpClient client = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder().url(WS).build();
+        Request request = new Request.Builder().url(WS+regionId).build();
         return client.newWebSocket(request, new WebSocketHandler());
     }
 

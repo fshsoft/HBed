@@ -18,7 +18,7 @@ class PPGShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 280f
+    private val INTERVAL_SCROLL_REFRESH = 260f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
@@ -93,7 +93,7 @@ class PPGShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
         paint!!.color = Color.parseColor("#DB6E7C")
         paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
-        path!!.moveTo(0f, mHeight / 2)
+//        path!!.moveTo(0f, mHeight / 2)
 
         val nowIndex = if (refreshList == null) 0 else refreshList!!.size
         if (nowIndex == 0) {
@@ -145,13 +145,13 @@ class PPGShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
 
 //              Log.d("noy====",nowY.toString())
 
-                if(nowY>=350f){
+            /*    if(nowY>=350f){
                     nowY = 350f
                 }
 
                 if(nowY<=0){
                     nowY =0.0f
-                }
+                }*/
 
             }
 
@@ -159,15 +159,9 @@ class PPGShowView(context: Context, attrs: AttributeSet) : View(context, attrs) 
                 path!!.moveTo(nowX, nowY)
 
             } else {
-
-                //坐标= mWidth -2*intervalRowHeart 1401-10 2个间隙
-                if(nowX>mWidth -3*intervalRowHeart){
-                    //坐标x为最后三个的时候，直接跳出循环，不再绘制。 主要是最后三个点会进行bug直线绘制线，结束是到高度为mHeight/2
-                    //偶尔高度会0.很奇怪
-                    break
-                }
-                if(nowX==0f){ //坐标x为0的时候，不绘制，只移动，主要是一开始就会进行绘制，高度是mHeight/2有条竖线
+                if(nowX<=intervalRowHeart ||nowX>=mWidth -2*intervalRowHeart){
                     path!!.moveTo(nowX, nowY)
+
                 }else{
                     path!!.lineTo(nowX, nowY)
 

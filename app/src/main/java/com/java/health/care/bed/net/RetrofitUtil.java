@@ -100,4 +100,33 @@ public class RetrofitUtil {
 
         return allApi;
     }
+
+    public AllApi initRetrofitCpr() {
+        String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
+
+        if(!ip.isEmpty()){
+            String url ="http://"+ip+":8336/";
+
+            //增加超时时间
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .readTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(TIMEOUT, TimeUnit.SECONDS)
+                    .addInterceptor(InterceptorUtil.LogInterceptor())//添加日志拦截器
+                    .build();
+
+
+            Retrofit mRetrofit = new Retrofit.Builder()
+                    // 设置请求的域名
+                    .baseUrl(url)
+                    // 设置解析转换工厂，用自己定义的
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(client)
+                    .build();
+            allApi = mRetrofit.create(AllApi.class);
+        }
+
+        return allApi;
+    }
 }

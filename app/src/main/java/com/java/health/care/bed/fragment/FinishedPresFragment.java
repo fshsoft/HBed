@@ -51,7 +51,7 @@ public class FinishedPresFragment extends BaseFragment implements MainContract.V
         int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         if(patientID!=0){
             //调用接口
-            mainPresenter.getPrescription(1);
+            mainPresenter.getPrescription(patientID);
         }
         getFinishedPres();
     }
@@ -66,7 +66,7 @@ public class FinishedPresFragment extends BaseFragment implements MainContract.V
                         int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
                         if(patientID!=0){
                             //调用接口
-                            mainPresenter.getPrescription(1);
+                            mainPresenter.getPrescription(patientID);
                             refreshLayout.finishRefresh();
                         }
                     }

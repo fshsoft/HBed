@@ -16,6 +16,9 @@ import java.util.Map;
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -63,7 +66,7 @@ public interface AllApi {
    Observable<BaseEntry<Prescription>> getPrescription(@Header("authorization") String str,@Path("patient") String patient);
 
    /**
-    * 文件上传 Api.uploadFile 这个是apk下载，我这边不需要，需要对生命体征检测和心肺谐振评估和训练上传文件 需要
+    * 文件上传 Api.uploadFile 这个是apk下载，我这边不需要，需要对生命体征检测上传文件 需要
     */
 /*   @POST(Api.uploadFile)
    @Multipart
@@ -71,6 +74,19 @@ public interface AllApi {
    @POST(Api.uploadFile)
    @Multipart
    Observable<BaseEntry<FileBean>> uploadFile(@Header("authorization") String str,@Part List<MultipartBody.Part> parts);
+
+
+   /**
+    * 心肺谐振评估和训练
+    * 上传文件
+    */
+/*   @POST(Api.uploadFileCPR)
+   @Multipart
+   Observable<String> uploadFileCPR(@Part List<MultipartBody.Part> parts);*/
+
+   @POST(Api.uploadFileCPR)
+   @Multipart
+   Call<ResponseBody> uploadFileCPR( @Part List<MultipartBody.Part> parts);
    /**
     * 文件下载
     */

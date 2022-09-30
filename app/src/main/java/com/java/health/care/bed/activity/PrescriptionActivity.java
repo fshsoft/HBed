@@ -146,7 +146,9 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
         mainPresenter = new MainPresenter(this, this);
         //床ID：bunkId
         bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
+//        int bunkNum = SPUtils.getInstance().getInt(SP.BUNK_NUM);
         if(bunkId!=0){
+//            Log.d("getUser==bunkId",bunkId+"bunkNum:"+bunkNum);
             mainPresenter.getUser(bunkId);
         }
 
@@ -163,6 +165,8 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
         goService(DataReaderService.class);
         //自动先进行扫描康养床ble,然后进行连接，前提需要在设置里面先连接过康养床设备获取mac地址
         scanBle();
+
+
 
     }
 

@@ -39,9 +39,15 @@ public class Api {
     public static final String findPrescription = "/cas/open/prescription/find/{patient}";
 
     /**
-     * APK文件上传,我这边不需要处理这个接口
+     * 生命体征检测需要上传的文件
      */
     public static final String uploadFile = "/cas/open/file/upload";
+
+    /**
+     * 自主神经评估和心肺谐振训练文件上传
+     */
+
+    public static final String uploadFileCPR = "/cpr";
 
     /**
      * 文件下载，这个是apk下载

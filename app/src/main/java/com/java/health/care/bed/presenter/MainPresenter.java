@@ -21,15 +21,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainPresenter implements MainContract.presenter {
 
@@ -249,6 +256,68 @@ public class MainPresenter implements MainContract.presenter {
                     });
 
 
+    }
+
+    @Override
+    public void uploadFileCPR(File file) {
+        RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .addFormDataPart("file", file.getName(), body)
+                .setType(MultipartBody.FORM)
+                .build();
+
+        RetrofitUtil.getInstance().initRetrofitCpr().uploadFileCPR(multipartBody.parts())
+                .enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.isSuccessful()){
+                            ResponseBody responseBody = response.body();
+                            try {
+
+                                String msg = responseBody.string();
+                                Log.d("ResponseBody======",responseBody.string());
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("ResponseBody======1",t.getMessage()+"==="+t.toString());
+
+                    }
+                });
+
+
+       /* RetrofitUtil.getInstance().initRetrofitCpr().uploadFileCPR(multipartBody.parts())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>(){
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d("onNext=======1",d+"=========");
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        //请求结果
+                        Log.d("onNext=======2",s+"");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d("onNext=======3",e+"=========");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d("onNext=======4","=========");
+                    }
+                });
+*/
     }
 
     /**

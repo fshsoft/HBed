@@ -12,6 +12,10 @@ public class Patient {
     private String patientName;
     private String age;
     private String sex;
+    private int height;
+    private int weight;
+    private int armLength;
+    private int hospitalId;
 
     public int getBunkId() {
         return bunkId;
@@ -59,5 +63,37 @@ public class Patient {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public int getArmLength() {
+        return armLength;
+    }
+
+    public void setArmLength(int armLength) {
+        this.armLength = armLength;
+    }
+
+    public int getHospitalId() {
+        return hospitalId;
+    }
+
+    public void setHospitalId(int hospitalId) {
+        this.hospitalId = hospitalId;
     }
 }

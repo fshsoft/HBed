@@ -171,7 +171,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
         presenter = new MainPresenter(this, this);
 
-
+        //通知DataReaderService现在是搞的生命体征 主要是区分cm19是做生命体征true  还是心肺谐振评估训练false
+        EventBus.getDefault().post(false);
     }
 
     @Override

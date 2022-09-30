@@ -108,9 +108,10 @@ public class RealTimeStatePacket {
      * 体温有小数，比较特殊，比如36.8  乘以10后看成368 进行传输
      */
 
+    //生命体征监测cm19，实时数据包 ========= cm22原始数据实时发，原始数据写入文件
     public RealTimeStatePacket(int userId,int serialNum,byte[] ecgData,byte[] respData,byte[] ppgData,byte[] rrData,byte[] ssPressBytes,
                                byte[] szPressBytes,short heartRate,short spo2,
-                        short szPress,short ssPress,short resp, short temp,int startTime){
+                        short szPress,short ssPress,short resp, short temp,float rr,int startTime){
         this.userId = userId;
         this.serialNum = serialNum;
         this.ecgData = ecgData;
@@ -125,10 +126,12 @@ public class RealTimeStatePacket {
         this.ssPress = ssPress;
         this.resp = resp;
         this.temp =temp;
+        this.rr = rr;
         this.startTime  =  startTime;
     }
 
 
+    //生命体征监测CM19组包，文件zip
     public RealTimeStatePacket(int userId,int serialNum,byte[] ecgData,byte[] respData,
                                short heartRate, short resp,float rr,int realTime){
         this.userId = userId;
@@ -136,7 +139,6 @@ public class RealTimeStatePacket {
         this.ecgData = ecgData;
         this.respData=respData;
         this.heartRate = heartRate;
-        this.score = score;
         this.resp = resp;
         this.rr = rr;
         this.realTime  =  realTime;
@@ -167,14 +169,16 @@ public class RealTimeStatePacket {
         if(null!=ssPressBytes) tlvBox.putBytesValue(69,szPressBytes);
 
         if(resp!=0)tlvBox.putShortValue(70,resp);
-        if(temp!=0)tlvBox.putShortValue(72,temp);
+
 
         if(startTime!=0) tlvBox.putIntValue(80,startTime);
 
         if(realTime!=0) tlvBox.putIntValue(80,realTime);
 
-        if(rr!=0) tlvBox.putFloatValue(81,rr);
+        if(temp!=0)tlvBox.putShortValue(81,temp);
 
+//        if(rr!=0) tlvBox.putFloatValue(82,rr);
+        tlvBox.putFloatValue(82,rr);
         byte[] bytes = tlvBox.serialize();
         int length = bytes.length;
         byte[] bao=new byte[length+16];

@@ -70,6 +70,7 @@ public class DataReaderService extends Service {
 
     public static final String TAG = DataReaderService.class.getSimpleName();
 
+    private  float rrValue;
     //获取设备开始时间
     private int startTime;
 
@@ -152,6 +153,9 @@ public class DataReaderService extends Service {
 
     //患者ID
     private int patientId;
+
+    //判断CM19设备是做生命体征监测还是心肺谐振
+    private boolean isLife = false;
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -452,9 +456,9 @@ public class DataReaderService extends Service {
 
                 for (byte[] packet : packets) {
                     Log.d("fsh===", Arrays.toString(packet));
-                    //进行写入数据
+                    //cm22进行写入数据
                     FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg",packet, true);
-                    //发送整包数据，和CM19有区别组包
+                    //发送整包数据，和CM19有区别组包cm22
                     dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
                     int len = tlvBox.decodePacket(packet);
@@ -724,11 +728,8 @@ public class DataReaderService extends Service {
                             }
                         }
 
-                        //实时发送
-                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,null,null,null,null,
-                                (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp,startTime).buildPacket();
 
-                        dataTrans.sendData(realTimeData);
+
                         DevicePacket devicePacket = new DevicePacket(currentOffset,
                                 becgData, secgnew, secgData, irspData, heartRate[0], 1, (char) 26,
                                 30, 15, null, 26,
@@ -748,21 +749,34 @@ public class DataReaderService extends Service {
 
                         devicePacket.score = score;
 
-                        //针对心肺谐振的写入
-                        FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
-                        FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
-                        if (score > 0) {
-                            byte[] baos = new byte[4];
-                            ByteUtil.intToByte(baos, score, 0);
-                            FileIOUtils.writeFileFromBytesByStream(path + "scoreData.score", baos, true);
+                        //实时发送
+                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,null,null,null,null,
+                                (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp,rrValue,startTime).buildPacket();
+
+                        //实时发送整包数据，组包
+                        dataTrans.sendData(realTimeData);
+
+
+                        if(isLife){
+
+                            //生命体征检测：重新组包，把数据写入文件
+
+                            byte[] realDatas = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,(short) heartRate[0],
+                                    (short) respRate,devicePacket.rrNew,getSecondTimestamp(new Date())).buildPacket();
+                            FileIOUtils.writeFileFromBytesByStream(path + "LIFE.life", realDatas, true);
+                        }else {
+                            //针对心肺谐振的写入
+                            FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
+                            FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
+                            if (score > 0) {
+                                byte[] baos = new byte[4];
+                                ByteUtil.intToByte(baos, score, 0);
+                                FileIOUtils.writeFileFromBytesByStream(path + "scoreData.score", baos, true);
+                            }
+
                         }
 
 
-                        //生命体征检测：重新组包，把数据写入文件
-
-                        byte[] realDatas = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,(short) heartRate[0],
-                                (short) respRate,devicePacket.rrNew,getSecondTimestamp(new Date())).buildPacket();
-                        FileIOUtils.writeFileFromBytesByStream(path + "LIFE.life", realDatas, true);
                         // 向监听器发送数据
                         dataTrans.sendData(devicePacket);
 
@@ -860,6 +874,8 @@ public class DataReaderService extends Service {
                 pkt.rrNew = heartRateFilter(heart);
                 Log.d(TAG, "RR间期0：" + pkt.rrNew);
             }
+
+            rrValue = pkt.rrNew;
             pkt.respRate = respRate;
             dataTrans.sendData(pkt, battery);
             //写RR到文件
@@ -937,8 +953,7 @@ public class DataReaderService extends Service {
                 Log.d(TAG, "康养床bleDevice为空了");
             }
 
-        }
-        if(event instanceof List){
+        }else if(event instanceof List){
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
                 Log.d(TAG,"deviceList=="+deviceList.size());
@@ -990,6 +1005,13 @@ public class DataReaderService extends Service {
                 writeBPBleDevice(bleDeviceBP);
             }
 
+        }else if(event instanceof Boolean){
+            boolean isLifeOrPPG  = (boolean) event;
+            if(isLifeOrPPG == true){
+                isLife = true;
+            }else {
+                isLife = false;
+            }
         }
 
 

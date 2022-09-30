@@ -41,9 +41,14 @@ public interface MainContract {
         void getPrescription(int patientId);
 
         /**
-         * 文件上传
+         * 生命体征检测文件上传
          */
         void uploadFile(File file,String strategy, String patientId,String preID,String preType);
+
+        /**
+         * 自主神经评估和心肺谐振训练文件上传
+         */
+        void uploadFileCPR(File file);
 
         /**
          * 香薰和声波 完成处方上传

@@ -18,7 +18,7 @@ class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, att
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 280f
+    private val INTERVAL_SCROLL_REFRESH = 260f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
@@ -91,7 +91,8 @@ class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, att
         paint!!.color = Color.parseColor("#6EDB75")
         paint!!.strokeWidth = 5f
         paint!!.isAntiAlias = true
-        path!!.moveTo(0f, mHeight / 2)
+
+//        path!!.moveTo(0f, mHeight / 2)
 
         val nowIndex = if (refreshList == null) 0 else refreshList!!.size
         if (nowIndex == 0) {
@@ -133,17 +134,7 @@ class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, att
         for (i in data!!.indices) { //遍历数组下标0-data.length
             nowX = i * intervalRowHeart
             var dataValue = data!![i]
-            Log.d("aaron====8888999==++", Arrays.toString(data))
-//            if (dataValue > 0) {
-//                if (dataValue > MAX_VALUE * 0.3f) {
-//                    dataValue = MAX_VALUE * 0.3f
-//                }
-//            } else {
-//                if (dataValue < -MAX_VALUE * 0.3f) {
-//                    dataValue = -(MAX_VALUE * 0.3f)
-//                }
-//            }
-//            nowY = mHeight / 2 - dataValue * intervalColumnHeart
+
 
             //坐标y -0偏置值  最后除以1mv电压
             nowY = (dataValue -128)* intervalColumnHeart*0.2f +mHeight/2
@@ -155,12 +146,11 @@ class EcgCM22ShowView(context: Context, attrs: AttributeSet) : View(context, att
                 path!!.moveTo(nowX, nowY)
 
             } else {
-                //坐标= mWidth -3*intervalRowHeart 1401-15 2个间隙
-                if(nowX>mWidth -3*intervalRowHeart){  //坐标x为最后三个的时候，直接跳出循环，不再绘制。
-                    break
-                }
-                if(nowX==0f){  //坐标x为0的时候，不绘制，只移动
+
+
+                if(nowX<=intervalRowHeart ||nowX>=mWidth -intervalRowHeart){
                     path!!.moveTo(nowX, nowY)
+
                 }else{
                     path!!.lineTo(nowX, nowY)
 

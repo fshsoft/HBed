@@ -1,12 +1,14 @@
 package com.java.health.care.bed.fragment;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.activity.AssessActivity;
@@ -26,6 +28,7 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -60,10 +63,24 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
         int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         if(patientID!=0) {
             //调用接口
-            mainPresenter.getPrescription(1);
+            mainPresenter.getPrescription(patientID);
         }
 
          getUnFinishedPres();
+
+
+        //测试数据上传
+     /*   new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+  "1_2_53.zip";
+                //获取文件
+                File file = FileUtils.getFileByPath(zip);
+
+                //文件上传
+                mainPresenter.uploadFileCPR(file);
+            }
+        }).start();*/
 
 
     }
@@ -79,7 +96,7 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
                         int patientID = SPUtils.getInstance().getInt(SP.PATIENT_ID);
                         if(patientID!=0){
                             //调用接口
-                            mainPresenter.getPrescription(1);
+                            mainPresenter.getPrescription(patientID);
                             refreshLayout.finishRefresh();
 
                         }

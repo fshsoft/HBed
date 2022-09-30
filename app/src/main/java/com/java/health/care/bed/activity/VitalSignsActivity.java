@@ -149,8 +149,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     private int indexEcgCM22 = 0;
     private int indexPPG = 0;
-    private int[] shortsEcgCM22 = new int[5];
-    private int[] shortsPPG = new int[5];
+    private int[] shortsEcgCM22 = new int[2];
+    private int[] shortsPPG = new int[2];
 
     private int patientId;
 
@@ -183,6 +183,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         //虽然做生命体征检测，但是康养床蓝牙还是要连接的，因为康养床有呼叫功能，必须保持蓝牙连接
         bleDeviceKYCMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
 
+
+
     }
 
     @Override
@@ -203,6 +205,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @Override
     protected void initData() {
         EventBus.getDefault().register(this);
+
+        //通知DataReaderService现在是搞的生命体征 主要是区分cm19是做生命体征true  还是心肺谐振评估训练false
+        EventBus.getDefault().post(true);
+
         DataTransmitter.getInstance().addDataReceiver(VitalSignsActivity.this);
         BleManager.getInstance().init(getApplication());
         BleManager.getInstance()
@@ -323,7 +329,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                     //很重要，从队列里面取5个数据
                     //取数据的计算方法：采样率为200，定时器25ms绘制一次，（200/1000）*25ms =5个数据  5 5 5 25
 
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 2; i++) {
 
                         Integer x = getDataQueueEcgCM22.poll();
 
@@ -354,7 +360,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                     indexPPG++;
 
                 }
-            }, 100, 25);
+            }, 100, 10);
         }
 
         //测试数据上传
@@ -458,18 +464,20 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         BleManager.getInstance().scan(new BleScanCallback() {
             @Override
             public void onScanFinished(List<BleDevice> scanResultList) {
-
+                Log.d(TAG, "bleDeviceMac:success:" + "onScanFinished");
 
             }
 
             @Override
             public void onScanStarted(boolean success) {
-                Log.d(TAG, "bleDeviceMac:success:" + success);
+                //onScanStarted(boolean success): 会回到主线程，参数表示本次扫描动作是否开启成功。
+                // 由于蓝牙没有打开，上一次扫描没有结束等原因，会造成扫描开启失败。
+                Log.d(TAG, "bleDeviceMac:success:" + "onScanStarted:"+success);
             }
 
             @Override
             public void onScanning(BleDevice bleDevice) {
-
+                Log.d(TAG, "bleDeviceMac:success:" + "onScanning");
                 //这个里面是否需要连接，还需要根据处方给的设备情况
                 if (bleDevice.getMac().equals(bleDeviceCm22Mac)) {
                     //判断TextView是否是显示状态，是显示状态才连接
@@ -519,24 +527,29 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
                 progressDialog.dismiss();
-                showToast("蓝牙连接失败");
+//                showToast("蓝牙连接失败");
                 Log.d(TAG, "onConnectFail:exception:" + exception.toString());
                 //蓝牙连接失败
                 if(bleDevice.getName().contains(Constant.CM19)){
-
-                    retryConnectBle(bleDevice);
+                    if (retryNum < 5) {
+                        retryConnectBle(bleDevice);
+                    }
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
-
-                    retryConnectBle(bleDevice);
+                    if (retryNum < 5) {
+                        retryConnectBle(bleDevice);
+                    }
                 }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
-
-                    retryConnectBle(bleDevice);
+                    if (retryNum < 5) {
+                        retryConnectBle(bleDevice);
+                    }
                 }else if(bleDevice.getName().contains(Constant.IRT)){
-
-                    retryConnectBle(bleDevice);
+                    if (retryNum < 5) {
+                        retryConnectBle(bleDevice);
+                    }
                 }else if(bleDevice.getName().contains(Constant.CM22)){
-
-                    retryConnectBle(bleDevice);
+                    if (retryNum < 5) {
+                        retryConnectBle(bleDevice);
+                    }
                 }
             }
 
@@ -871,7 +884,13 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
 
             //调用接口，上传文件
-            presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+
+                }
+            }).start();
 
 
         }
