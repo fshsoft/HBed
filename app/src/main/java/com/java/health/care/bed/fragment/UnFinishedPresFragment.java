@@ -69,16 +69,16 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
          getUnFinishedPres();
 
 
-        //测试数据上传
-     /*   new Thread(new Runnable() {
+       /* //测试数据上传
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+  "1_2_53.zip";
+                String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/"+  "20-20220930170334/ecgData.zip";
                 //获取文件
                 File file = FileUtils.getFileByPath(zip);
 
                 //文件上传
-                mainPresenter.uploadFileCPR(file);
+                mainPresenter.uploadFile(file,"file_uploadReportLfs", "20", "19","BLOOD_PRESSURE");
             }
         }).start();*/
 
