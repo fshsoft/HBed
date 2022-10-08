@@ -58,6 +58,8 @@ import com.java.health.care.bed.widget.TagValueTextView;
 import com.plattysoft.leonids.ParticleSystem;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,6 +160,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     @Override
     protected void initData() {
         DataTransmitter.getInstance().addDataReceiver(this);
+        EventBus.getDefault().register(this);
         bleDeviceMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_CM19_MAC);
         BleManager.getInstance().init(getApplication());
         BleManager.getInstance()
@@ -175,6 +178,10 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         EventBus.getDefault().post(false);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(Object event) {
+
+    }
     @Override
     protected void onResume() {
         super.onResume();

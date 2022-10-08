@@ -99,6 +99,11 @@ public interface AllApi {
    @POST(Api.upExec)
    Observable<BaseEntry<LLBean>> upExec(@Header("authorization") String str,@Body Map<String, String> maps);
 
+   /**
+    * 呼叫发送
+    */
+   @POST(Api.sendMessage)
+   Observable<BaseEntry> sendMessage(@Header("authorization") String str,@Body Map<String, Object> maps);
 
    /*/**
      * 获取全部患者列表

@@ -37,6 +37,10 @@ import com.permissionx.guolindev.callback.ExplainReasonCallback;
 import com.permissionx.guolindev.callback.RequestCallback;
 import com.permissionx.guolindev.request.ExplainScope;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +58,7 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
     private static final String TAG = PrescriptionActivity.class.getSimpleName();
 
     private MainPresenter mainPresenter;
-    private int bunkId;
+
     @BindView(R.id.prescription_tab)
     TabLayout mTabLayout;
 
@@ -76,6 +80,11 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
 
     private String bleDeviceMac;
 
+    private int patientId;
+
+    private int bunkId;
+
+    private int regionId;
 
     @OnClick(R.id.prescription_tv_set)
     public void onClickSet(){
@@ -143,9 +152,12 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
     @Override
     protected void initData() {
         checkPermissions();
+        EventBus.getDefault().register(this);
         mainPresenter = new MainPresenter(this, this);
         //床ID：bunkId
         bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        regionId = SPUtils.getInstance().getInt(SP.REGION_ID);
 //        int bunkNum = SPUtils.getInstance().getInt(SP.BUNK_NUM);
         if(bunkId!=0){
 //            Log.d("getUser==bunkId",bunkId+"bunkNum:"+bunkNum);
@@ -170,6 +182,13 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(Object event) {
+        if(event instanceof Integer){
+            int num = (int) event;
+            mainPresenter.sendMessage(regionId,bunkId,num,patientId);
+        }
+    }
 
 
     /**
@@ -209,7 +228,9 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
 
     @Override
     public void setCode(String code) {
-
+        if(code.equals("200")){
+            showToast("呼叫");
+        }
     }
 
     @Override

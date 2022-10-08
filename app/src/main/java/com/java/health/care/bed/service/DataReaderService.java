@@ -1,7 +1,6 @@
 package com.java.health.care.bed.service;
 
 import android.app.Service;
-import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
@@ -42,9 +41,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -53,8 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.buffer.ByteBuf;
@@ -70,7 +65,7 @@ public class DataReaderService extends Service {
 
     public static final String TAG = DataReaderService.class.getSimpleName();
 
-    private  float rrValue;
+    private float rrValue;
     //获取设备开始时间
     private int startTime;
 
@@ -156,6 +151,7 @@ public class DataReaderService extends Service {
 
     //判断CM19设备是做生命体征监测还是心肺谐振
     private boolean isLife = false;
+
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
@@ -319,7 +315,7 @@ public class DataReaderService extends Service {
                                 && (head2 == ImplementConfig.TLV_VERSION_ONE
 //                                || head2 == ImplementConfig.TLV_VERSION_TWO
                                 || head2 == ImplementConfig.TLV_VERSION_THREE))) {*/
-                        if(head1 == ImplementConfig.TLV_CODE_SYS_DATA && head2 == ImplementConfig.TLV_VERSION_ONE) {
+                        if (head1 == ImplementConfig.TLV_CODE_SYS_DATA && head2 == ImplementConfig.TLV_VERSION_ONE) {
                             int head3 = dataBuffer.get(2) & 0xff;
                             int head4 = dataBuffer.get(3) & 0xff;
                             packetLen = (head3 << 8) + head4;
@@ -457,7 +453,7 @@ public class DataReaderService extends Service {
                 for (byte[] packet : packets) {
                     Log.d("fsh===", Arrays.toString(packet));
                     //cm22进行写入数据
-                    FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg",packet, true);
+                    FileIOUtils.writeFileFromBytesByStream(path + "BLOOD_PRESSURE_Data.data", packet, true);
                     //发送整包数据，和CM19有区别组包cm22
                     dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
@@ -491,7 +487,7 @@ public class DataReaderService extends Service {
 //                            Log.d("fsh===", "===ssPressData4" + ssPressData.length + "===" + Arrays.toString(ssPressData));
 //                        }
 
-                        int length = ecgData.length/2;
+                        int length = ecgData.length / 2;
                         short[] sEcgData = new short[length];
                         short[] sPpgData = new short[length];
                         ByteUtil.bbToShorts(sEcgData, ecgData);
@@ -508,7 +504,7 @@ public class DataReaderService extends Service {
                         int sSzPress = sSzPressDataData[0];
                         int sSsPress = sSsPressDataData[0];
 //                        Log.d("fsh===", "===sEcgData0====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
-                        if(signalProcessor!=null){
+                        if (signalProcessor != null) {
                             signalProcessor.SmoothBaseLine(sEcgData, 96);
                         }
 
@@ -516,7 +512,7 @@ public class DataReaderService extends Service {
                                 (short) sEcg,(short) 0,(short) 0,(short) 0, (short) 0,(short) 0,startTime).buildPacket();
                         dataTrans.sendData(realTimeData);*/
 
-                        BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData,sPpgData,sEcg,sSzPress,sSsPress);
+                        BPDevicePacket bpDevicePacket = new BPDevicePacket(sEcgData, sPpgData, sEcg, sSzPress, sSsPress);
                         dataTrans.sendData(bpDevicePacket);
 //                        Log.d("fsh===", "===sEcgData====" + sEcgData.length + "===" + Arrays.toString(sEcgData));
 //                        Log.d("fsh===", "===sPpgData" + sPpgData.length + "===" + Arrays.toString(sPpgData));
@@ -729,7 +725,6 @@ public class DataReaderService extends Service {
                         }
 
 
-
                         DevicePacket devicePacket = new DevicePacket(currentOffset,
                                 becgData, secgnew, secgData, irspData, heartRate[0], 1, (char) 26,
                                 30, 15, null, 26,
@@ -750,21 +745,21 @@ public class DataReaderService extends Service {
                         devicePacket.score = score;
 
                         //实时发送
-                        byte[] realTimeData = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,null,null,null,null,
-                                (short) heartRate[0],(short) spo2,(short) szPress,(short) ssPress, (short) respRate,(short) temp,rrValue,startTime).buildPacket();
+                        byte[] realTimeData = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, null, null, null, null,
+                                (short) heartRate[0], (short) spo2, (short) szPress, (short) ssPress, (short) respRate, (short) temp, rrValue, startTime).buildPacket();
 
                         //实时发送整包数据，组包
                         dataTrans.sendData(realTimeData);
 
 
-                        if(isLife){
+                        if (isLife) {
 
                             //生命体征检测：重新组包，把数据写入文件
 
-                            byte[] realDatas = new RealTimeStatePacket(patientId,serialNum++,ecgData,rspData,(short) heartRate[0],
-                                    (short) respRate,devicePacket.rrNew,getSecondTimestamp(new Date())).buildPacket();
-                            FileIOUtils.writeFileFromBytesByStream(path + "LIFE.life", realDatas, true);
-                        }else {
+                            byte[] realDatas = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, (short) heartRate[0],
+                                    (short) respRate, devicePacket.rrNew, getSecondTimestamp(new Date())).buildPacket();
+                            FileIOUtils.writeFileFromBytesByStream(path + "LIFE_Data.data", realDatas, true);
+                        } else {
                             //针对心肺谐振的写入
                             FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);
                             FileIOUtils.writeFileFromBytesByStream(path + "respData.resp", ByteUtil.get16Bitint(irspData), true);
@@ -879,7 +874,7 @@ public class DataReaderService extends Service {
             pkt.respRate = respRate;
             dataTrans.sendData(pkt, battery);
             //写RR到文件
-            FileIOUtils.writeFileFromString(path+"rrData.rr",String.valueOf(pkt.rrNew)+"\n",true);
+            FileIOUtils.writeFileFromString(path + "rrData.rr", String.valueOf(pkt.rrNew) + "\n", true);
         }
 
 
@@ -953,10 +948,10 @@ public class DataReaderService extends Service {
                 Log.d(TAG, "康养床bleDevice为空了");
             }
 
-        }else if(event instanceof List){
+        } else if (event instanceof List) {
             List<BleDevice> deviceList = (List<BleDevice>) event;
             if (deviceList != null) {
-                Log.d(TAG,"deviceList=="+deviceList.size());
+                Log.d(TAG, "deviceList==" + deviceList.size());
                 for (BleDevice bleDevice : deviceList) {
                     String bleMac = bleDevice.getMac();
 
@@ -980,7 +975,7 @@ public class DataReaderService extends Service {
                         if (bleMac.equals(bleQSMac))
 
 //                            writeBPBleDevice(bleDevice);
-                        bleDeviceBP = bleDevice;
+                            bleDeviceBP = bleDevice;
                         getBPBleDevice(bleDeviceBP);
                     }
                     if (bleIRTMac != null) {
@@ -997,19 +992,18 @@ public class DataReaderService extends Service {
                     }
                 }
             }
-        }
-        else if (event instanceof Integer){
+        } else if (event instanceof Integer) {
             int time = (int) event;
-            if(time == 2){
+            if (time == 2) {
                 // 手动控制测量
                 writeBPBleDevice(bleDeviceBP);
             }
 
-        }else if(event instanceof Boolean){
-            boolean isLifeOrPPG  = (boolean) event;
-            if(isLifeOrPPG == true){
+        } else if (event instanceof Boolean) {
+            boolean isLifeOrPPG = (boolean) event;
+            if (isLifeOrPPG == true) {
                 isLife = true;
-            }else {
+            } else {
                 isLife = false;
             }
         }
@@ -1020,14 +1014,14 @@ public class DataReaderService extends Service {
     /**
      * 记录读写数据时间和创建文件
      */
-    private void recordTimeAndCreateFile(){
+    private void recordTimeAndCreateFile() {
 
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String dateNowStr = sdf.format(d);
-        SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME,dateNowStr);
+        SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME, dateNowStr);
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
-        path = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr+"/";
+        path = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + patientId + "-" + dateNowStr + "/";
         File dir = new File(path);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -1137,8 +1131,8 @@ public class DataReaderService extends Service {
                         Log.d(TAG + "IRT=======", Arrays.toString(data));
                         if (data.length == 4) {
                             double dataIRT = DataUtils.getIRTData(data);
-                            temp = (double)dataIRT*10;
-                            Log.d("fshman" + "IRT=======", "dataIRT:" + dataIRT+"==="+temp);
+                            temp = (double) dataIRT * 10;
+                            Log.d("fshman" + "IRT=======", "dataIRT:" + dataIRT + "===" + temp);
                             mapEvent.put(Constant.IRT_DATA, dataIRT);
                             EventBus.getDefault().post(mapEvent);
                         }
@@ -1420,7 +1414,23 @@ public class DataReaderService extends Service {
                     @Override
                     public void onCharacteristicChanged(byte[] data) {
                         // 打开通知后，设备发过来的数据将在这里出现
-                        Log.d("fshman" + "kyc=======", Arrays.toString(data));
+                        Log.d(TAG + "kyc=======", Arrays.toString(data));
+                        //这个里面主要还是监听呼叫
+                        //按了呼叫返回响应[-2, 8, 7, 1, 1, 17, -1, 22]
+                        //呼叫取消返回响应[-2, 8, 7, 1, 2, 18, -1, 22]
+
+                        if(data.length==8){
+                            //呼叫
+                            if(data[1]==8 && data[2]==7 && data[3]==1 &&data[4]==1 && data[5]==17){
+                                EventBus.getDefault().post(1);
+                            }
+                            //取消
+                            if(data[1]==8 && data[2]==7 && data[3]==1 &&data[4]==2 && data[5]==18){
+                                EventBus.getDefault().post(0);
+                            }
+
+                        }
+
                     }
                 }
 
@@ -1452,147 +1462,147 @@ public class DataReaderService extends Service {
 
 
     //CM22 点击开始前，需要写入一些个人信息
-    private byte[] patientInfo(){
+    private byte[] patientInfo() {
         //个人信息从接口获取  身高，体重，臂长，性别，年龄{height,weight,armLength,sex,age}
         byte height = (byte) 170;
-        byte weight = (byte)80;
-        byte armLength = (byte)65;
+        byte weight = (byte) 80;
+        byte armLength = (byte) 65;
      /*   int sexValue =SPUtils.getInstance().getString(SP.PATIENT_SEX).equals("男")? 1: 0;
         byte sex = (byte) sexValue;
         String ageValue = SPUtils.getInstance().getString(SP.PATIENT_AGE);
         byte age = (byte) Integer.parseInt(ageValue);*/
-        byte sex = (byte)1;
-        byte age = (byte)32;
-        byte[] patientBytes = {height,weight,armLength,sex,age};
+        byte sex = (byte) 1;
+        byte age = (byte) 32;
+        byte[] patientBytes = {height, weight, armLength, sex, age};
         String HexPersonStr = ByteUtil.bytesToHexString(patientBytes);
-        return ByteUtil.HexString2Bytes(Constant.Order_PersonInfo+HexPersonStr);
+        return ByteUtil.HexString2Bytes(Constant.Order_PersonInfo + HexPersonStr);
     }
 
     //CM22 用户ID
-    private byte[] patientID(){
+    private byte[] patientID() {
         byte[] IDbytes = new byte[4];
-        Log.d(TAG,"patientId:"+patientId);
-        ByteUtil.putIntBig(IDbytes,patientId,0);
+        Log.d(TAG, "patientId:" + patientId);
+        ByteUtil.putIntBig(IDbytes, patientId, 0);
         String HexID = ByteUtil.bytesToHexString(IDbytes);
-        return ByteUtil.HexString2Bytes(Constant.Order_PersonID+HexID);
+        return ByteUtil.HexString2Bytes(Constant.Order_PersonID + HexID);
     }
 
     //cm22 发送开始时间
-    private byte[] writeSyncTime(){
-        int curTimestamp =  getSecondTimestamp(new Date());
+    private byte[] writeSyncTime() {
+        int curTimestamp = getSecondTimestamp(new Date());
         byte[] timeByte = new byte[4];
-        ByteUtil.putIntBig(timeByte,curTimestamp,0);
-        String HexTime =  ByteUtil.bytesToHexString(timeByte);
-        return ByteUtil.HexString2Bytes(Constant.Order_BeginTime+HexTime);
+        ByteUtil.putIntBig(timeByte, curTimestamp, 0);
+        String HexTime = ByteUtil.bytesToHexString(timeByte);
+        return ByteUtil.HexString2Bytes(Constant.Order_BeginTime + HexTime);
 
     }
 
     //CM22无创连续血压值标定
-    private byte[] bdValue(){
+    private byte[] bdValue() {
         String bd = SPUtils.getInstance().getString(SP.WCPRESSVALUE);
         int ss;
         int sz;
-        if(bd.isEmpty()){
+        if (bd.isEmpty()) {
             ss = 120;
             sz = 80;
-        }else {
+        } else {
             String[] bp = bd.split("/");
             ss = Integer.parseInt(bp[0]);
             sz = Integer.parseInt(bp[1]);
         }
-        byte[] ssBytes =new byte[2];
-        byte[] szBytes =new byte[2];
-        ByteUtil.putInttoTwoSmart(ssBytes,ss,0);
-        ByteUtil.putInttoTwoSmart(szBytes,sz,0);
+        byte[] ssBytes = new byte[2];
+        byte[] szBytes = new byte[2];
+        ByteUtil.putInttoTwoSmart(ssBytes, ss, 0);
+        ByteUtil.putInttoTwoSmart(szBytes, sz, 0);
         String HexDia = ByteUtil.bytesToHexString(ssBytes);
         String HexSys = ByteUtil.bytesToHexString(szBytes);
-        return ByteUtil.HexString2Bytes(Constant.Order_Calibration+HexDia+HexSys);
+        return ByteUtil.HexString2Bytes(Constant.Order_Calibration + HexDia + HexSys);
     }
 
- /*   //写入个人信息
-    private void writePersonInfo(BluetoothGattCharacteristic characteristic){
-        Log.i(TAG, "血压计个人信息");
-        UserModel user = BloodPressApplication.getInstance().getMyUser();
-        Byte height =(byte)(Integer.parseInt(user.getHeight()));
-        Byte weight =(byte)(Integer.parseInt(user.getWeight()));
-        Byte armlen =(byte)(Integer.parseInt(user.getArteriallen()));
-        int sexValue = user.getSex()?1:0;
-        Byte sex =(byte)(sexValue);
-        Byte age =(byte)(Integer.parseInt(user.getAge()));
-        byte[] personBytes ={height,weight,armlen,sex,age};
-        String HexPersonStr = ByteUtil.bytesToHexString(personBytes);
-        characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonInfo+HexPersonStr));
-        Log.i(TAG, "writePersonInfo: "+Order_PersonInfo+HexPersonStr);
-    }
-    //同步时间
-    private  void writeSyncTime(BluetoothGattCharacteristic characteristic){
-        Log.i(TAG, "同步时间");
-        int curTimestamp =  getSecondTimestamp(new Date());
-        byte[] timeByte = new byte[4];
-        ByteUtil.putIntBig(timeByte,curTimestamp,0);
-        String HexTime =  ByteUtil.bytesToHexString(timeByte);
-        characteristic.setValue(ByteUtil.HexString2Bytes(Order_BeginTime+HexTime));
-        Log.i(TAG, "writeSyncTime: "+Order_BeginTime+HexTime);
-    };
+    /*   //写入个人信息
+       private void writePersonInfo(BluetoothGattCharacteristic characteristic){
+           Log.i(TAG, "血压计个人信息");
+           UserModel user = BloodPressApplication.getInstance().getMyUser();
+           Byte height =(byte)(Integer.parseInt(user.getHeight()));
+           Byte weight =(byte)(Integer.parseInt(user.getWeight()));
+           Byte armlen =(byte)(Integer.parseInt(user.getArteriallen()));
+           int sexValue = user.getSex()?1:0;
+           Byte sex =(byte)(sexValue);
+           Byte age =(byte)(Integer.parseInt(user.getAge()));
+           byte[] personBytes ={height,weight,armlen,sex,age};
+           String HexPersonStr = ByteUtil.bytesToHexString(personBytes);
+           characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonInfo+HexPersonStr));
+           Log.i(TAG, "writePersonInfo: "+Order_PersonInfo+HexPersonStr);
+       }
+       //同步时间
+       private  void writeSyncTime(BluetoothGattCharacteristic characteristic){
+           Log.i(TAG, "同步时间");
+           int curTimestamp =  getSecondTimestamp(new Date());
+           byte[] timeByte = new byte[4];
+           ByteUtil.putIntBig(timeByte,curTimestamp,0);
+           String HexTime =  ByteUtil.bytesToHexString(timeByte);
+           characteristic.setValue(ByteUtil.HexString2Bytes(Order_BeginTime+HexTime));
+           Log.i(TAG, "writeSyncTime: "+Order_BeginTime+HexTime);
+       };
 
-    //写入标定
-    private  void writeBiaoding(BluetoothGattCharacteristic characteristic){
-        Log.i(TAG, "写入标定");
-        BiaodingModel biaodingModel = BloodPressApplication.getInstance().getMyBiaoding();
-        int dia,sys;
-        if (biaodingModel!=null){
-            dia =Integer.parseInt(biaodingModel.getDiapress());
-            sys =Integer.parseInt(biaodingModel.getSyspress());
-        }else{
-            dia = 120;
-            sys = 80;
+       //写入标定
+       private  void writeBiaoding(BluetoothGattCharacteristic characteristic){
+           Log.i(TAG, "写入标定");
+           BiaodingModel biaodingModel = BloodPressApplication.getInstance().getMyBiaoding();
+           int dia,sys;
+           if (biaodingModel!=null){
+               dia =Integer.parseInt(biaodingModel.getDiapress());
+               sys =Integer.parseInt(biaodingModel.getSyspress());
+           }else{
+               dia = 120;
+               sys = 80;
+           }
+           byte[] diabytes =new byte[2];
+           byte[] sysbytes =new byte[2];
+           ByteUtil.putInttoTwoSmart(diabytes,dia,0);
+           ByteUtil.putInttoTwoSmart(sysbytes,sys,0);
+           String Hexdia = ByteUtil.bytesToHexString(diabytes);
+           String Hexsys = ByteUtil.bytesToHexString(sysbytes);
+           characteristic.setValue(ByteUtil.HexString2Bytes(Order_Calibration+Hexdia+Hexsys));
+           Log.i(TAG, "writeBiaoding: "+Order_Calibration+Hexdia+Hexsys);
+       }
+
+       private  void writePersonID(BluetoothGattCharacteristic characteristic){
+           Log.i(TAG, "个人id");
+
+           UserModel user = BloodPressApplication.getInstance().getMyUser();
+           int personID =  user.getId();
+           byte[] IDbytes = new byte[4];
+           ByteUtil.putIntBig(IDbytes,personID,0);
+           String HexID = ByteUtil.bytesToHexString(IDbytes);
+           characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonID+HexID));
+           Log.i(TAG, "writePersonID: "+Order_PersonID+HexID);
+       }
+       //停止测试
+       private  void sendStopBroadcast(BluetoothGattCharacteristic characteristic){
+           Log.i(TAG, "writeBlueCharacteristic: "+"停止测试");
+           characteristic.setValue(ByteUtil.HexString2Bytes(Order_StopMeasure));
+           if (BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.measureFragment) {
+               Intent intent = new Intent(
+                       MeasureFragment.BP_STOP_SEND);
+               sendBroadcast(intent);
+           }else if(BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.CalibrationActivity){
+               Intent intent = new Intent(
+                       CalibrationActivity.BP_STOP_SEND);
+               sendBroadcast(intent);
+           }
+       }*/
+    //获取当前时间戳
+    public static int getSecondTimestamp(Date date) {
+        if (null == date) {
+            return 0;
         }
-        byte[] diabytes =new byte[2];
-        byte[] sysbytes =new byte[2];
-        ByteUtil.putInttoTwoSmart(diabytes,dia,0);
-        ByteUtil.putInttoTwoSmart(sysbytes,sys,0);
-        String Hexdia = ByteUtil.bytesToHexString(diabytes);
-        String Hexsys = ByteUtil.bytesToHexString(sysbytes);
-        characteristic.setValue(ByteUtil.HexString2Bytes(Order_Calibration+Hexdia+Hexsys));
-        Log.i(TAG, "writeBiaoding: "+Order_Calibration+Hexdia+Hexsys);
-    }
-
-    private  void writePersonID(BluetoothGattCharacteristic characteristic){
-        Log.i(TAG, "个人id");
-
-        UserModel user = BloodPressApplication.getInstance().getMyUser();
-        int personID =  user.getId();
-        byte[] IDbytes = new byte[4];
-        ByteUtil.putIntBig(IDbytes,personID,0);
-        String HexID = ByteUtil.bytesToHexString(IDbytes);
-        characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonID+HexID));
-        Log.i(TAG, "writePersonID: "+Order_PersonID+HexID);
-    }
-    //停止测试
-    private  void sendStopBroadcast(BluetoothGattCharacteristic characteristic){
-        Log.i(TAG, "writeBlueCharacteristic: "+"停止测试");
-        characteristic.setValue(ByteUtil.HexString2Bytes(Order_StopMeasure));
-        if (BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.measureFragment) {
-            Intent intent = new Intent(
-                    MeasureFragment.BP_STOP_SEND);
-            sendBroadcast(intent);
-        }else if(BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.CalibrationActivity){
-            Intent intent = new Intent(
-                    CalibrationActivity.BP_STOP_SEND);
-            sendBroadcast(intent);
+        String timestamp = String.valueOf(date.getTime());
+        int length = timestamp.length();
+        if (length > 3) {
+            return Integer.valueOf(timestamp.substring(0, length - 3));
+        } else {
+            return 0;
         }
-    }*/
- //获取当前时间戳
- public static int getSecondTimestamp(Date date){
-     if (null == date) {
-         return 0;
-     }
-     String timestamp = String.valueOf(date.getTime());
-     int length = timestamp.length();
-     if (length > 3) {
-         return Integer.valueOf(timestamp.substring(0,length-3));
-     } else {
-         return 0;
-     }
- }
+    }
 }

@@ -51,6 +51,7 @@ public class Constant {
     public static final String BLE_DEVICE_QIANSHAN_MAC = "BLE_DEVICE_QIANSHAN_MAC";
     public static final String BLE_DEVICE_IRT_MAC = "BLE_DEVICE_IRT_MAC";
     public static final String BLE_DEVICE_KYC_MAC = "BLE_DEVICE_KANGYANGCHUANG_MAC";
+    public static final String BLE_DEVICE_KYC = "BLE_DEVICE_KYC";
 
     public static final String BP_DATA = "BP_DATA";
     public static final String BP_DATA_SS = "BP_DATA_SS";
@@ -112,11 +113,21 @@ public class Constant {
     //关闭LED灯
     public static final String CLOSE_LED_ONE_HALL = "FE07050113FF16";
 
-    //呼叫响应
+    //呼叫响应 灯光闪烁
     public static final String CALL_ON = "FE0707000EFF16";
 
-    //呼叫取消响应
+    //呼叫取消响应，灯光熄灭
     public static final String CALL_OFF = "FE0707000EFF16";
+
+    //响应
+    //呼叫 按住 [-2, 8, 7, 1, 1, 17, -1, 22]
+    //呼叫 取消 [-2, 8, 7, 1, 2, 18, -1, 22]
+
+    //声波
+    //[-2, 7, 1, 0, 8, -1, 22]
+
+    //芳香
+    //[-2, 7, 3, 0, 10, -1, 22]
 
 
 }

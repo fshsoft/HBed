@@ -2,23 +2,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_bg"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
-    <Button
+
+    <TextView
+        android:id="@+id/back"
         android:layout_width="match_parent"
-        android:text="开始"
-        android:id="@+id/btn_start"
-        android:layout_height="wrap_content" />
+        android:layout_height="50dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/back"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
+        android:text="声波理疗"
+        android:textColor="@color/barTitleColor"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
     <com.java.health.care.bed.widget.CountDownProgressBar
         android:id="@+id/cpb_countdown"
-        android:layout_width="200dp"
-        android:layout_marginTop="100dp"
+        android:layout_width="340dp"
+        android:layout_marginTop="150dp"
         android:layout_gravity="center_horizontal"
         app:countDown_centerTextSize="25dp"
-        app:countDown_circleWidth="4dp"
-        app:countDown_firstColor="@color/primary_grey_dark"
-        app:countDown_secondColor="@color/primary"
+        app:countDown_circleWidth="35dp"
+        app:countDown_firstColor="@color/circle_color_first"
+        app:countDown_secondColor="@color/circle_color_second"
         app:countDown_isShowGradient="true"
-        app:countDown_centerTextColor="#2395FF"
-        android:layout_height="200dp" />
+        app:countDown_centerTextColor="@color/barTitleColor"
+        android:layout_height="340dp" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_start"
+        android:layout_marginTop="200dp"
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_bg"
+        android:textSize="28sp"
+        android:text="开始"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

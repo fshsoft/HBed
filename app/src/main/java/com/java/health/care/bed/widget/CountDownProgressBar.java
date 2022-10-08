@@ -12,12 +12,16 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.util.TimeUtil;
 
 /**
  * 声波和香薰界面进度展示
@@ -173,13 +177,13 @@ public class CountDownProgressBar extends View {
         circlePaint.setStyle(Paint.Style.STROKE); // 设置绘制的圆为空心
         canvas.drawCircle(center, center, radius, circlePaint); // 画底部的空心圆
         RectF oval = new RectF(center - radius, center - radius, center + radius, center + radius); // 圆的外接正方形
-        if (isShowGradient) {
+    /*    if (isShowGradient) {
             // 绘制颜色渐变圆环
             // shader类是Android在图形变换中非常重要的一个类。Shader在三维软件中我们称之为着色器，其作用是来给图像着色。
             LinearGradient linearGradient = new LinearGradient(circleWidth, circleWidth, getMeasuredWidth()
                     - circleWidth, getMeasuredHeight() - circleWidth, colorArray, null, Shader.TileMode.MIRROR);
             circlePaint.setShader(linearGradient);
-        }
+        }*/
 //        circlePaint.setShadowLayer(10, 10, 10, Color.BLUE);
         circlePaint.setColor(secondColor); // 设置圆弧的颜色
         circlePaint.setStrokeCap(Paint.Cap.ROUND); // 把每段圆弧改成圆角的
@@ -194,26 +198,53 @@ public class CountDownProgressBar extends View {
      * @param canvas 画布对象
      * @param center 圆心的x和y坐标
      */
+    private boolean drawFlag = false;
     private void drawText(Canvas canvas, int center) {
         int result = ((maxValue - currentValue) * (duration / 1000) / maxValue); // 计算进度
         String percent;
-        if (maxValue == currentValue) {
-            percent = "完成";
-            textPaint.setTextSize(centerTextSize); // 设置要绘制的文字大小
-        } else {
-            percent = (result / 60 < 10 ? "0" + result / 60 : result / 60) + ":" + (result % 60 < 10 ? "0" + result % 60 : result % 60);
-//            percent = result+"秒";
-            textPaint.setTextSize(centerTextSize+centerTextSize/3); // 设置要绘制的文字大小
-        }
-        textPaint.setTextAlign(Paint.Align.CENTER); // 设置文字居中，文字的x坐标要注意
-        textPaint.setColor(centerTextColor); // 设置文字颜色
+        if(!drawFlag){
 
-        textPaint.setStrokeWidth(0); // 注意此处一定要重新设置宽度为0,否则绘制的文字会重叠
-        Rect bounds = new Rect(); // 文字边框
-        textPaint.getTextBounds(percent, 0, percent.length(), bounds); // 获得绘制文字的边界矩形
-        FontMetricsInt fontMetrics = textPaint.getFontMetricsInt(); // 获取绘制Text时的四条线
-        int baseline = center + (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom; // 计算文字的基线,方法见http://blog.csdn.net/harvic880925/article/details/50423762
-        canvas.drawText(percent, center, baseline, textPaint); // 绘制表示进度的文字
+            percent = "时长"+"\r\n"+ TimeUtil.second2Time((long) duration);
+            textPaint.setTextSize(centerTextSize+centerTextSize/3); // 设置要绘制的文字大小
+
+            TextPaint tPaint = new TextPaint();
+            tPaint.setColor(centerTextColor);
+            tPaint.setTextSize(centerTextSize+centerTextSize/3);
+            tPaint.setAntiAlias(true);
+            tPaint.setTextAlign(Paint.Align.CENTER);
+            Rect bounds = new Rect(); // 文字边框
+            tPaint.getTextBounds(percent, 0, percent.length(), bounds); // 获得绘制文字的边界矩形
+            StaticLayout layout = new StaticLayout(percent, tPaint, getMeasuredWidth(), Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
+            canvas.save();
+            canvas.translate(280, 180);
+            layout.draw(canvas);
+            canvas.restore();
+
+        }else {
+
+            if (maxValue == currentValue) {
+                percent = "完成";
+                textPaint.setTextSize(centerTextSize); // 设置要绘制的文字大小
+            } else {
+                percent = (result / 60 < 10 ? "0" + result / 60 : result / 60) + ":" + (result % 60 < 10 ? "0" + result % 60 : result % 60);
+//            percent = result+"秒";
+                textPaint.setTextSize(centerTextSize+centerTextSize/3); // 设置要绘制的文字大小
+
+            }
+
+            textPaint.setTextAlign(Paint.Align.CENTER); // 设置文字居中，文字的x坐标要注意
+            textPaint.setColor(centerTextColor); // 设置文字颜色
+
+            textPaint.setStrokeWidth(0); // 注意此处一定要重新设置宽度为0,否则绘制的文字会重叠
+            Rect bounds = new Rect(); // 文字边框
+            textPaint.getTextBounds(percent, 0, percent.length(), bounds); // 获得绘制文字的边界矩形
+            FontMetricsInt fontMetrics = textPaint.getFontMetricsInt(); // 获取绘制Text时的四条线
+            int baseline = center + (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom; // 计算文字的基线,方法见http://blog.csdn.net/harvic880925/article/details/50423762
+
+            canvas.drawText(percent, center, baseline, textPaint); // 绘制表示进度的文字
+
+        }
+
 
     }
 
@@ -271,9 +302,17 @@ public class CountDownProgressBar extends View {
      *
      * @param duration 动画时长
      */
+
+    public void setDuration(int duration){
+        this.duration = duration;
+        drawFlag = false;
+        invalidate();
+
+    }
     public void setDuration(int duration, OnFinishListener listener) {
         this.listener = listener;
         this.duration = duration + 1000;
+        drawFlag = true;
         if (animator != null) {
             animator.cancel();
         } else {

@@ -62,4 +62,7 @@
     <color name="color_red_FE647C">#FE647C</color>
     <color name="color_blue_7EC0EE">#7EC0EE</color>
 
+    <color name="circle_color_first">#96cdcd</color>
+    <color name="circle_color_second">#35A48D</color>
+
 </resources>

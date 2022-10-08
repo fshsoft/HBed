@@ -18,6 +18,7 @@ import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.net.RetrofitUtil;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -354,6 +355,47 @@ public class MainPresenter implements MainContract.presenter {
                     }
                 });
     }
+
+    @Override
+    public void sendMessage(int clientId, int bunkId, int type,int userId) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+
+        JSONObject js = new JSONObject();
+        try {
+            js.put("bunkId", bunkId);
+            js.put("type", type);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String message = js.toString();
+        Map<String, Object> map = new HashMap<>();
+        map.put("clientId", String.valueOf(clientId));
+        map.put("messageType", "1");
+        map.put("message", message);
+        map.put("userId", String.valueOf(userId));
+
+
+        RetrofitUtil.getInstance().initRetrofit().sendMessage(value, map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver(context) {
+                    @Override
+                    protected void onSuccess(BaseEntry t) throws Exception {
+                        view.setCode(t.getCode());
+
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+
+        }
+
+
+
 
     /**
      * 文件上传

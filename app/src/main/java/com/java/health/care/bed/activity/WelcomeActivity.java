@@ -20,6 +20,9 @@ import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.service.DataReaderService;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,6 +39,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private String spO2Mac;
     private String bpMac;
     private String tempMac;
+    private List<BleDevice> deviceListConnect = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +123,11 @@ public class WelcomeActivity extends AppCompatActivity {
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+
+                deviceListConnect.add(bleDevice);
+                if(deviceListConnect.size()!=0) {
+                    EventBus.getDefault().post(deviceListConnect);
+                }
             }
 
             @Override

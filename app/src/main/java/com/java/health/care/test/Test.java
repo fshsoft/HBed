@@ -12,11 +12,13 @@ import java.util.Arrays;
  */
 public class Test {
     public static void main(String[] args) {
-        int2bytes(918);
-        short2bytes((short) 478);
+//        int2bytes(918);
+//        short2bytes((short) 478);
 //        short2bytes((short) 366);
 //        updateArray();
 //        insertArray();
+        System.out.println(Integer.toHexString(6000/60));
+
 
     }
 

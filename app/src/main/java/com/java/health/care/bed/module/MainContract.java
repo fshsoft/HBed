@@ -54,5 +54,10 @@ public interface MainContract {
          * 香薰和声波 完成处方上传
          */
         void upExec(int preId,String preType,int duration,String startTime,String endTime);
+
+        /**
+         * 呼叫发送
+         */
+        void sendMessage(int clientId, int bunkId, int type,int userId);
     }
 }

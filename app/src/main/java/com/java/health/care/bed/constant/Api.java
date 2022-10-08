@@ -63,4 +63,8 @@ public class Api {
      * 生命体征检测，心肺谐振评估和训练  完成之后文件上传
      */
 
+    /**
+     * 呼叫发送
+     */
+    public static final String sendMessage = "/cas/device/gateway/deviceGateWay/sendMessage";
 }

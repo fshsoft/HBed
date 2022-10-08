@@ -154,19 +154,24 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     private int patientId;
 
+    private int bunkId;
+
+    private int regionId;
+
     private int preId;
 
     private String preType;
 
     private int mMusicDuration;
 
-    private MainPresenter presenter;
+    private MainPresenter mainPresenter;
 
     private MyCountDownTimer mc;
 
     private int cmType;
 
     private ProgressDialog progressDialog;
+
 
     @Override
     protected int getLayoutId() {
@@ -217,7 +222,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 .setConnectOverTime(20000)
                 .setOperateTimeout(5000);
         bindService(new Intent(this, WebSocketService.class), serviceConnection, BIND_AUTO_CREATE);
-        presenter = new MainPresenter(this, this);
+        mainPresenter = new MainPresenter(this, this);
+
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
+        regionId = SPUtils.getInstance().getInt(SP.REGION_ID);
 
         //判断是无创连续血压CM22还是生命体征cm19,从处方列表跳转过来，1为cm19  2为cm22
         UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
@@ -828,13 +837,18 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                     bpText.setText("测量失败");
                 }
             }
+        }else if(event instanceof Integer){
+            int num = (int) event;
+            mainPresenter.sendMessage(regionId,bunkId,num,patientId);
         }
 
     }
 
     @Override
     public void setCode(String code) {
-
+        if(code.equals("200")){
+            showToast("呼叫");
+        }
     }
 
     @Override
@@ -887,7 +901,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+                    mainPresenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
 
                 }
             }).start();
@@ -900,7 +914,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     private File zipFiles() {
 
         String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
-        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+
         //原保存的文件路径
         String src = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + patientId + "-" + dateNowStr;
 
