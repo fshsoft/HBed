@@ -96,8 +96,8 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
 
     private int indexEcgCM19 = 0;
     private int indexResp = 0;
-    private int[] shortsEcgCM19 = new int[2];
-    private int[] shortsResp = new int[2];
+    private int[] shortsEcgCM19 = new int[3];
+    private int[] shortsResp = new int[3];
 
     private int indexEcgCM22 = 0;
     private int indexPPG = 0;
@@ -141,7 +141,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                 //很重要，从队列里面取5个数据
                 //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据  5 5 5 16
 
-                for (int i = 0; i < 2; i++) {
+                for (int i = 0; i < 3; i++) {
 
                     Integer x = dataQueueEcgCM19.poll();
 
@@ -173,7 +173,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
 
 
             }
-        }, 960, 6);
+        }, 100, 10);
 
 
         //无创连续血压
@@ -214,7 +214,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                 indexPPG++;
 
             }
-        }, 500, 10);
+        }, 100, 10);
 
     }
 

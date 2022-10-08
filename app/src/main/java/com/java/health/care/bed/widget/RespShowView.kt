@@ -18,12 +18,12 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
     private var mHeight: Float = 0.toFloat()
     private var paint: Paint? = null
     private var path: Path? = null
-    private val INTERVAL_SCROLL_REFRESH = 420f
+    private val INTERVAL_SCROLL_REFRESH = 320f
 
     private var refreshList: MutableList<Float>? = null
     private var showIndex: Int = 0
 
-    private val MAX_VALUE = 600f
+    private val MAX_VALUE = 400f
     //可以绘制的点数 目前2560*1600 计算为128个
     private var intervalNumHeart: Int = 1
     //间隙 计算得20
@@ -163,7 +163,7 @@ class RespShowView(context: Context, attrs: AttributeSet) : View(context, attrs)
             } else {
 
                 //坐标= mWidth -2*intervalRowHeart 1401-10 2个间隙
-                if(nowX>mWidth -3*intervalRowHeart){
+                if(nowX>mWidth -5*intervalRowHeart){
                     //坐标x为最后三个的时候，直接跳出循环，不再绘制。 主要是最后三个点会进行bug直线绘制线，结束是到高度为mHeight/2
                     //偶尔高度会0.很奇怪
                     break
