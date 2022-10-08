@@ -270,15 +270,15 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     @OnClick(R.id.back)
     public void back(){
-//        finish();
-        goActivity(PrescriptionActivity.class);
+//        goActivity(PrescriptionActivity.class);
+        goActivity(WelcomeActivity.class);
         finish();
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            goActivity(PrescriptionActivity.class);
+            goActivity(WelcomeActivity.class);
             finish();
         }
         return false;

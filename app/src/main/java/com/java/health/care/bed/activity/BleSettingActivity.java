@@ -241,7 +241,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                 img_loading.setVisibility(View.INVISIBLE);
                 btn_scan.setText(getString(R.string.start_scan));
                 progressDialog.dismiss();
-                Toast.makeText(BleSettingActivity.this, getString(R.string.connect_fail), Toast.LENGTH_LONG).show();
+                Toast.makeText(BleSettingActivity.this, getString(R.string.connect_fail), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -279,9 +279,9 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
                 mDeviceAdapter.notifyDataSetChanged();
 
                 if (isActiveDisConnected) {
-                    Toast.makeText(BleSettingActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();
+                    Toast.makeText(BleSettingActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(BleSettingActivity.this, getString(R.string.disconnected), Toast.LENGTH_LONG).show();
+                    Toast.makeText(BleSettingActivity.this, getString(R.string.disconnected), Toast.LENGTH_SHORT).show();
                     ObserverManager.getInstance().notifyObserver(bleDevice);
                 }
                 if(null!=deviceListConnect){
@@ -303,7 +303,7 @@ public class BleSettingActivity extends BaseActivity implements View.OnClickList
     private void checkPermissions() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
-            Toast.makeText(this, getString(R.string.please_open_blue), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.please_open_blue), Toast.LENGTH_SHORT).show();
             return;
         }
 

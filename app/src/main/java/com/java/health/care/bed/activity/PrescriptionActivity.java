@@ -152,7 +152,7 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
             mainPresenter.getUser(bunkId);
         }
 
-        bleDeviceMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
+/*        bleDeviceMac = SPUtils.getInstance().getString(Constant.BLE_DEVICE_KYC_MAC);
         BleManager.getInstance().init(getApplication());
         BleManager.getInstance()
                 .enableLog(true)
@@ -164,7 +164,7 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
         //开启服务，保持康养床的蓝牙连接
         goService(DataReaderService.class);
         //自动先进行扫描康养床ble,然后进行连接，前提需要在设置里面先连接过康养床设备获取mac地址
-        scanBle();
+        scanBle();*/
 
 
 

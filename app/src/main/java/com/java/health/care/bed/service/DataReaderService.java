@@ -1490,10 +1490,16 @@ public class DataReaderService extends Service {
     //CM22无创连续血压值标定
     private byte[] bdValue(){
         String bd = SPUtils.getInstance().getString(SP.WCPRESSVALUE);
-        String[] bp = bd.split("/");
-        int ss = Integer.parseInt(bp[0]);
-        int sz = Integer.parseInt(bp[1]);
-
+        int ss;
+        int sz;
+        if(bd.isEmpty()){
+            ss = 120;
+            sz = 80;
+        }else {
+            String[] bp = bd.split("/");
+            ss = Integer.parseInt(bp[0]);
+            sz = Integer.parseInt(bp[1]);
+        }
         byte[] ssBytes =new byte[2];
         byte[] szBytes =new byte[2];
         ByteUtil.putInttoTwoSmart(ssBytes,ss,0);
