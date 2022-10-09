@@ -36,7 +36,14 @@ public class Api {
      * 这个里面的{patient}是为了拼接
      *
      */
-    public static final String findPrescription = "/cas/open/prescription/find/{patient}";
+    public static final String findPrescription = "/cas/open/prescription/find/patient/{patient}";
+
+    /**
+     * 目前只针对自主神经处方（RESONANCE）和心肺谐振处方（NERVE）
+     * 上传文件成功后，调用完成处方
+     */
+    public static final String presFinish  =  "/cas/open/prescription/finish/{patientId}/{preType}/{preId}";
+
 
     /**
      * 生命体征检测需要上传的文件
@@ -47,7 +54,7 @@ public class Api {
      * 自主神经评估和心肺谐振训练文件上传
      */
 
-    public static final String uploadFileCPR = "/cpr";
+    public static final String uploadFileCPR = "/cprraw";
 
     /**
      * 文件下载，这个是apk下载
@@ -67,4 +74,7 @@ public class Api {
      * 呼叫发送
      */
     public static final String sendMessage = "/cas/device/gateway/deviceGateWay/sendMessage";
+
+
+
 }

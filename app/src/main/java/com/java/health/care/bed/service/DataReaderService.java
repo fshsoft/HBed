@@ -1464,15 +1464,31 @@ public class DataReaderService extends Service {
     //CM22 点击开始前，需要写入一些个人信息
     private byte[] patientInfo() {
         //个人信息从接口获取  身高，体重，臂长，性别，年龄{height,weight,armLength,sex,age}
-        byte height = (byte) 170;
-        byte weight = (byte) 80;
-        byte armLength = (byte) 65;
-     /*   int sexValue =SPUtils.getInstance().getString(SP.PATIENT_SEX).equals("男")? 1: 0;
+        int heightValue = SPUtils.getInstance().getInt(SP.PATIENT_HEIGHT);
+        int weightValue = SPUtils.getInstance().getInt(SP.PATIENT_WEIGHT);
+        int armLengthValue = SPUtils.getInstance().getInt(SP.PATIENT_ARM_LENGTH);
+        byte height,weight,armLength;
+        if(heightValue!=0){
+            height = (byte) heightValue;
+        }else {
+            height = (byte) 170;
+        }
+        if(weightValue!=0){
+            weight = (byte) weightValue;
+        }else {
+            weight = (byte) 80;
+        }
+
+        if(armLengthValue!=0){
+            armLength = (byte) armLengthValue;
+        }else {
+            armLength = (byte) 65;
+        }
+        int sexValue =SPUtils.getInstance().getString(SP.PATIENT_SEX).equals("男")? 1: 0;
         byte sex = (byte) sexValue;
         String ageValue = SPUtils.getInstance().getString(SP.PATIENT_AGE);
-        byte age = (byte) Integer.parseInt(ageValue);*/
-        byte sex = (byte) 1;
-        byte age = (byte) 32;
+        byte age = (byte) Integer.parseInt(ageValue);
+
         byte[] patientBytes = {height, weight, armLength, sex, age};
         String HexPersonStr = ByteUtil.bytesToHexString(patientBytes);
         return ByteUtil.HexString2Bytes(Constant.Order_PersonInfo + HexPersonStr);
@@ -1519,79 +1535,7 @@ public class DataReaderService extends Service {
         return ByteUtil.HexString2Bytes(Constant.Order_Calibration + HexDia + HexSys);
     }
 
-    /*   //写入个人信息
-       private void writePersonInfo(BluetoothGattCharacteristic characteristic){
-           Log.i(TAG, "血压计个人信息");
-           UserModel user = BloodPressApplication.getInstance().getMyUser();
-           Byte height =(byte)(Integer.parseInt(user.getHeight()));
-           Byte weight =(byte)(Integer.parseInt(user.getWeight()));
-           Byte armlen =(byte)(Integer.parseInt(user.getArteriallen()));
-           int sexValue = user.getSex()?1:0;
-           Byte sex =(byte)(sexValue);
-           Byte age =(byte)(Integer.parseInt(user.getAge()));
-           byte[] personBytes ={height,weight,armlen,sex,age};
-           String HexPersonStr = ByteUtil.bytesToHexString(personBytes);
-           characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonInfo+HexPersonStr));
-           Log.i(TAG, "writePersonInfo: "+Order_PersonInfo+HexPersonStr);
-       }
-       //同步时间
-       private  void writeSyncTime(BluetoothGattCharacteristic characteristic){
-           Log.i(TAG, "同步时间");
-           int curTimestamp =  getSecondTimestamp(new Date());
-           byte[] timeByte = new byte[4];
-           ByteUtil.putIntBig(timeByte,curTimestamp,0);
-           String HexTime =  ByteUtil.bytesToHexString(timeByte);
-           characteristic.setValue(ByteUtil.HexString2Bytes(Order_BeginTime+HexTime));
-           Log.i(TAG, "writeSyncTime: "+Order_BeginTime+HexTime);
-       };
 
-       //写入标定
-       private  void writeBiaoding(BluetoothGattCharacteristic characteristic){
-           Log.i(TAG, "写入标定");
-           BiaodingModel biaodingModel = BloodPressApplication.getInstance().getMyBiaoding();
-           int dia,sys;
-           if (biaodingModel!=null){
-               dia =Integer.parseInt(biaodingModel.getDiapress());
-               sys =Integer.parseInt(biaodingModel.getSyspress());
-           }else{
-               dia = 120;
-               sys = 80;
-           }
-           byte[] diabytes =new byte[2];
-           byte[] sysbytes =new byte[2];
-           ByteUtil.putInttoTwoSmart(diabytes,dia,0);
-           ByteUtil.putInttoTwoSmart(sysbytes,sys,0);
-           String Hexdia = ByteUtil.bytesToHexString(diabytes);
-           String Hexsys = ByteUtil.bytesToHexString(sysbytes);
-           characteristic.setValue(ByteUtil.HexString2Bytes(Order_Calibration+Hexdia+Hexsys));
-           Log.i(TAG, "writeBiaoding: "+Order_Calibration+Hexdia+Hexsys);
-       }
-
-       private  void writePersonID(BluetoothGattCharacteristic characteristic){
-           Log.i(TAG, "个人id");
-
-           UserModel user = BloodPressApplication.getInstance().getMyUser();
-           int personID =  user.getId();
-           byte[] IDbytes = new byte[4];
-           ByteUtil.putIntBig(IDbytes,personID,0);
-           String HexID = ByteUtil.bytesToHexString(IDbytes);
-           characteristic.setValue(ByteUtil.HexString2Bytes(Order_PersonID+HexID));
-           Log.i(TAG, "writePersonID: "+Order_PersonID+HexID);
-       }
-       //停止测试
-       private  void sendStopBroadcast(BluetoothGattCharacteristic characteristic){
-           Log.i(TAG, "writeBlueCharacteristic: "+"停止测试");
-           characteristic.setValue(ByteUtil.HexString2Bytes(Order_StopMeasure));
-           if (BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.measureFragment) {
-               Intent intent = new Intent(
-                       MeasureFragment.BP_STOP_SEND);
-               sendBroadcast(intent);
-           }else if(BloodPressApplication.getInstance().broadcase ==BloodPressApplication.Broadcase.CalibrationActivity){
-               Intent intent = new Intent(
-                       CalibrationActivity.BP_STOP_SEND);
-               sendBroadcast(intent);
-           }
-       }*/
     //获取当前时间戳
     public static int getSecondTimestamp(Date date) {
         if (null == date) {

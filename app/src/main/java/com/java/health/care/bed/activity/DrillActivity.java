@@ -60,6 +60,7 @@ import com.plattysoft.leonids.ParticleSystem;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +96,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     public static final String TAG = DrillActivity.class.getSimpleName();
     private WebSocketService webSocketService;
     private View connectDeviceView;
-    private TextView tvConnectDevice;
+    private TextView tvConnectDevice,patient_time;
     private View breatheView;
     private TextView breatheType;//常规呼吸
     private TextView breatheStatus;//呼或者是吸
@@ -118,8 +119,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     private int indexEcgCM19 = 0;
     private int indexResp = 0;
-    private int[] shortsEcgCM19 = new int[5];
-    private int[] shortsResp = new int[5];
+    private int[] shortsEcgCM19 = new int[3];
+    private int[] shortsResp = new int[3];
 
     private String bleDeviceMac;
     List<BleDevice> deviceListConnect = new ArrayList<>();
@@ -139,22 +140,30 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     private List<Param> paramList;
 
+    private int bunkId;
+
+    private int regionId;
+
     private int patientId;
 
     private int preId;
 
     private String preType;
 
+    private int hospitalId;
+
+    private int doctorId;
+
     private int mMusicDuration;
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_assess;
+        return R.layout.activity_drill;
     }
 
     @Override
     protected void initView() {
-        addConnectDeviceView();
+
     }
 
     @Override
@@ -178,14 +187,20 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         EventBus.getDefault().post(false);
     }
 
+    //呼叫
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-
+        if(event instanceof Integer){
+            int num = (int) event;
+            bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
+            regionId = SPUtils.getInstance().getInt(SP.REGION_ID);
+            presenter.sendMessage(regionId,bunkId,num,patientId);
+        }
     }
     @Override
     protected void onResume() {
         super.onResume();
-
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         //评估里面 有四个阶段，每个阶段类型不一样，value:自由呼吸-1， 6次/分钟   9次/分钟  12次/分钟
         UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
 
@@ -193,12 +208,37 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
         preId = unFinishedPres.getPreId();
 
+        doctorId = unFinishedPres.getDoctorId();
+
         preType = unFinishedPres.getPreType();
+
         // 获取评估训练时长
-//        mMusicDuration = Integer.valueOf("10") * 60 * 1000;
         mMusicDuration = unFinishedPres.getDuration();
 
+        /**
+         * 必须要通过接口得知，类型和时长，总时长
+         * resprate, 呼吸频率
+         * respratio,呼气吸气比
+         */
+        String resprateValue = null;
+        String respratioValue = null;
+        for(Param param : paramList) {
+            if(param.getKey().equals("resprate")){
+                //赋值呼吸频率
+                resprateValue = param.getValue();
+            }else if(param.getKey().equals("respratio")){
+                respratioValue = param.getValue();
+            }
+        }
+
         Log.d(TAG,"preId:"+preId+"==preType:"+preType+"==mMusicDuration:"+mMusicDuration);
+
+        drill_id.setText("训练ID："+preId);
+        drill_user.setText("姓名："+SPUtils.getInstance().getString(SP.PATIENT_NAME));
+        drill_hxl.setText("呼吸率："+resprateValue+"次/分钟");
+        drill_hxb.setText("吸气呼气比："+respratioValue);
+
+        addConnectDeviceView();
     }
 
 
@@ -209,7 +249,8 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         connectDeviceView = LayoutInflater.from(this).inflate(R.layout.patient_view_access_init, null, false);
         ImageView imageView = connectDeviceView.findViewById(R.id.patient_breathe_iv);
         tvConnectDevice = connectDeviceView.findViewById(R.id.patient_access_connect_device);
-
+        patient_time = connectDeviceView.findViewById(R.id.patient_time);
+        patient_time.setText(mMusicDuration/60+"");
         ImageLoadUtils.loadGifToImg(this, R.drawable.a3699, imageView);
         tvConnectDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -384,7 +425,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
                 //很重要，从队列里面取5个数据
                 //取数据的计算方法：采样率为300，定时器17ms绘制一次，（300/1000）*17ms =5.1个数据
 
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 3; i++) {
 
                     Integer x = dataQueueEcgCM19.poll();
 
@@ -416,7 +457,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
 
             }
-        }, 100, 16);
+        }, 100, 10);
 
     }
 
@@ -698,7 +739,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
             //todo 调用接口，上传文件
 
             //文件上传
-            presenter.uploadFile(zipFiles(),"file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId),preType);
+            presenter.uploadFileCPR(zipFiles());
 
         }
     }
@@ -706,13 +747,16 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     //压缩文件
     private File zipFiles(){
 
-        String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
+        String startTime = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+        hospitalId = SPUtils.getInstance().getInt(SP.HOSPITAL_ID);
         //原保存的文件路径
-        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+dateNowStr;
+        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
 
-        //将要压缩的文件zip
-        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/"+patientId+"-"+dateNowStr + ".zip";
+
+        //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
+        String zip = Environment.getExternalStorageDirectory().getPath() +
+                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2 + ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
@@ -765,10 +809,6 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     @Override
     public void setCode(String code) {
-        if(code.equals("200")){
-            goActivity(PrescriptionActivity.class);
-
-        }
     }
 
     @Override
@@ -783,11 +823,19 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     @Override
     public void setObj(Object obj) {
+        //完成处方接口
+        boolean isSuccess = (boolean) obj;
+        if(isSuccess ==true){
 
+            goActivity(PrescriptionActivity.class);
+        }
     }
 
     @Override
     public void setData(Object obj) {
-
+        String code = (String) obj;
+        if(code.equals("000000")){
+            presenter.presFinish(patientId,preId,preType);
+        }
     }
 }

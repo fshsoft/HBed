@@ -197,6 +197,9 @@ public class MainPresenter implements MainContract.presenter {
                 });
     }
 
+    /**
+     * 针对生命体征检测上传文件
+     */
     @Override
     public void uploadFile(File file, String strategy,String patientId, String preId,String preType) {
         String value = SPUtils.getInstance().getString(SP.TOKEN);
@@ -245,9 +248,7 @@ public class MainPresenter implements MainContract.presenter {
 
                         @Override
                         protected void onSuccess(BaseEntry<FileBean> t) throws Exception {
-                            view.setCode(t.getCode());
-                            view.setMsg(t.getMessage());
-                            view.setObj(t.getData());
+                            view.setObj(t.isSuccess());
                         }
 
                         @Override
@@ -272,15 +273,19 @@ public class MainPresenter implements MainContract.presenter {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if(response.isSuccessful()){
-                            ResponseBody responseBody = response.body();
+
+
+
                             try {
-
-                                String msg = responseBody.string();
-                                Log.d("ResponseBody======",responseBody.string());
-
-                            } catch (IOException e) {
+                                String json = response.body().string();
+                                JSONObject jsonObject = new JSONObject(json);
+                                String code = jsonObject.optString("rspCode");
+                                view.setData(code);
+                            } catch (IOException | JSONException e) {
                                 e.printStackTrace();
                             }
+                            view.setData(response.toString());
+
                         }
                     }
 
@@ -291,34 +296,6 @@ public class MainPresenter implements MainContract.presenter {
                     }
                 });
 
-
-       /* RetrofitUtil.getInstance().initRetrofitCpr().uploadFileCPR(multipartBody.parts())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>(){
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d("onNext=======1",d+"=========");
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        //请求结果
-                        Log.d("onNext=======2",s+"");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("onNext=======3",e+"=========");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d("onNext=======4","=========");
-                    }
-                });
-*/
     }
 
     /**
@@ -394,15 +371,25 @@ public class MainPresenter implements MainContract.presenter {
 
         }
 
+    @Override
+    public void presFinish(int patientId, int preId, String preType) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        RetrofitUtil.getInstance().initRetrofit().presFinish(String.valueOf(value),patientId,preId,preType)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver(context) {
 
+                    @Override
+                    protected void onSuccess(BaseEntry t) throws Exception {
+                        view.setObj(t.isSuccess());
+                    }
 
-
-    /**
-     * 文件上传
-     */
-
-
-
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                        showMessage(e,isNetWorkError);
+                    }
+                });
+    }
 
 
 

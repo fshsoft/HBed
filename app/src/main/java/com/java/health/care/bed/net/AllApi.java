@@ -68,12 +68,19 @@ public interface AllApi {
    /**
     * 文件上传 Api.uploadFile 这个是apk下载，我这边不需要，需要对生命体征检测上传文件 需要
     */
-/*   @POST(Api.uploadFile)
-   @Multipart
-   Observable<BaseEntry<FileBean>> uploadFile(@PartMap Map<String, RequestBody> maps);*/
    @POST(Api.uploadFile)
    @Multipart
    Observable<BaseEntry<FileBean>> uploadFile(@Header("authorization") String str,@Part List<MultipartBody.Part> parts);
+
+
+   /**
+    * 目前只针对自主神经处方（RESONANCE）和心肺谐振处方（NERVE）
+    * 上传文件成功后，调用完成处方
+    */
+   @POST(Api.presFinish)
+   Observable<BaseEntry> presFinish(@Header("authorization") String str,
+                                    @Path("patientId") int patientId,@Path("preId") int preId,@Path("preType") String preType);
+
 
 
    /**

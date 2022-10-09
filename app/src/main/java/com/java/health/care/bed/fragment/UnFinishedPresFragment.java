@@ -136,7 +136,7 @@ public class UnFinishedPresFragment extends BaseFragment implements MainContract
             unFinishedPresAdapter.setPresItemClickListener(new UnFinishedPresAdapter.OnPresItemClickListener() {
                 @Override
                 public void OnPresItemClick(View view, int position) {
-                    showToast("positon:"+unFinishedPresList.get(position).getPreType()+"positon"+position);
+//                    showToast("positon:"+unFinishedPresList.get(position).getPreType()+"positon"+position);
                     //判断跳转到不同的页面
                     UnFinishedPres unFinishedPres = unFinishedPresList.get(position);
                     String type = unFinishedPres.getPreType();

@@ -19,6 +19,8 @@ public class FinishedPres {
 
     private List<Param> param;
 
+    private int doctorId;
+
 
     public int getPreId() {
         return preId;
@@ -58,5 +60,13 @@ public class FinishedPres {
 
     public void setParam(List<Param> param) {
         this.param = param;
+    }
+
+    public int getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(int doctorId) {
+        this.doctorId = doctorId;
     }
 }

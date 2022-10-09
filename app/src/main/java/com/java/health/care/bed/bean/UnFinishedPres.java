@@ -28,6 +28,10 @@ public class UnFinishedPres implements Parcelable {
     private Param paramInfo;
 
     private int flag;
+
+    private int doctorId;
+
+    private int respType;
     //===============================================
     protected UnFinishedPres(Parcel in) {
         preId = in.readInt();
@@ -35,6 +39,8 @@ public class UnFinishedPres implements Parcelable {
         duration = in.readInt();
         execTime = in.readString();
         flag = in.readInt();
+        doctorId = in.readInt();
+        respType = in.readInt();
         //=============
         paramInfo = in.readParcelable(Param.class.getClassLoader());
         param = new ArrayList<>();
@@ -113,6 +119,8 @@ public class UnFinishedPres implements Parcelable {
         dest.writeInt(duration);
         dest.writeString(execTime);
         dest.writeInt(flag);
+        dest.writeInt(doctorId);
+        dest.writeInt(respType);
         //=============
         dest.writeParcelable(paramInfo,0);
         dest.writeList(param);
@@ -124,5 +132,22 @@ public class UnFinishedPres implements Parcelable {
 
     public void setParamInfo(Param paramInfo) {
         this.paramInfo = paramInfo;
+    }
+
+    public int getDoctorId() {
+        return doctorId;
+    }
+
+    public void setDoctorId(int doctorId) {
+        this.doctorId = doctorId;
+    }
+
+
+    public int getRespType() {
+        return respType;
+    }
+
+    public void setRespType(int respType) {
+        this.respType = respType;
     }
 }

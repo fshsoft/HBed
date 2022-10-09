@@ -83,7 +83,7 @@
                     android:textSize="44sp"
                     android:layout_marginLeft="10dp"
                     android:gravity="center_vertical"
-                    android:text="50"
+                    android:text=""
                     android:layout_marginRight="30dp"
                     android:textColor="@color/holo_red_light"/>
 

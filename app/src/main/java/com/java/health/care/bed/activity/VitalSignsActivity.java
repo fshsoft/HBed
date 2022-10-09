@@ -403,7 +403,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                             }
                         }
 
-                        finish();
+                        //调用接口，上传文件
+                        mainPresenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+
+
                     }
                 })
                 .build();
@@ -598,9 +601,9 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 });
 
 
-                //把获取到的时间，进行展示，倒计时展示
+            /*    //把获取到的时间，进行展示，倒计时展示
                 String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration)  * 1000);
-                patient_view_time.setText(timeStr);
+                patient_view_time.setText(timeStr);*/
                 //开启倒计时
                 handler.sendEmptyMessageDelayed(3333, 1000);
             }
@@ -846,9 +849,6 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     @Override
     public void setCode(String code) {
-        if(code.equals("200")){
-            showToast("呼叫");
-        }
     }
 
     @Override
@@ -863,7 +863,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     @Override
     public void setObj(Object obj) {
-
+        //文件上传成功
+        boolean isSuccess = (boolean) obj;
+        if(isSuccess==true){
+            showToast("上传文件成功");
+            finish();
+        }
     }
 
     @Override
@@ -898,13 +903,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
 
             //调用接口，上传文件
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mainPresenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
-
-                }
-            }).start();
+            mainPresenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
 
 
         }
@@ -961,21 +960,6 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     //释放音频，移除handle中message
     private void closeAll() {
-/*        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-
-        if (perMediaPlayer != null) {
-            perMediaPlayer.release();
-        }
-
-        if (bgMediaPlayer != null) {
-            bgMediaPlayer.release();
-        }
-
-        handler.removeMessages(1111);
-        handler.removeMessages(2222);
-        handler.removeMessages(4444);*/
 
         unbindService(serviceConnection);
         EventBus.getDefault().unregister(this);

@@ -26,6 +26,10 @@ public class SP {
     public static final String PATIENT_SEX = "patientSex";
     public static final String PATIENT_AGE = "patientAge";
     public static final String PATIENT_ARM_LENGTH = "patientArmLength";
+    public static final String PATIENT_HEIGHT = "patientHeight";
+    public static final String PATIENT_WEIGHT = "patientWeight";
+    public static final String HOSPITAL_ID = "hospitalId";
+
 
 
 

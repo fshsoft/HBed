@@ -59,5 +59,12 @@ public interface MainContract {
          * 呼叫发送
          */
         void sendMessage(int clientId, int bunkId, int type,int userId);
+
+        /**
+         * 目前只针对自主神经处方（RESONANCE）和心肺谐振处方（NERVE）
+         * 上传文件成功后，调用完成处方
+         */
+
+        void presFinish(int patientId,int preId,String preType);
     }
 }

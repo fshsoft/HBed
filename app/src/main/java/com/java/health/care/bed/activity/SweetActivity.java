@@ -32,6 +32,13 @@ import java.util.List;
  */
 public class SweetActivity extends BaseActivity implements MainContract.View {
     private MainPresenter presenter;
+
+    private int patientId;
+
+    private int bunkId;
+
+    private int regionId;
+
     private CountDownProgressBar cpb_countdown;
     public static final String TAG = SweetActivity.class.getSimpleName();
     private int preId;
@@ -131,7 +138,13 @@ public class SweetActivity extends BaseActivity implements MainContract.View {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(Object event) {
-
+        if(event instanceof Integer){
+            int num = (int) event;
+            patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+            bunkId = SPUtils.getInstance().getInt(SP.BUNK_ID);
+            regionId = SPUtils.getInstance().getInt(SP.REGION_ID);
+            presenter.sendMessage(regionId,bunkId,num,patientId);
+        }
     }
     @Override
     public void setCode(String code) {

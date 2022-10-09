@@ -229,7 +229,6 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
     @Override
     public void setCode(String code) {
         if(code.equals("200")){
-            showToast("呼叫");
         }
     }
 
@@ -255,6 +254,12 @@ public class PrescriptionActivity extends BaseActivity implements MainContract.V
             SPUtils.getInstance().put(SP.PATIENT_NAME,patient.getPatientName());
             SPUtils.getInstance().put(SP.PATIENT_SEX,patient.getSex());
             SPUtils.getInstance().put(SP.PATIENT_AGE,patient.getAge());
+            SPUtils.getInstance().put(SP.PATIENT_ARM_LENGTH,patient.getArmLength());
+            SPUtils.getInstance().put(SP.PATIENT_WEIGHT,patient.getWeight());
+            SPUtils.getInstance().put(SP.PATIENT_HEIGHT,patient.getHeight());
+
+            SPUtils.getInstance().put(SP.HOSPITAL_ID,patient.getHospitalId());
+
 
         }
     }
