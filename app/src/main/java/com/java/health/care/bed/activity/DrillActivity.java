@@ -1,6 +1,7 @@
 package com.java.health.care.bed.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothGatt;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -92,7 +93,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
     TextView drill_hxb;
     @BindView(R.id.drill_ll)
     LinearLayout drill_ll;
-
+    private ProgressDialog progressDialog;
     public static final String TAG = DrillActivity.class.getSimpleName();
     private WebSocketService webSocketService;
     private View connectDeviceView;
@@ -255,10 +256,11 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         tvConnectDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog = new ProgressDialog(DrillActivity.this);
+                progressDialog.show();
                 //开始，连接cm19设备
-//
                 scanBle();
-                addBreathView();
+
 
             }
         });
@@ -277,6 +279,9 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
             @Override
             public void onScanStarted(boolean success) {
                 Log.d(TAG, "bleDeviceMac:success:" + success);
+                if(success==false){
+                    scanBle();
+                }
             }
 
             @Override
@@ -298,11 +303,14 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
+                progressDialog.dismiss();
                 Log.d(TAG, "onConnectFail:exception:" + exception.toString());
             }
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                progressDialog.dismiss();
+                addBreathView();
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 //蓝牙设备CM19连接成功
                 stopFlag = false;

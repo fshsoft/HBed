@@ -1,10 +1,19 @@
 package com.java.health.care.bed.activity;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.blankj.utilcode.util.SPUtils;
+import com.clj.fastble.BleManager;
+import com.clj.fastble.data.BleDevice;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
 import com.java.health.care.bed.bean.Param;
@@ -24,6 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+
 /**
  * @author fsh
  * @date 2022/08/25 16:57
@@ -32,6 +44,8 @@ import java.util.List;
  * 背部、腰部、腿部
  */
 public class SoundWaveActivity extends BaseActivity implements MainContract.View {
+    @BindView(R.id.btn_start)
+    AppCompatButton btn_start;
     private MainPresenter presenter;
 
     private int patientId;
@@ -76,51 +90,123 @@ public class SoundWaveActivity extends BaseActivity implements MainContract.View
         }
         cpb_countdown.setDuration(duration);
 
-        btn_start.setOnClickListener(new View.OnClickListener() {
+        /*btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //打开通道
-                String dur = Integer.toHexString(duration/60);
-                if(dur.length()==1){
-                    dur = "0"+dur;
-                }
-                if(one!=0){
-                    EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_ONE_HALL + dur
-                            +Integer.toHexString(10+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
-                }
-                if(two!=0){
-                    EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_TWO_HALL +  dur
-                            +Integer.toHexString(11+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
-                }
-                if(three!=0){
-                    EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_THREE_HALL +  dur
-                            +Integer.toHexString(12+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
-                }
+
+            }
+        });*/
+
+    }
+
+    @OnClick({R.id.btn_start})
+    public void onClickBtn(){
+        if(btn_start.getText().toString().equals("开始")){
+            //打开通道
+            String dur = Integer.toHexString(duration/60);
+            if(dur.length()==1){
+                dur = "0"+dur;
+            }
+            if(one!=0){
+                EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_ONE_HALL + dur
+                        +Integer.toHexString(10+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
+            }
+            if(two!=0){
+                EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_TWO_HALL +  dur
+                        +Integer.toHexString(11+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
+            }
+            if(three!=0){
+                EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_THREE_HALL +  dur
+                        +Integer.toHexString(12+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
+            }
                 /*if(four!=0){
                     EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_FOUR_HALL +  Integer.toHexString(duration/60)
                             +Integer.toHexString(13+duration/60)+ Constant.OPEN_SOUND_WAVE_LAST);
                 }*/
-                //记录开始时间
-                Date d = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                startTime = sdf.format(d);
-                cpb_countdown.setDuration(duration*1000, new CountDownProgressBar.OnFinishListener() {
-                    @Override
-                    public void onFinish() {
-                        //记录结束时间
-                        Date d = new Date();
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        endTime = sdf.format(d);
-                        presenter.upExec(preId,"SONIC_WAVE",duration,startTime,endTime);
+            //记录开始时间
+            Date d = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            startTime = sdf.format(d);
+            cpb_countdown.setDuration(duration*1000, new CountDownProgressBar.OnFinishListener() {
+                @Override
+                public void onFinish() {
+                    //记录结束时间
+                    Date d = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    endTime = sdf.format(d);
+                    presenter.upExec(preId,"SONIC_WAVE",duration,startTime,endTime);
 
-                    }
-                });
-            }
-        });
+                }
+            });
+        }else if(btn_start.getText().toString().equals("中断")){
+            showDialog();
+        }
+    }
+    //按键返回
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            showDialog();
+        }
+        return false;
 
     }
 
+    //返回箭头
+    @OnClick(R.id.back)
+    public void back() {
+        //todo
+        showDialog();
+    }
+
+
+    /**
+     * 中断逻辑，记录结束时间，上传接口
+     */
+    private void overAndUpdate(){
+        //记录结束时间
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        endTime = sdf.format(d);
+        presenter.upExec(preId,"SONIC_WAVE",duration,startTime,endTime);
+    }
+
+    //弹窗提示
+    private void showDialog(){
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("你确定要中断此次理疗吗？")
+                .positiveText("确定")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Log.d(TAG,"MaterialDialog确定");
+
+
+                        //调用接口，上传文件
+                        overAndUpdate();
+
+                    }
+                })
+                .build();
+
+
+        if (dialog.getTitleView() != null) {
+            dialog.getTitleView().setTextSize(25);
+        }
+
+        if (dialog.getActionButton(DialogAction.POSITIVE) != null) {
+            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
+        }
+
+        if(dialog.getActionButton(DialogAction.NEGATIVE)!=null){
+            dialog.getActionButton(DialogAction.NEGATIVE).setTextSize(25);
+        }
+
+        dialog.show();
+    }
     @Override
     protected void initData() {
         /**

@@ -1423,10 +1423,12 @@ public class DataReaderService extends Service {
                             //呼叫
                             if(data[1]==8 && data[2]==7 && data[3]==1 &&data[4]==1 && data[5]==17){
                                 EventBus.getDefault().post(1);
+                                EventBus.getDefault().post(Constant.CALL_ON);
                             }
                             //取消
                             if(data[1]==8 && data[2]==7 && data[3]==1 &&data[4]==2 && data[5]==18){
                                 EventBus.getDefault().post(0);
+                                EventBus.getDefault().post(Constant.CALL_OFF);
                             }
 
                         }

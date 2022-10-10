@@ -1,6 +1,7 @@
 package com.java.health.care.bed.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothGatt;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -145,7 +146,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     private MyCountDownTimer mc;
     //获取到数据，通知开始倒计时
     private boolean isGotData = false;
-
+    private ProgressDialog progressDialog;
     private List<Param> paramList;
 
     private MainPresenter presenter;
@@ -330,6 +331,8 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                progressDialog.dismiss();
+                addBreathView();
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 //蓝牙设备CM19连接成功
                 stopFlag = false;
