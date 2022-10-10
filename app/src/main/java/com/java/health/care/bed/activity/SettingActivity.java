@@ -15,6 +15,8 @@ import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
+import com.java.health.care.bed.bean.APK;
+import com.java.health.care.bed.bean.APKS;
 import com.java.health.care.bed.bean.Token;
 import com.java.health.care.bed.constant.Constant;
 import com.java.health.care.bed.constant.SP;
@@ -139,6 +141,11 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @Override
     public void setData(Object obj) {
 
+        APKS apks = (APKS) obj;
+        String fileName = apks.getApkList().get(0).getFileName();
+
+        Log.d("set==========",fileName);
+
     }
 
 
@@ -213,37 +220,19 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     }
 
-   /* //点击服务器地址，弹窗
-    @OnClick(R.id.set_server_port_rl)
-    public void setPort(){
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("请输入端口号")
-                .content("")
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("如：8080", null, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        set_server_port_address.setText(input);
-                        SPUtils.getInstance().put(SP.IP_SERVER_PORT,input.toString());
-                    }
-                })
-                .positiveText("确定")
-                .build();
+    /**
+     * 点击版本更新
+     * 首先要调用一下接口，版本比对
+     */
+    @OnClick(R.id.set_version_update_rl)
+    public void onClickUpdateVersion(){
+        //调用接口，如果versionCode变大，再弹窗提示下载安装
+        presenter.compareVersionApk();
 
 
-        if (dialog.getTitleView() != null){
-            dialog.getTitleView().setTextSize(25);
-        }
-        if (dialog.getContentView() != null){
-            dialog.getInputEditText().setTextSize(25);
-        }
-        if (dialog.getActionButton(DialogAction.POSITIVE) != null){
-            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
-        }
+    }
 
-        dialog.show();
 
-    }*/
 
     //点击床位编号，跳转到注册
     @OnClick(R.id.set_bed_rl)

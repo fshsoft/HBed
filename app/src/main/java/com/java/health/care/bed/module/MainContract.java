@@ -71,5 +71,10 @@ public interface MainContract {
          * 下载apk
          */
         void download(String versionName);
+
+        /**
+         * 比对apk版本
+         */
+        void compareVersionApk();
     }
 }

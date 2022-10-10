@@ -6,6 +6,8 @@ import android.util.Log;
 import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.base.BaseObserver;
+import com.java.health.care.bed.bean.APK;
+import com.java.health.care.bed.bean.APKS;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
 import com.java.health.care.bed.bean.DownloadFile;
@@ -420,6 +422,33 @@ public class MainPresenter implements MainContract.presenter {
                     @Override
                     protected void onSuccess(BaseEntry<DownloadFile> t) throws Exception {
 
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+
+                    }
+                });
+    }
+
+    /**
+     * 比对apk版本
+     */
+    @Override
+    public void compareVersionApk() {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("fileFormat", "apk");
+        map.put("success",true);
+        RetrofitUtil.getInstance().initRetrofit().compareVersionApk(value, map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<APKS>(context) {
+
+                    @Override
+                    protected void onSuccess(BaseEntry<APKS> t) throws Exception {
+                        view.setData(t.getData());
                     }
 
                     @Override

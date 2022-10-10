@@ -77,6 +77,7 @@ public class Api {
     /**
      * apk 版本号进行比对
      */
+    public static final String compareVersionApk = "/cas/open/file/find";
 
 
 }
