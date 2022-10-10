@@ -157,6 +157,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
 
     private int mMusicDuration;
 
+    private String src,zip;
     @Override
     protected int getLayoutId() {
         return R.layout.activity_drill;
@@ -759,18 +760,25 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         hospitalId = SPUtils.getInstance().getInt(SP.HOSPITAL_ID);
         //原保存的文件路径
-        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
+        src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
 
+        File file1 = new File(src+"/ecgData.ecg");
+        File file2 = new File(src+"/respData.resp");
+        List<File> fileList = new ArrayList<>(2);
+        fileList.add(file1);
+        fileList.add(file2);
 
         //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
-        String zip = Environment.getExternalStorageDirectory().getPath() +
-                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2 + ".zip";
+        zip = Environment.getExternalStorageDirectory().getPath() +
+                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2+"_CPR_" + ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
         //压缩文件
         try {
-            ZipUtils.zipFile(src,zip);
+//            ZipUtils.zipFile(src,zip);
+
+            ZipUtils.zipFiles(fileList,FileUtils.getFileByPath(zip));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -834,7 +842,7 @@ public class DrillActivity extends BaseActivity implements DataReceiver, MainCon
         //完成处方接口
         boolean isSuccess = (boolean) obj;
         if(isSuccess ==true){
-
+            FileUtils.delete(zip);
             goActivity(PrescriptionActivity.class);
         }
     }

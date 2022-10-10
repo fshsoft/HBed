@@ -453,7 +453,7 @@ public class DataReaderService extends Service {
                 for (byte[] packet : packets) {
                     Log.d("fsh===", Arrays.toString(packet));
                     //cm22进行写入数据
-                    FileIOUtils.writeFileFromBytesByStream(path + "BLOOD_PRESSURE_Data.data", packet, true);
+                    FileIOUtils.writeFileFromBytesByStream(path + "lifeData.data", packet, true);
                     //发送整包数据，和CM19有区别组包cm22
                     dataTrans.sendData(packet);
                     tlvBox = new TlvBox();
@@ -468,6 +468,7 @@ public class DataReaderService extends Service {
                         byte[] ssPressData = tlvBox.getBytesValue(EcgPacket.SysBp.getType());
                         //R波位置
                         byte[] rrData = tlvBox.getBytesValue(EcgPacket.RIndex.getType());
+                        FileIOUtils.writeFileFromBytesByStream(path + "rrData.rr", rrData, true);
 
 //                        if (ecgData != null) {
 //                            Log.d("fsh===", "===ecgData192" + ecgData.length + "===" + Arrays.toString(ecgData));
@@ -758,7 +759,7 @@ public class DataReaderService extends Service {
 
                             byte[] realDatas = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, (short) heartRate[0],
                                     (short) respRate, devicePacket.rrNew, getSecondTimestamp(new Date())).buildPacket();
-                            FileIOUtils.writeFileFromBytesByStream(path + "LIFE_Data.data", realDatas, true);
+                            FileIOUtils.writeFileFromBytesByStream(path + "lifeData.data", realDatas, true);
                         } else {
                             //针对心肺谐振的写入
                             FileIOUtils.writeFileFromBytesByStream(path + "ecgData.ecg", ByteUtil.get16Bitshort(secgData), true);

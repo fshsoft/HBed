@@ -86,6 +86,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     List<BleDevice> deviceListConnect = new ArrayList<>();
     public static final String TAG = VitalSignsActivity.class.getSimpleName();
 
+    //已经读取数据
+    private boolean isConnectAndReadData = false;
+    //此来表示设备是否连接，连接了多少个设备
+    private int bleConnectNum =0;
     //1、要根据处方来判断显示哪些ble设备，2、根据蓝牙连接与否，来对这些设备颜色变更。
     @BindView(R.id.vital_ble_cm22)
     TextView bleCM22;//无创连续血压蓝牙
@@ -153,7 +157,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     private int[] shortsPPG = new int[2];
 
     private int patientId;
-
+    private int hospitalId;
     private int bunkId;
 
     private int regionId;
@@ -434,7 +438,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
             scanBle();
         }else if(vital_start.getText().toString().equals("中断")){
             //todo 中断操作
-            showDialog();
+            if(isConnectAndReadData){
+                showDialog();
+            }else {
+                finish();
+            }
+
         }
 
     }
@@ -445,7 +454,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            showDialog();
+            if(isConnectAndReadData){
+                showDialog();
+            }else {
+                finish();
+            }
+
         }
         return false;
 
@@ -454,9 +468,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     //返回箭头
     @OnClick(R.id.back)
     public void back() {
-        //todo
-        showDialog();
-//        finish();
+        if(isConnectAndReadData){
+            showDialog();
+        }else {
+            finish();
+        }
     }
 
     @OnClick(R.id.vital_close)
@@ -534,6 +550,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         });
     }
 
+    /**
+     * 生命体征检测： cm19必须要勾选，//   无创连续血压：cm22必须要勾选
+     * @param bleDevice
+     */
     private void connectBle(BleDevice bleDevice) {
         BleManager.getInstance().connect(bleDevice, new BleGattCallback() {
             @Override
@@ -543,35 +563,43 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
+
                 progressDialog.dismiss();
 //                showToast("蓝牙连接失败");
                 Log.d(TAG, "onConnectFail:exception:" + exception.toString());
                 //蓝牙连接失败
                 if(bleDevice.getName().contains(Constant.CM19)){
-                    if (retryNum < 5) {
+                    if (retryNum < 3) {
                         retryConnectBle(bleDevice);
+                    }else {
+                        //如果cm19一直连不上，就取消倒计时
+                        handler.sendEmptyMessage(4444);
                     }
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
-                    if (retryNum < 5) {
+                    if (retryNum < 3) {
                         retryConnectBle(bleDevice);
                     }
                 }else if(bleDevice.getName().contains(Constant.QIANSHAN)){
-                    if (retryNum < 5) {
+                    if (retryNum < 3) {
                         retryConnectBle(bleDevice);
                     }
                 }else if(bleDevice.getName().contains(Constant.IRT)){
-                    if (retryNum < 5) {
+                    if (retryNum < 3) {
                         retryConnectBle(bleDevice);
                     }
                 }else if(bleDevice.getName().contains(Constant.CM22)){
-                    if (retryNum < 5) {
+                    if (retryNum < 3) {
                         retryConnectBle(bleDevice);
+                    }else {
+                        //如果cm22一直连不上，就取消倒计时
+                        handler.sendEmptyMessage(4444);
                     }
                 }
             }
 
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                bleConnectNum++;
                 progressDialog.dismiss();
                 Log.d(TAG, "onConnectSuccess:status:" + status);
                 deviceListConnect.add(bleDevice);
@@ -610,12 +638,17 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 String timeStr = millisUntilFinishedToMin(Integer.valueOf(mMusicDuration)  * 1000);
                 patient_view_time.setText(timeStr);*/
                 //开启倒计时
-                handler.sendEmptyMessageDelayed(3333, 1000);
+                if(bleConnectNum==1){
+                    handler.sendEmptyMessageDelayed(3333, 1000);
+                }
+
             }
 
             @Override
             public void onDisConnected(boolean isActiveDisConnected, BleDevice device, BluetoothGatt gatt, int status) {
                 Log.d(TAG, "onDisConnected:status:8" + status);
+                bleConnectNum--;
+
                 /**
                  * 连接断开，特指连接后再断开的情况。在这里可以监控设备的连接状态，一旦连接断开，可以根据自身情况考虑对BleDevice对象进行重连操作。
                  * 需要注意的是，断开和重连之间最好间隔一段时间，否则可能会出现长时间连接不上的情况。
@@ -625,30 +658,30 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 //蓝牙断开 状态为8
                 if (bleDevice.getName().contains(Constant.CM19)) {
                     bleCM19.setTextColor(getResources().getColor(R.color.black));
-                    if (retryNum < 5) {
-                        retryConnectBle(bleDevice);
-                    }
+
+                    retryConnectBle(bleDevice);
+
                 } else if (bleDevice.getName().contains(Constant.SPO2)) {
                     bleSpo2.setTextColor(getResources().getColor(R.color.black));
-                    if (retryNum < 5) {
-                        retryConnectBle(bleDevice);
-                    }
+
+                    retryConnectBle(bleDevice);
+
 
                 } else if (bleDevice.getName().contains(Constant.QIANSHAN)) {
                     bleBP.setTextColor(getResources().getColor(R.color.black));
-                    if (retryNum < 5) {
-                        retryConnectBle(bleDevice);
-                    }
+
+                    retryConnectBle(bleDevice);
+
                 } else if (bleDevice.getName().contains(Constant.IRT)) {
                     bleTemp.setTextColor(getResources().getColor(R.color.black));
-                    if (retryNum < 5) {
-                        retryConnectBle(bleDevice);
-                    }
+
+                    retryConnectBle(bleDevice);
+
                 } else if (bleDevice.getName().contains(Constant.CM22)) {
                     bleCM22.setTextColor(getResources().getColor(R.color.black));
-                    if (retryNum < 5) {
-                        retryConnectBle(bleDevice);
-                    }
+
+                    retryConnectBle(bleDevice);
+
                 }
             }
         });
@@ -745,6 +778,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     @Override
     public void onDataReceived(byte[] packet) {
+        isConnectAndReadData= true;
         //实时发送数据webSocket
         webSocketService.send(packet);
     }
@@ -902,7 +936,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         public void onFinish() {
             //倒计时完成后，处理事物
 
-            closeAll();
+//            closeAll();
 
             //todo 语音提醒检测完成
 
@@ -916,20 +950,29 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     //压缩文件
     private File zipFiles() {
+        patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
 
-        String dateNowStr = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
+        String startTime = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
 
         //原保存的文件路径
-        String src = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + patientId + "-" + dateNowStr;
+        String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
+        File file1 = new File(src+"/lifeData.data");
+        File file2 = new File(src+"/rrData.rr");
+        List<File> fileList = new ArrayList<>(2);
+        fileList.add(file1);
+        fileList.add(file2);
 
-        //将要压缩的文件zip
-        String zip = Environment.getExternalStorageDirectory().getPath() + "/HBed/zipData/" + patientId + "-" + dateNowStr + ".zip";
+        //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
+        String zip = Environment.getExternalStorageDirectory().getPath() +
+                "/HBed/zipData/"+ + patientId + "_" + preId + "_" + preType+"_2_LIFE_" + ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
         //压缩文件
         try {
-            ZipUtils.zipFile(src, zip);
+//            ZipUtils.zipFile(src,zip);
+
+            ZipUtils.zipFiles(fileList,FileUtils.getFileByPath(zip));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -996,6 +1039,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 //开启倒计时
                 mc = new MyCountDownTimer(mMusicDuration * 1000, 1000);
                 mc.start();
+            }else if(msg.what==4444){
+                if (null != mc) {
+                    mc.cancel();
+                    mc = null;
+                }
             }
 
         }

@@ -1,5 +1,8 @@
 package com.java.health.care.bed.base;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+
 import com.blankj.utilcode.util.Utils;
 import com.java.health.care.bed.model.Music;
 
@@ -35,5 +38,40 @@ public class BaseApplication extends LitePalApplication {
 
     public void setMusicList(List<Music> musicList) {
         this.musicList = musicList;
+    }
+
+     /** 获取本地软件版本号
+	 */
+    public static int getLocalVersionCode() {
+        int localVersion = 0;
+        try {
+            PackageInfo packageInfo = getMyApp().getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(getMyApp().getPackageName(), 0);
+            localVersion = packageInfo.versionCode;
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return localVersion;
+    }
+
+    /**
+     * 获取本地软件版本号名称
+     */
+    public static String getLocalVersionName() {
+        String localVersion = "";
+        try {
+            PackageInfo packageInfo = null;
+
+                packageInfo = getMyApp().getApplicationContext()
+                        .getPackageManager()
+                        .getPackageInfo(getMyApp().getPackageName(), 0);
+                localVersion = packageInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        return localVersion;
     }
 }

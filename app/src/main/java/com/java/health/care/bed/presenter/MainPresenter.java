@@ -260,6 +260,9 @@ public class MainPresenter implements MainContract.presenter {
 
     }
 
+    /**
+     * 生命体征监测，cm19和cm22无创连续血压文件上传接口
+     */
     @Override
     public void uploadFileCPR(File file) {
         RequestBody body = RequestBody.create(MediaType.parse("multipart/form-data"),file);
@@ -333,6 +336,9 @@ public class MainPresenter implements MainContract.presenter {
                 });
     }
 
+    /**
+     * 呼叫发送接口
+     */
     @Override
     public void sendMessage(int clientId, int bunkId, int type,int userId) {
         String value = SPUtils.getInstance().getString(SP.TOKEN);
@@ -341,6 +347,7 @@ public class MainPresenter implements MainContract.presenter {
         try {
             js.put("bunkId", bunkId);
             js.put("type", type);
+            js.put("code",5001);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -371,6 +378,9 @@ public class MainPresenter implements MainContract.presenter {
 
         }
 
+    /**
+     * 针对心肺谐振评估和训练，上传文件成功后，调用这个接口，表示已经完成处方
+     */
     @Override
     public void presFinish(int patientId, int preId, String preType) {
         String value = SPUtils.getInstance().getString(SP.TOKEN);
