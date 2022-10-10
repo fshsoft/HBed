@@ -8,6 +8,7 @@ import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.base.BaseObserver;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
+import com.java.health.care.bed.bean.DownloadFile;
 import com.java.health.care.bed.bean.FileBean;
 import com.java.health.care.bed.bean.LLBean;
 import com.java.health.care.bed.bean.Prescription;
@@ -401,7 +402,31 @@ public class MainPresenter implements MainContract.presenter {
                 });
     }
 
+    /**
+     * 下载APK
+     */
+    @Override
+    public void download(String versionName) {
+        String value = SPUtils.getInstance().getString(SP.TOKEN);
+        Map<String, String> map = new HashMap<>();
+        map.put("name", versionName);
+        map.put("source", "pad");
+        RetrofitUtil.getInstance().initRetrofit().download(value, map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new BaseObserver<DownloadFile>(context) {
 
 
+                    @Override
+                    protected void onSuccess(BaseEntry<DownloadFile> t) throws Exception {
+
+                    }
+
+                    @Override
+                    protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+
+                    }
+                });
+    }
 
 }

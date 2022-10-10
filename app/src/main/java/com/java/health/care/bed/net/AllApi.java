@@ -3,6 +3,7 @@ package com.java.health.care.bed.net;
 import com.java.health.care.bed.base.BaseEntry;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
+import com.java.health.care.bed.bean.DownloadFile;
 import com.java.health.care.bed.bean.FileBean;
 import com.java.health.care.bed.bean.LLBean;
 import com.java.health.care.bed.bean.Prescription;
@@ -15,8 +16,6 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -26,7 +25,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 
 public interface AllApi {
@@ -87,18 +85,11 @@ public interface AllApi {
     * 心肺谐振评估和训练
     * 上传文件
     */
-/*   @POST(Api.uploadFileCPR)
-   @Multipart
-   Observable<String> uploadFileCPR(@Part List<MultipartBody.Part> parts);*/
 
    @POST(Api.uploadFileCPR)
    @Multipart
    Call<ResponseBody> uploadFileCPR( @Part List<MultipartBody.Part> parts);
-   /**
-    * 文件下载
-    */
-   @POST(Api.downloadFile)
-   Observable<BaseEntry<String>> downloadFile();
+
 
    /**
     *香薰和声波 完成处方上传
@@ -112,17 +103,11 @@ public interface AllApi {
    @POST(Api.sendMessage)
    Observable<BaseEntry> sendMessage(@Header("authorization") String str,@Body Map<String, Object> maps);
 
-   /*/**
-     * 获取全部患者列表
-     *//*
-    @POST(ApiAddress.getPatientList)
-    Observable<BaseEntry<List<Patient>>> getPatientList(@Body Map<String, String> maps);
 
-    *//**
-     * 获取在线患者
-     *//*
-    @POST(ApiAddress.getOnLinePatientList)
-    Observable<BaseEntry<List<PatientOnLine>>> getOnLinePatientList();
+   /**
+    * 下载apk
+    */
+   @POST(Api.download)
+   Observable<BaseEntry<DownloadFile>> download(@Header("authorization") String str,@Body Map<String, String> maps);
 
-   */
 }

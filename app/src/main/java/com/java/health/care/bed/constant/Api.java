@@ -56,25 +56,27 @@ public class Api {
 
     public static final String uploadFileCPR = "/cprraw";
 
-    /**
-     * 文件下载，这个是apk下载
-     */
-    public static final String downloadFile = "/cas/open/file/download";
 
     /**
      * 香薰和声波 完成处方上传
      */
     public static final String upExec = "cas/open/pre/exec";
 
-    /**
-     * 生命体征检测，心肺谐振评估和训练  完成之后文件上传
-     */
 
     /**
      * 呼叫发送
      */
     public static final String sendMessage = "/cas/device/gateway/deviceGateWay/sendMessage";
 
+
+    /**
+     * 下载apk
+     */
+    public static final String download = "/cas/open/file/download";
+
+    /**
+     * apk 版本号进行比对
+     */
 
 
 }

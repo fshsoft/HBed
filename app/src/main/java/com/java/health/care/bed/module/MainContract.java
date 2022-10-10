@@ -66,5 +66,10 @@ public interface MainContract {
          */
 
         void presFinish(int patientId,int preId,String preType);
+
+        /**
+         * 下载apk
+         */
+        void download(String versionName);
     }
 }
