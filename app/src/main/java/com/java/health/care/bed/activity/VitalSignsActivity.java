@@ -957,7 +957,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         //原保存的文件路径
         String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
         File file1 = new File(src+"/lifeData.data");
+        //file2不一定有rrData.rr
         File file2 = new File(src+"/rrData.rr");
+        if(file2.exists()){
+            file2.mkdir();
+        }
         List<File> fileList = new ArrayList<>(2);
         fileList.add(file1);
         fileList.add(file2);

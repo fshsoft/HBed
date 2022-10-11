@@ -413,6 +413,7 @@ public class MainPresenter implements MainContract.presenter {
         Map<String, String> map = new HashMap<>();
         map.put("name", versionName);
         map.put("source", "pad");
+        map.put("strategy", "file_downloadLfs");
         RetrofitUtil.getInstance().initRetrofit().download(value, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -444,11 +445,14 @@ public class MainPresenter implements MainContract.presenter {
         RetrofitUtil.getInstance().initRetrofit().compareVersionApk(value, map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new BaseObserver<APKS>(context) {
+                .subscribe(new BaseObserver<List<APK>>(context) {
+
 
                     @Override
-                    protected void onSuccess(BaseEntry<APKS> t) throws Exception {
-                        view.setData(t.getData());
+                    protected void onSuccess(BaseEntry<List<APK>> t) throws Exception {
+                        String fileName = t.getData().get(0).getFileName();
+
+                        view.setData(fileName);
                     }
 
                     @Override

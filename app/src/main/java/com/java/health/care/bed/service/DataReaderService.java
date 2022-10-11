@@ -466,9 +466,11 @@ public class DataReaderService extends Service {
                         byte[] heartData = tlvBox.getBytesValue(EcgPacket.HeartRate.getType());
                         byte[] szPressData = tlvBox.getBytesValue(EcgPacket.DiaBp.getType());
                         byte[] ssPressData = tlvBox.getBytesValue(EcgPacket.SysBp.getType());
-                        //R波位置
-                        byte[] rrData = tlvBox.getBytesValue(EcgPacket.RIndex.getType());
-                        FileIOUtils.writeFileFromBytesByStream(path + "rrData.rr", rrData, true);
+                        //血压袖带rIndex
+                        byte[] rIndex = tlvBox.getBytesValue(EcgPacket.RIndex.getType());
+
+                        //rrData
+//                        FileIOUtils.writeFileFromBytesByStream(path + "rrData.rr", new byte[0], true);
 
 //                        if (ecgData != null) {
 //                            Log.d("fsh===", "===ecgData192" + ecgData.length + "===" + Arrays.toString(ecgData));
@@ -757,8 +759,11 @@ public class DataReaderService extends Service {
 
                             //生命体征检测：重新组包，把数据写入文件
 
-                            byte[] realDatas = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, (short) heartRate[0],
-                                    (short) respRate, devicePacket.rrNew, getSecondTimestamp(new Date())).buildPacket();
+//                            byte[] realDatas = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, (short) heartRate[0],
+//                                    (short) respRate, devicePacket.rrNew, getSecondTimestamp(new Date())).buildPacket();
+                            byte[] realDatas = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, null, null, null, null,
+                                    (short) heartRate[0], (short) spo2, (short) szPress, (short) ssPress, (short) respRate, (short) temp, rrValue, startTime).buildPacket();
+
                             FileIOUtils.writeFileFromBytesByStream(path + "lifeData.data", realDatas, true);
                         } else {
                             //针对心肺谐振的写入
@@ -1034,7 +1039,7 @@ public class DataReaderService extends Service {
      * 收到CM19的bleDevice
      */
     private void getCM19BleDevice(BleDevice bleDevice) {
-        startTime = getSecondTimestamp(new Date());
+
         BleManager.getInstance().notify(
                 bleDevice,
                 Constant.UUID_SERVICE_CM19,
@@ -1044,6 +1049,7 @@ public class DataReaderService extends Service {
                     public void onNotifySuccess() {
                         // 打开通知操作成功
                         Log.d(TAG, "cm19打开通知成功");
+                        startTime = getSecondTimestamp(new Date());
                         recordTimeAndCreateFile();
                     }
 

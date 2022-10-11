@@ -1,6 +1,7 @@
 package com.java.health.care.bed.net;
 
 import com.java.health.care.bed.base.BaseEntry;
+import com.java.health.care.bed.bean.APK;
 import com.java.health.care.bed.bean.APKS;
 import com.java.health.care.bed.bean.Bunk;
 import com.java.health.care.bed.bean.Dept;
@@ -115,6 +116,6 @@ public interface AllApi {
     * 比对apk版本
     */
    @POST(Api.compareVersionApk)
-   Observable<BaseEntry<APKS>> compareVersionApk(@Header("authorization") String str,@Body Map<String, Object> maps);
+   Observable<BaseEntry<List<APK>>> compareVersionApk(@Header("authorization") String str, @Body Map<String, Object> maps);
 
 }

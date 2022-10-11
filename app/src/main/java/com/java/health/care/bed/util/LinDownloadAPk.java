@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -15,12 +16,19 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.java.health.care.bed.R;
+import com.java.health.care.bed.base.BaseApplication;
+import com.java.health.care.bed.constant.SP;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -34,8 +42,7 @@ public class LinDownloadAPk
 {
     private static int FILE_LEN = 0;
     private static RemoteViews mNotifiviews;
-    public static String APK_UPGRADE = Environment
-            .getExternalStorageDirectory() + "/DownLoad/apk/BLCS.apk";
+    public static String APK_UPGRADE = Environment.getExternalStorageDirectory().getPath()+"/HBed/apk/KYC.apk";
     private static PendingIntent nullIntent;
     private static Context mContext;
 
@@ -87,7 +94,7 @@ public class LinDownloadAPk
         protected void onPreExecute()
         {
             // 发送通知显示升级进度
-            sendNotify();
+//            sendNotify();
         }
         @Override
         protected Void doInBackground(String... params)
@@ -100,16 +107,40 @@ public class LinDownloadAPk
                 URL url = new URL(apkUrl);
                 HttpURLConnection conn = (HttpURLConnection) url
                         .openConnection();
+                ////设置header内的参数 connection.setRequestProperty("健, "值")
+                conn.setRequestMethod("POST");
+                conn.setUseCaches(false); // Post请求不能使用缓存
+                conn.setDoInput(true);// 设置是否从HttpURLConnection输入，默认值为 true
+                conn.setDoOutput(true);// 设置是否使用HttpURLConnection进行输出，默认值为 false
+
+                conn.setRequestProperty("authorization", SPUtils.getInstance().getString(SP.TOKEN));
+                conn.setRequestProperty("Content-Type", "application/json");
+                ////设置body内的参数，put到JSONObject中
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", SPUtils.getInstance().getString(SP.APK_NAME));
+                jsonObject.put("source", "pad");
+                jsonObject.put("strategy","file_downloadLfs");
+
+                // 得到请求的输出流对象
+                OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(),"UTF-8");
+                writer.write(jsonObject.toString());
+                writer.flush();
+
+
                 // 设置连接超时时间
                 conn.setConnectTimeout(25000);
                 // 设置下载数据超时时间
                 conn.setReadTimeout(25000);
+
                 if (conn.getResponseCode() != HttpURLConnection.HTTP_OK)
                 {
                     return null;// 服务端错误响应
                 }
                 is = conn.getInputStream();
+
+                //文件大小
                 FILE_LEN = conn.getContentLength();
+
                 File apkFile = new File(APK_UPGRADE);
                 // 如果文件夹不存在则创建
                 if (!apkFile.getParentFile().exists())
@@ -144,6 +175,8 @@ public class LinDownloadAPk
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             } finally
             {
                 if (is != null)
@@ -174,68 +207,34 @@ public class LinDownloadAPk
         protected void onProgressUpdate(Integer... values)
         {
             // 更新通知
-            updateNotify(values[0]);
+//            updateNotify(values[0]);
         }
 
         @Override
         protected void onPostExecute(Void result)
         {
-            Toast.makeText(mContext, "下载完成，请点击通知栏完成升级", Toast.LENGTH_LONG)
-                    .show();
-            finishNotify();
+            Toast.makeText(mContext, "下载完成", Toast.LENGTH_LONG).show();
+            startIntent(APK_UPGRADE);
         }
     }
 
-    private static void sendNotify()
-    {
-        Intent intent = new Intent();
-        nullIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
-        mNotifiviews = new RemoteViews(mContext.getPackageName(),
-                R.layout.custom_notify);
-        mNotifiviews.setViewVisibility(R.id.tv_custom_notify_number, View.VISIBLE);
-        mNotifiviews.setViewVisibility(R.id.pb_custom_notify, View.VISIBLE);
-        LinNotify.show(mContext,"","",mNotifiviews,LinNotify.NEW_MESSAGE,null);
-    }
 
-    private static void updateNotify(int loadedLen)
-    {
-        int progress = loadedLen * 100 / FILE_LEN;
-        mNotifiviews.setTextViewText(R.id.tv_custom_notify_number, progress + "%");
-        mNotifiviews.setProgressBar(R.id.pb_custom_notify, FILE_LEN, loadedLen,
-                false);
-        LinNotify.show(mContext,"","",mNotifiviews,LinNotify.NEW_MESSAGE,null);
-    }
-
-    private static void finishNotify()
-    {
-        mNotifiviews.setTextViewText(R.id.tv_custom_notify_number,  "100%");
-        Intent installAppIntent = getInstallAppIntent(APK_UPGRADE);
-        PendingIntent contentIntent = PendingIntent.getActivity(mContext, 0,installAppIntent, 0);
-        mNotifiviews.setTextViewText(R.id.tv_custom_notify_finish, "下载完成，请点击进行安装");
-        mNotifiviews.setViewVisibility(R.id.tv_custom_notify_number, View.INVISIBLE);
-        mNotifiviews.setViewVisibility(R.id.pb_custom_notify, View.GONE);
-        mNotifiviews.setViewVisibility(R.id.tv_custom_notify_finish, View.VISIBLE);
-        LinNotify.show(mContext,"","",mNotifiviews,LinNotify.NEW_MESSAGE,contentIntent);
-    }
 
     /**
      * 调往系统APK安装界面（适配7.0）
      * @return
      */
-    public static Intent getInstallAppIntent( String filePath) {
+    public static void startIntent( String filePath) {
         //apk文件的本地路径
-        File apkfile = new File(filePath);
-        if (!apkfile.exists()) {
-            return null;
-        }
+        File apkFile = new File(filePath);
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri contentUri = getUriForFile(apkfile);
+        Uri contentUri = getUriForFile(apkFile);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
         intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
-        return intent;
+        mContext.startActivity(intent);
     }
 
     /**
@@ -246,7 +245,7 @@ public class LinDownloadAPk
 
         Uri fileUri = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            fileUri = FileProvider.getUriForFile(mContext, mContext.getPackageName()+".fileprovider", file);
+            fileUri = FileProvider.getUriForFile(mContext, mContext.getPackageName()+".file_provider", file);
         } else {
             fileUri = Uri.fromFile(file);
         }

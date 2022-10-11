@@ -99,10 +99,10 @@ public class Constant {
     public static final String OPEN_SWEET_LAST = "FF16";//14校验位 FF16 帧尾
 
     //关闭熏香
-    public static final String CLOSE_SWEET_ONE_HALL = "FE07040112FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
-    public static final String CLOSE_SWEET_TWO_HALL = "FE07040212FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
-    public static final String CLOSE_SWEET_THREE_HALL = "FE07040312FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
-    public static final String CLOSE_SWEET_FOUR_HALL = "FE07040412FF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_ONE_HALL = "FE0704010CFF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_TWO_HALL = "FE0704020DFF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_THREE_HALL = "FE0704030EFF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
+    public static final String CLOSE_SWEET_FOUR_HALL = "FE0704040FFF16";//FE帧头 07数据长度?? 04关闭香薰 01功能码关闭（01第一通道）
 
     //打开LED灯
     public static final String OPEN_LED_ONE_HALL = "FE080501";//FE帧头 08数据长度 01功能码打开（01打开第一通道，0A时间10分钟）

@@ -29,6 +29,7 @@ public class SP {
     public static final String PATIENT_HEIGHT = "patientHeight";
     public static final String PATIENT_WEIGHT = "patientWeight";
     public static final String HOSPITAL_ID = "hospitalId";
+    public static final String APK_NAME = "apkName";
 
 
 

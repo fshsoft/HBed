@@ -12,16 +12,15 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.ToastUtils;
+import com.clj.fastble.BleManager;
 import com.java.health.care.bed.R;
 import com.java.health.care.bed.base.BaseActivity;
-import com.java.health.care.bed.bean.APK;
-import com.java.health.care.bed.bean.APKS;
 import com.java.health.care.bed.bean.Token;
-import com.java.health.care.bed.constant.Constant;
+import com.java.health.care.bed.constant.Api;
 import com.java.health.care.bed.constant.SP;
 import com.java.health.care.bed.module.MainContract;
 import com.java.health.care.bed.presenter.MainPresenter;
+import com.java.health.care.bed.util.LinDownloadAPk;
 import com.java.health.care.bed.util.VersionUtil;
 import com.permissionx.guolindev.PermissionX;
 import com.permissionx.guolindev.callback.ExplainReasonCallback;
@@ -60,7 +59,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
 
     private String server_ip;
 
-
+    private String apkName;
 
     @Override
     protected int getLayoutId() {
@@ -72,6 +71,7 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
         presenter = new MainPresenter(this, this);
         set_version_update_num.setText("V "+VersionUtil.getAppVersionName(this));
         checkPermissions();
+        BleManager.getInstance().disconnectAllDevice();
     }
 
     @Override
@@ -141,13 +141,48 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     @Override
     public void setData(Object obj) {
 
-        APKS apks = (APKS) obj;
-        String fileName = apks.getApkList().get(0).getFileName();
-
-        Log.d("set==========",fileName);
+        apkName = (String) obj;
+        //对fileName进行分割比较versionCode是否变大，如果变大，进行弹窗提示可以升级
+        SPUtils.getInstance().put(SP.APK_NAME,apkName);
+        showDialog();
 
     }
+    //弹窗提示
+    private void showDialog(){
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("是否要进行版本更新？")
+                .positiveText("确定")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
 
+                    //调用下载文件接口
+//                        presenter.download(apkName);
+                        String ip = SPUtils.getInstance().getString(SP.IP_SERVER_ADDRESS);
+                        String url ="http://"+ip+":1234";
+                        LinDownloadAPk.downApk(SettingActivity.this, url+Api.download);
+//
+
+                    }
+                })
+                .build();
+
+
+        if (dialog.getTitleView() != null) {
+            dialog.getTitleView().setTextSize(25);
+        }
+
+        if (dialog.getActionButton(DialogAction.POSITIVE) != null) {
+            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
+        }
+
+        if(dialog.getActionButton(DialogAction.NEGATIVE)!=null){
+            dialog.getActionButton(DialogAction.NEGATIVE).setTextSize(25);
+        }
+
+        dialog.show();
+    }
 
     //点击蓝牙设置
     @OnClick(R.id.set_ble_set_rl)
@@ -223,6 +258,8 @@ public class SettingActivity extends BaseActivity implements MainContract.View {
     /**
      * 点击版本更新
      * 首先要调用一下接口，版本比对
+     * apk命名规则：名称+versionName+versionCode+发布时间+.apk
+     * 主要是比较versionCode是否增大
      */
     @OnClick(R.id.set_version_update_rl)
     public void onClickUpdateVersion(){

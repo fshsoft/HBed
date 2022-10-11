@@ -2,17 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.java.health.care.bed">
 
-        <!-- Request legacy Bluetooth permissions on older devices. -->
-        <uses-permission android:name="android.permission.BLUETOOTH"
-            android:maxSdkVersion="30" />
-        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
-            android:maxSdkVersion="30" />
+    <!-- Request legacy Bluetooth permissions on older devices. -->
+    <uses-permission
+        android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
 
-        <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-        <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-        <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -28,15 +30,16 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /><!-- 屏蔽HOME键需要的权限 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:hardwareAccelerated="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HBed"
@@ -44,15 +47,16 @@
 
         <meta-data
             android:name="design_width_in_dp"
-            android:value="1600"/>
+            android:value="1600" />
         <meta-data
             android:name="design_height_in_dp"
-            android:value="2560"/>
+            android:value="2560" />
 
-        <activity android:name=".activity.WelcomeActivity"
-            android:theme="@style/FullScreenTheme"
+        <activity
+            android:name=".activity.WelcomeActivity"
             android:exported="true"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:theme="@style/FullScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -61,56 +65,83 @@
 
         </activity>
 
-        <activity android:name=".activity.PrescriptionActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.PrescriptionActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.InputPassWordActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.InputPassWordActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.SettingActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.SettingActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.BleSettingActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.BleSettingActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.VitalSignsActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.VitalSignsActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.AssessActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.AssessActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.DrillActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.DrillActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.KYCSetActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.KYCSetActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.BLESeeAndOperateActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.BLESeeAndOperateActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.SoundWaveActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.SoundWaveActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.SweetActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.SweetActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".ble.operation.OperationActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".ble.operation.OperationActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.KSBQActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.KSBQActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.BedRegisterActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.BedRegisterActivity"
+            android:screenOrientation="landscape" />
 
-        <activity android:name=".activity.EcgsActivity"
-            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".activity.EcgsActivity"
+            android:screenOrientation="landscape" />
 
         <!--server-->
-        <service android:name=".service.DataReaderService"
-            android:exported="false"/>
+        <service
+            android:name=".service.DataReaderService"
+            android:exported="false" />
 
-        <service android:name=".service.WebSocketService"/>
+        <service android:name=".service.WebSocketService" />
+
+        <!--下载完成apk后打开文件进行安装-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.java.health.care.bed.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

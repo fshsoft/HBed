@@ -65,8 +65,8 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
     Switch sound_wave_two;
     @BindView(R.id.sound_wave_three)
     Switch sound_wave_three;
-    @BindView(R.id.sound_wave_four)
-    Switch sound_wave_four;
+   /* @BindView(R.id.sound_wave_four)
+    Switch sound_wave_four;*/
 
     @BindView(R.id.sweet_one)
     Switch sweet_one;
@@ -122,7 +122,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
         sound_wave_one.setOnCheckedChangeListener(this);
         sound_wave_two.setOnCheckedChangeListener(this);
         sound_wave_three.setOnCheckedChangeListener(this);
-        sound_wave_four.setOnCheckedChangeListener(this);
+//        sound_wave_four.setOnCheckedChangeListener(this);
         sweet_one.setOnCheckedChangeListener(this);
         sweet_two.setOnCheckedChangeListener(this);
         sweet_three.setOnCheckedChangeListener(this);
@@ -250,7 +250,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_THREE_HALL);
                     }
                     break;
-                case R.id.sound_wave_four:
+             /*   case R.id.sound_wave_four:
                     if(isChecked){
                         //FE0801040A17FF16  第四通道10分钟
                         EventBus.getDefault().post(Constant.OPEN_SOUND_WAVE_FOUR_HALL + Constant.OPEN_SOUND_WAVE_TIME
@@ -258,7 +258,7 @@ public class BLESeeAndOperateActivity extends BaseActivity implements DataReceiv
                     }else {
                         EventBus.getDefault().post(Constant.CLOSE_SOUND_WAVE_FOUR_HALL);
                     }
-                    break;
+                    break;*/
 
                     //香薰
                 case R.id.sweet_one:

@@ -35,7 +35,7 @@ android {
         variant.outputs.all {
             if (variant.name.equalsIgnoreCase('release')){
                 def df = new SimpleDateFormat("yyyyMMdd")
-                outputFileName = "HealthBed${defaultConfig.versionName}_${df.format(new Date())}_release.apk"
+                outputFileName = "KYC_${defaultConfig.versionName}_${defaultConfig.versionCode}_${df.format(new Date())}_release.apk"
             }
         }
     }
