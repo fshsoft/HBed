@@ -880,7 +880,7 @@ public class DataReaderService extends Service {
             pkt.respRate = respRate;
             dataTrans.sendData(pkt, battery);
             //写RR到文件
-            FileIOUtils.writeFileFromString(path + "rrData.rr", String.valueOf(pkt.rrNew) + "\n", true);
+//            FileIOUtils.writeFileFromString(path + "rrData.rr", String.valueOf(pkt.rrNew) + "\n", true);
         }
 
 
@@ -1028,9 +1028,14 @@ public class DataReaderService extends Service {
         SPUtils.getInstance().put(SP.KEY_ECG_FILE_TIME, dateNowStr);
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         path = Environment.getExternalStorageDirectory().getPath() + "/HBed/data/" + patientId + "-" + dateNowStr + "/";
+        String pathH300L = Environment.getExternalStorageDirectory().getPath() + "/H300L/";
         File dir = new File(path);
+        File dirH300L = new File(pathH300L);
         if (!dir.exists()) {
             dir.mkdirs();
+        }
+        if(!dirH300L.exists()){
+            dirH300L.mkdirs();
         }
     }
 

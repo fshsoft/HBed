@@ -834,7 +834,10 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
             //todo 调用接口，上传文件
             //文件上传
-            presenter.uploadFileCPR(zipFiles());
+            //原接口
+//            presenter.uploadFileCPR(zipFiles());
+            //先接口
+            presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
 
 
         }
@@ -855,7 +858,8 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
         fileList.add(file2);
         //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
         zip = Environment.getExternalStorageDirectory().getPath() +
-                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2 +"_CPR_"+ ".zip";
+                "/HBed/zipData/"+ patientId +  "_" + preId + "_" + startTime +"_" +preType + ".zip";
+//                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2 +"_CPR_"+ ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
@@ -924,21 +928,21 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
     @Override
     public void setObj(Object obj) {
-        //完成处方接口
+       /* //完成处方接口
         boolean isSuccess = (boolean) obj;
         if(isSuccess ==true){
             FileUtils.delete(zip);
             goActivity(PrescriptionActivity.class);
-        }
+        }*/
     }
 
     @Override
     public void setData(Object obj) {
 
-        String code = (String) obj;
+        /*String code = (String) obj;
         if(code.equals("000000")){
             presenter.presFinish(patientId,preId,preType);
-        }
+        }*/
     }
 
 }

@@ -433,6 +433,11 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     @OnClick(R.id.vital_start)
     public void start() {
         if(vital_start.getText().toString().equals("开始")){
+            String rr = Environment.getExternalStorageDirectory().getPath()+"/H300L"+"/rr.txt";
+            if(rr!=null){
+                //开始之前先删除上次留下的rr.txt文件
+                FileUtils.delete(rr);
+            }
             progressDialog = new ProgressDialog(this);
             progressDialog.show();
             scanBle();
@@ -696,16 +701,17 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
     private int retryNum = 1;
 
     private void retryConnectBle(BleDevice bleDevice) {
+        if(null!=timerBle){
+            timerBle.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    connectBle(bleDevice);
+                    retryNum++;
 
-        timerBle.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                connectBle(bleDevice);
-                retryNum++;
+                }
+            }, 2000, 5000);
 
-            }
-        }, 2000, 5000);
-
+        }
 
     }
 
@@ -906,6 +912,7 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
         boolean isSuccess = (boolean) obj;
         if(isSuccess==true){
             showToast("上传文件成功");
+
             finish();
         }
     }
@@ -956,9 +963,10 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
         //原保存的文件路径
         String src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
+
         File file1 = new File(src+"/lifeData.data");
-        //file2不一定有rrData.rr
-        File file2 = new File(src+"/rrData.rr");
+        //file2不一定有rr.txt
+        File file2 = new File(Environment.getExternalStorageDirectory().getPath()+"/H300L"+"/rr.txt");
         if(file2.exists()){
             file2.mkdir();
         }
@@ -968,7 +976,8 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
         //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
         String zip = Environment.getExternalStorageDirectory().getPath() +
-                "/HBed/zipData/"+ + patientId + "_" + preId + "_" + preType+"_2_LIFE_" + ".zip";
+                "/HBed/zipData/"+ patientId +  "_" + preId + "_" + startTime +"_" +preType + ".zip";
+//                "/HBed/zipData/"+ + patientId + "_" + preId + "_" + preType+"_2_LIFE_" + ".zip";
 
         //判断zip文件是否存在并创建文件
         FileUtils.createOrExistsFile(zip);
@@ -1012,17 +1021,20 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
 
     //释放音频，移除handle中message
     private void closeAll() {
-
+        BleManager.getInstance().disconnectAllDevice();
         unbindService(serviceConnection);
         EventBus.getDefault().unregister(this);
         if (timerBle != null) {
             timerBle.cancel();
+            timerBle=null;
         }
         if (timerCM19 != null) {
             timerCM19.cancel();
+            timerCM19 =null;
         }
         if (timerCM22 != null) {
             timerCM22.cancel();
+            timerCM22 = null;
         }
         if (null != mc) {
             mc.cancel();
