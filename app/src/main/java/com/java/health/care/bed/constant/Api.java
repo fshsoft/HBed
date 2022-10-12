@@ -39,7 +39,7 @@ public class Api {
     public static final String findPrescription = "/cas/open/prescription/find/patient/{patient}";
 
     /**
-     * 目前只针对自主神经处方（RESONANCE）和心肺谐振处方（NERVE）
+     * 目前只针对自主神经处方和心肺谐振处
      * 上传文件成功后，调用完成处方
      */
     public static final String presFinish  =  "/cas/open/prescription/finish/{patientId}/{preType}/{preId}";

@@ -68,7 +68,8 @@ public class DataReaderService extends Service {
     private float rrValue;
     //获取设备开始时间
     private int startTime;
-
+    private int count = 0;
+    private int better = 0;
     private FileOutputStream ecgStream = null;
     private FileOutputStream scoreStream = null;
     private FileOutputStream respStream = null;
@@ -690,7 +691,15 @@ public class DataReaderService extends Service {
                             ByteUtil.bbToShorts(selecData, elecData);
                             battery = (selecData[0] * 6) / 100;
                         }
-
+                        if (count == 0) {
+                            better = battery;
+                            count++;
+                        }
+                        if (better < battery) {
+                            battery = better;
+                        } else {
+                            better = battery;
+                        }
                         double[] activity = new double[15];
                         int[] heartRate = new int[1];
                         int[] abnStates = new int[8];
@@ -715,15 +724,15 @@ public class DataReaderService extends Service {
                                 e.printStackTrace();
                             }
 
-                            Log.i(TAG + "tag", Arrays.toString(activity));
-                            Log.i(TAG + "????", activity[0] + "");
-                            Log.i(TAG + "???", activity[1] + "");
-                            Log.i(TAG + "???", activity[2] + "");
-                            Log.i(TAG + "????", activity[4] + "");
-                            Log.i(TAG + "????", activity[5] + "");
+//                            Log.i(TAG + "tag", Arrays.toString(activity));
+//                            Log.i(TAG + "????", activity[0] + "");
+//                            Log.i(TAG + "???", activity[1] + "");
+//                            Log.i(TAG + "???", activity[2] + "");
+//                            Log.i(TAG + "????", activity[4] + "");
+//                            Log.i(TAG + "????", activity[5] + "");
 
                             if (activity[5] > 0) {
-                                handHeartdata(heartRate[0], ByteUtil.intToByte1(heartRate[0]), battery);
+                                handHeartdata(heartRate[0], ByteUtil.intToByte1(heartRate[0]), better);
                             }
                         }
 
@@ -746,6 +755,8 @@ public class DataReaderService extends Service {
                         devicePacket.resp = respRate;
 
                         devicePacket.score = score;
+
+                        Log.d("SCORE==========",devicePacket.score+"");
 
                         //实时发送
                         byte[] realTimeData = new RealTimeStatePacket(patientId, serialNum++, ecgData, rspData, null, null, null, null,
@@ -854,7 +865,7 @@ public class DataReaderService extends Service {
 
                 pkt.scoreNew = newret[1];
                 score = (int) (newret[1]);
-
+                Log.d(TAG, "RR间期1：scoreNew" + newret[1]+"========score="+score);
                 pkt.sdnn = newret[2];
                 pkt.sdsd = newret[3];
                 pkt.lf = newret[4];
@@ -1037,6 +1048,8 @@ public class DataReaderService extends Service {
         if(!dirH300L.exists()){
             dirH300L.mkdirs();
         }
+
+
     }
 
 
@@ -1056,6 +1069,24 @@ public class DataReaderService extends Service {
                         Log.d(TAG, "cm19打开通知成功");
                         startTime = getSecondTimestamp(new Date());
                         recordTimeAndCreateFile();
+
+
+                        //对获取平衡状态评分进行库的初始化
+                        String patientName = SPUtils.getInstance().getString(SP.PATIENT_NAME);
+                        int patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
+                        boolean[] finalscore = new boolean[1];
+                        float[] scorerpt = new float[3];
+                        Ucoherence.sendDataProcessCmd((byte) 0, patientId,
+                                patientName, 1, finalscore, scorerpt);
+
+                        //需要调用2次
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Ucoherence.sendDataProcessCmd((byte) 1, patientId,
+                                        patientName, 1, finalscore, scorerpt);
+                            }
+                        },60*1000);
                     }
 
                     @Override

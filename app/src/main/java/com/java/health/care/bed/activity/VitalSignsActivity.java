@@ -507,9 +507,12 @@ public class VitalSignsActivity extends BaseActivity implements DataReceiver, Ma
                 // 由于蓝牙没有打开，上一次扫描没有结束等原因，会造成扫描开启失败。
                 Log.d(TAG, "bleDeviceMac:success:" + "onScanStarted:"+success);
                 if(success==false){
-                    //重新进行扫描
-                    scanBle();
-
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            scanBle();
+                        }
+                    },5000);
                 }
             }
 

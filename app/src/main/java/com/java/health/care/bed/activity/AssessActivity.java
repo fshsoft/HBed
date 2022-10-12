@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -30,6 +31,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ZipUtils;
@@ -74,8 +77,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -230,6 +235,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
     @Override
     protected void onResume() {
         super.onResume();
+
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         //评估里面 有四个阶段，每个阶段类型不一样，value:自由呼吸-1， 6次/分钟   9次/分钟  12次/分钟
         UnFinishedPres unFinishedPres = (UnFinishedPres) getIntent().getParcelableExtra(TAG);
@@ -264,6 +270,9 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
         assess_hxl.setText("呼吸率："+"自由呼吸");
 
         addConnectDeviceView();
+
+
+//        zipFiles("20221012161157");
     }
 
 
@@ -281,12 +290,17 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
         tvConnectDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                progressDialog = new ProgressDialog(AssessActivity.this);
+                progressDialog.show();
+
                 //点击开始，连接cm19设备
-//
+
                 scanBle();
 
-                //设备没连接成功之前，先进行切换界面，体验比较好
-                addBreathView();
+
+
+
 
 
             }
@@ -306,6 +320,15 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
             @Override
             public void onScanStarted(boolean success) {
                 Log.d(TAG, "bleDeviceMac:success:" + success);
+                if(success==false){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            scanBle();
+                        }
+                    },5000);
+                }
+
             }
 
             @Override
@@ -469,6 +492,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
             @Override
             public void onClick(View v) {
                 //中断评估
+                showDialog();
             }
         });
 
@@ -482,6 +506,57 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
         assess_ll.removeAllViews();
         assess_ll.addView(breatheView);
     }
+
+    @OnClick(R.id.back)
+    public void onClickBack(){
+        showDialog();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            showDialog();
+        }
+
+        return false;
+    }
+    //弹窗提示
+    private void showDialog(){
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("你确定要中断此次评估吗？")
+                .positiveText("确定")
+                .negativeText("取消")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Log.d(TAG,"MaterialDialog确定");
+                        //调用接口，上传文件
+                        Date d = new Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                        String endTime = sdf.format(d);
+                        presenter.uploadFile(zipFiles(endTime), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+
+
+                    }
+                })
+                .build();
+
+
+        if (dialog.getTitleView() != null) {
+            dialog.getTitleView().setTextSize(25);
+        }
+
+        if (dialog.getActionButton(DialogAction.POSITIVE) != null) {
+            dialog.getActionButton(DialogAction.POSITIVE).setTextSize(25);
+        }
+
+        if(dialog.getActionButton(DialogAction.NEGATIVE)!=null){
+            dialog.getActionButton(DialogAction.NEGATIVE).setTextSize(25);
+        }
+
+        dialog.show();
+    }
+
 
     //定时器，画图
     private void drawDataTimer(){
@@ -589,7 +664,7 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
             public void run() {
 
                 if(packet.scoreNew>0){
-                    tvBreathScore.setText(packet.scoreNew+"");
+                    tvBreathScore.setText((int)packet.scoreNew+"");
                 }
 
             }
@@ -828,37 +903,53 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
 
         @Override
         public void onFinish() {
+
+            Date d = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            String endTime = sdf.format(d);
+
             //倒计时完成后，处理事物
 
-            closeAll();
+//            closeAll();
 
             //todo 调用接口，上传文件
             //文件上传
             //原接口
 //            presenter.uploadFileCPR(zipFiles());
             //先接口
-            presenter.uploadFile(zipFiles(), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
+            presenter.uploadFile(zipFiles(endTime), "file_uploadReportLfs", String.valueOf(patientId), String.valueOf(preId), preType);
 
 
         }
     }
 
     //压缩文件
-    private File zipFiles(){
+    private File zipFiles(String endTime){
 
         String startTime = SPUtils.getInstance().getString(SP.KEY_ECG_FILE_TIME);
         patientId = SPUtils.getInstance().getInt(SP.PATIENT_ID);
         hospitalId = SPUtils.getInstance().getInt(SP.HOSPITAL_ID);
         //原保存的文件路径
         src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/"+patientId+"-"+startTime;
-        File file1 = new File(src+"/ecgData.ecg");
-        File file2 = new File(src+"/respData.resp");
-        List<File> fileList = new ArrayList<>(2);
-        fileList.add(file1);
-        fileList.add(file2);
+//        src = Environment.getExternalStorageDirectory().getPath()+"/HBed/data/1-20221012161137";
+        File file1 = new File(src+"/"+"ecgData.ecg");
+        File file2 = new File(src+"/"+"respData.resp");
+        File file3 = new File(src+"/"+"scoreData.score");
+
+        File file1Ecg = new File(src+"/"+startTime+".ecg");
+        file1.renameTo(file1Ecg);
+
+        File file2Resp = new File(src+"/"+endTime+".resp");
+        file2.renameTo(file2Resp);
+
+        List<File> fileList = new ArrayList<>(3);
+        fileList.add(file1Ecg);
+        fileList.add(file2Resp);
+        fileList.add(file3);
         //将要压缩的文件zip 文件名称依次为：hospitalId_doctorId_patientId_startTime_preId_reportType reportType默认写2
+        //自主神经是1，心肺谐振是2
         zip = Environment.getExternalStorageDirectory().getPath() +
-                "/HBed/zipData/"+ patientId +  "_" + preId + "_" + startTime +"_" +preType + ".zip";
+                "/HBed/zipData/"+ patientId +  "_" + preId + "_" + startTime +"_" +1 + ".zip";
 //                "/HBed/zipData/"+hospitalId + "_" + doctorId + "_" + patientId + "_" + startTime + "_" + preId + "_" + 2 +"_CPR_"+ ".zip";
 
         //判断zip文件是否存在并创建文件
@@ -934,6 +1025,14 @@ public class AssessActivity extends BaseActivity implements DataReceiver, MainCo
             FileUtils.delete(zip);
             goActivity(PrescriptionActivity.class);
         }*/
+
+        //文件上传成功
+        boolean isSuccess = (boolean) obj;
+        if(isSuccess==true){
+            showToast("上传文件成功");
+
+            finish();
+        }
     }
 
     @Override
